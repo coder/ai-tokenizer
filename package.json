@@ -1,0 +1,119 @@
+{
+  "name": "ai-tokenizer",
+  "version": "1.0.0",
+  "author": {
+    "name": "Kyle Carberry",
+    "email": "kyle@coder.com",
+    "url": "https://coder.com"
+  },
+  "devDependencies": {
+    "@ai-sdk/anthropic": "^1.0.10",
+    "@ai-sdk/openai": "^2.0.44",
+    "@types/bun": "latest",
+    "ai": "^5.0.61",
+    "base64-js": "^1.5.1",
+    "gpt-tokenizer": "^3.0.1",
+    "mitata": "^1.0.34",
+    "prettier": "^3.6.2",
+    "tiktoken": "^1.0.22",
+    "tsdown": "^0.15.6",
+    "zod-to-json-schema": "^3.24.6"
+  },
+  "peerDependencies": {
+    "typescript": "^5",
+    "ai": "^5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "ai": {
+      "optional": true
+    }
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./sdk": {
+      "import": {
+        "types": "./dist/sdk.d.ts",
+        "default": "./dist/sdk.js"
+      },
+      "require": {
+        "types": "./dist/sdk.d.cts",
+        "default": "./dist/sdk.cjs"
+      }
+    },
+    "./encoding": {
+      "import": {
+        "types": "./dist/encoding/index.d.ts",
+        "default": "./dist/encoding/index.js"
+      },
+      "require": {
+        "types": "./dist/encoding/index.d.cts",
+        "default": "./dist/encoding/index.cjs"
+      }
+    },
+    "./encoding/cl100k_base": {
+      "import": {
+        "types": "./dist/encoding/cl100k_base.d.ts",
+        "default": "./dist/encoding/cl100k_base.js"
+      },
+      "require": {
+        "types": "./dist/encoding/cl100k_base.d.cts",
+        "default": "./dist/encoding/cl100k_base.cjs"
+      }
+    },
+    "./encoding/o200k_base": {
+      "import": {
+        "types": "./dist/encoding/o200k_base.d.ts",
+        "default": "./dist/encoding/o200k_base.js"
+      },
+      "require": {
+        "types": "./dist/encoding/o200k_base.d.cts",
+        "default": "./dist/encoding/o200k_base.cjs"
+      }
+    },
+    "./encoding/p50k_base": {
+      "import": {
+        "types": "./dist/encoding/p50k_base.d.ts",
+        "default": "./dist/encoding/p50k_base.js"
+      },
+      "require": {
+        "types": "./dist/encoding/p50k_base.d.cts",
+        "default": "./dist/encoding/p50k_base.cjs"
+      }
+    },
+    "./encoding/claude": {
+      "import": {
+        "types": "./dist/encoding/claude.d.ts",
+        "default": "./dist/encoding/claude.js"
+      },
+      "require": {
+        "types": "./dist/encoding/claude.d.cts",
+        "default": "./dist/encoding/claude.cjs"
+      }
+    }
+  },
+  "description": "A faster than tiktoken tokenizer with first-class support for Vercel's AI SDK.",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "bench": "bun run bench/*",
+    "format": "prettier --cache --write \"src/**/*.{ts,tsx,json}\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "type": "module"
+}

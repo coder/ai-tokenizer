@@ -1,0 +1,1830 @@
+{
+  "anthropic/claude-3-haiku": {
+    "model": "anthropic/claude-3-haiku",
+    "configHash": "b9ea46aa",
+    "small": {
+      "predicted": 612,
+      "actual": 627,
+      "error": 15,
+      "accuracy": "97.61%"
+    },
+    "medium": {
+      "predicted": 4515,
+      "actual": 4546,
+      "error": 31,
+      "accuracy": "99.32%"
+    },
+    "large": {
+      "predicted": 45001,
+      "actual": 45107,
+      "error": 106,
+      "accuracy": "99.77%"
+    }
+  },
+  "anthropic/claude-3-opus": {
+    "model": "anthropic/claude-3-opus",
+    "configHash": "d1043862",
+    "small": {
+      "predicted": 881,
+      "actual": 893,
+      "error": 12,
+      "accuracy": "98.66%"
+    },
+    "medium": {
+      "predicted": 4565,
+      "actual": 4626,
+      "error": 61,
+      "accuracy": "98.68%"
+    },
+    "large": {
+      "predicted": 45057,
+      "actual": 45191,
+      "error": 134,
+      "accuracy": "99.70%"
+    }
+  },
+  "anthropic/claude-3.5-haiku": {
+    "model": "anthropic/claude-3.5-haiku",
+    "configHash": "b9ea46aa",
+    "small": {
+      "predicted": 612,
+      "actual": 627,
+      "error": 15,
+      "accuracy": "97.61%"
+    },
+    "medium": {
+      "predicted": 4527,
+      "actual": 4536,
+      "error": 9,
+      "accuracy": "99.80%"
+    },
+    "large": {
+      "predicted": 45046,
+      "actual": 45107,
+      "error": 61,
+      "accuracy": "99.86%"
+    }
+  },
+  "anthropic/claude-3.5-sonnet": {
+    "model": "anthropic/claude-3.5-sonnet",
+    "configHash": "2da73bf2",
+    "small": {
+      "predicted": 661,
+      "actual": 675,
+      "error": 14,
+      "accuracy": "97.93%"
+    },
+    "medium": {
+      "predicted": 4554,
+      "actual": 4588,
+      "error": 34,
+      "accuracy": "99.26%"
+    },
+    "large": {
+      "predicted": 45025,
+      "actual": 45173,
+      "error": 148,
+      "accuracy": "99.67%"
+    }
+  },
+  "anthropic/claude-3.5-sonnet-20240620": {
+    "model": "anthropic/claude-3.5-sonnet-20240620",
+    "configHash": "6a11b50e",
+    "small": {
+      "predicted": 641,
+      "actual": 654,
+      "error": 13,
+      "accuracy": "98.01%"
+    },
+    "medium": {
+      "predicted": 4563,
+      "actual": 4564,
+      "error": 1,
+      "accuracy": "99.98%"
+    },
+    "large": {
+      "predicted": 45085,
+      "actual": 45147,
+      "error": 62,
+      "accuracy": "99.86%"
+    }
+  },
+  "anthropic/claude-3.7-sonnet": {
+    "model": "anthropic/claude-3.7-sonnet",
+    "configHash": "2da73bf2",
+    "small": {
+      "predicted": 660,
+      "actual": 673,
+      "error": 13,
+      "accuracy": "98.07%"
+    },
+    "medium": {
+      "predicted": 4573,
+      "actual": 4592,
+      "error": 19,
+      "accuracy": "99.59%"
+    },
+    "large": {
+      "predicted": 45066,
+      "actual": 45183,
+      "error": 117,
+      "accuracy": "99.74%"
+    }
+  },
+  "anthropic/claude-opus-4": {
+    "model": "anthropic/claude-opus-4",
+    "configHash": "2da73bf2",
+    "small": {
+      "predicted": 660,
+      "actual": 673,
+      "error": 13,
+      "accuracy": "98.07%"
+    },
+    "medium": {
+      "predicted": 4571,
+      "actual": 4599,
+      "error": 28,
+      "accuracy": "99.39%"
+    },
+    "large": {
+      "predicted": 45043,
+      "actual": 45161,
+      "error": 118,
+      "accuracy": "99.74%"
+    }
+  },
+  "anthropic/claude-opus-4.1": {
+    "model": "anthropic/claude-opus-4.1",
+    "configHash": "2da73bf2",
+    "small": {
+      "predicted": 661,
+      "actual": 676,
+      "error": 15,
+      "accuracy": "97.78%"
+    },
+    "medium": {
+      "predicted": 4582,
+      "actual": 4590,
+      "error": 8,
+      "accuracy": "99.83%"
+    },
+    "large": {
+      "predicted": 45081,
+      "actual": 45173,
+      "error": 92,
+      "accuracy": "99.80%"
+    }
+  },
+  "anthropic/claude-sonnet-4": {
+    "model": "anthropic/claude-sonnet-4",
+    "configHash": "2da73bf2",
+    "small": {
+      "predicted": 661,
+      "actual": 673,
+      "error": 12,
+      "accuracy": "98.22%"
+    },
+    "medium": {
+      "predicted": 4577,
+      "actual": 4582,
+      "error": 5,
+      "accuracy": "99.89%"
+    },
+    "large": {
+      "predicted": 45027,
+      "actual": 45105,
+      "error": 78,
+      "accuracy": "99.83%"
+    }
+  },
+  "anthropic/claude-sonnet-4.5": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "configHash": "8954904b",
+    "small": {
+      "predicted": 843,
+      "actual": 856,
+      "error": 13,
+      "accuracy": "98.48%"
+    },
+    "medium": {
+      "predicted": 4554,
+      "actual": 4604,
+      "error": 50,
+      "accuracy": "98.91%"
+    },
+    "large": {
+      "predicted": 45029,
+      "actual": 45166,
+      "error": 137,
+      "accuracy": "99.70%"
+    }
+  },
+  "openai/gpt-4-turbo": {
+    "model": "openai/gpt-4-turbo",
+    "configHash": "b1a3750d",
+    "small": {
+      "predicted": 473,
+      "actual": 472,
+      "error": 1,
+      "accuracy": "99.79%"
+    },
+    "medium": {
+      "predicted": 4501,
+      "actual": 4506,
+      "error": 5,
+      "accuracy": "99.89%"
+    },
+    "large": {
+      "predicted": 45050,
+      "actual": 45113,
+      "error": 63,
+      "accuracy": "99.86%"
+    }
+  },
+  "openai/gpt-4.1": {
+    "model": "openai/gpt-4.1",
+    "configHash": "317ea230",
+    "small": {
+      "predicted": 464,
+      "actual": 464,
+      "error": 0,
+      "accuracy": "100.00%"
+    },
+    "medium": {
+      "predicted": 4509,
+      "actual": 4512,
+      "error": 3,
+      "accuracy": "99.93%"
+    },
+    "large": {
+      "predicted": 45010,
+      "actual": 45045,
+      "error": 35,
+      "accuracy": "99.92%"
+    }
+  },
+  "openai/gpt-4o": {
+    "model": "openai/gpt-4o",
+    "configHash": "317ea230",
+    "small": {
+      "predicted": 463,
+      "actual": 463,
+      "error": 0,
+      "accuracy": "100.00%"
+    },
+    "medium": {
+      "predicted": 4513,
+      "actual": 4516,
+      "error": 3,
+      "accuracy": "99.93%"
+    },
+    "large": {
+      "predicted": 45025,
+      "actual": 45060,
+      "error": 35,
+      "accuracy": "99.92%"
+    }
+  },
+  "openai/gpt-4o-mini": {
+    "model": "openai/gpt-4o-mini",
+    "configHash": "317ea230",
+    "small": {
+      "predicted": 466,
+      "actual": 466,
+      "error": 0,
+      "accuracy": "100.00%"
+    },
+    "medium": {
+      "predicted": 4529,
+      "actual": 4532,
+      "error": 3,
+      "accuracy": "99.93%"
+    },
+    "large": {
+      "predicted": 45006,
+      "actual": 45041,
+      "error": 35,
+      "accuracy": "99.92%"
+    }
+  },
+  "openai/gpt-5": {
+    "model": "openai/gpt-5",
+    "configHash": "8af03534",
+    "small": {
+      "predicted": 475,
+      "actual": 479,
+      "error": 4,
+      "accuracy": "99.16%"
+    },
+    "medium": {
+      "predicted": 4521,
+      "actual": 4547,
+      "error": 26,
+      "accuracy": "99.43%"
+    },
+    "large": {
+      "predicted": 45032,
+      "actual": 45274,
+      "error": 242,
+      "accuracy": "99.47%"
+    }
+  },
+  "openai/gpt-5-mini": {
+    "model": "openai/gpt-5-mini",
+    "configHash": "242287a4",
+    "small": {
+      "predicted": 475,
+      "actual": 479,
+      "error": 4,
+      "accuracy": "99.16%"
+    },
+    "medium": {
+      "predicted": 4518,
+      "actual": 4544,
+      "error": 26,
+      "accuracy": "99.43%"
+    },
+    "large": {
+      "predicted": 45006,
+      "actual": 45248,
+      "error": 242,
+      "accuracy": "99.47%"
+    }
+  },
+  "openai/gpt-oss-120b": {
+    "model": "openai/gpt-oss-120b",
+    "configHash": "86b6058d",
+    "small": {
+      "predicted": 589,
+      "actual": 494,
+      "error": 95,
+      "accuracy": "80.77%"
+    },
+    "medium": {
+      "predicted": 4521,
+      "actual": 3468,
+      "error": 1053,
+      "accuracy": "69.64%"
+    },
+    "large": {
+      "predicted": 45052,
+      "actual": 34554,
+      "error": 10498,
+      "accuracy": "69.62%"
+    }
+  },
+  "openai/gpt-oss-20b": {
+    "model": "openai/gpt-oss-20b",
+    "configHash": "ed1c5e96",
+    "small": {
+      "predicted": 581,
+      "actual": 442,
+      "error": 139,
+      "accuracy": "68.55%"
+    },
+    "medium": {
+      "predicted": 4527,
+      "actual": 3252,
+      "error": 1275,
+      "accuracy": "60.79%"
+    },
+    "large": {
+      "predicted": 45018,
+      "actual": 32382,
+      "error": 12636,
+      "accuracy": "60.98%"
+    }
+  },
+  "openai/o1": {
+    "model": "openai/o1",
+    "configHash": "bad0ccee",
+    "small": {
+      "predicted": 526,
+      "actual": 555,
+      "error": 29,
+      "accuracy": "94.77%"
+    },
+    "medium": {
+      "predicted": 4519,
+      "actual": 4551,
+      "error": 32,
+      "accuracy": "99.30%"
+    },
+    "large": {
+      "predicted": 45031,
+      "actual": 45095,
+      "error": 64,
+      "accuracy": "99.86%"
+    }
+  },
+  "openai/o3": {
+    "model": "openai/o3",
+    "configHash": "a475d606",
+    "small": {
+      "predicted": 470,
+      "actual": 474,
+      "error": 4,
+      "accuracy": "99.16%"
+    },
+    "medium": {
+      "predicted": 4517,
+      "actual": 4543,
+      "error": 26,
+      "accuracy": "99.43%"
+    },
+    "large": {
+      "predicted": 45016,
+      "actual": 45259,
+      "error": 243,
+      "accuracy": "99.46%"
+    }
+  },
+  "openai/o3-mini": {
+    "model": "openai/o3-mini",
+    "configHash": "b028a709",
+    "small": {
+      "predicted": 464,
+      "actual": 464,
+      "error": 0,
+      "accuracy": "100.00%"
+    },
+    "medium": {
+      "predicted": 4503,
+      "error": null,
+      "accuracy": "NaN%"
+    },
+    "large": {
+      "predicted": 45005,
+      "actual": 45040,
+      "error": 35,
+      "accuracy": "99.92%"
+    }
+  },
+  "openai/o4-mini": {
+    "model": "openai/o4-mini",
+    "configHash": "a475d606",
+    "small": {
+      "predicted": 475,
+      "actual": 479,
+      "error": 4,
+      "accuracy": "99.16%"
+    },
+    "medium": {
+      "predicted": 4525,
+      "actual": 4551,
+      "error": 26,
+      "accuracy": "99.43%"
+    },
+    "large": {
+      "predicted": 45036,
+      "actual": 45278,
+      "error": 242,
+      "accuracy": "99.47%"
+    }
+  },
+  "xai/grok-2": {
+    "model": "xai/grok-2",
+    "configHash": "fed4887e",
+    "small": {
+      "predicted": 564,
+      "actual": 591,
+      "error": 27,
+      "accuracy": "95.43%"
+    },
+    "medium": {
+      "predicted": 4517,
+      "actual": 4701,
+      "error": 184,
+      "accuracy": "96.09%"
+    },
+    "large": {
+      "predicted": 45007,
+      "actual": 47238,
+      "error": 2231,
+      "accuracy": "95.28%"
+    }
+  },
+  "xai/grok-2-vision": {
+    "model": "xai/grok-2-vision",
+    "configHash": "fed4887e",
+    "small": {
+      "predicted": 561,
+      "actual": 594,
+      "error": 33,
+      "accuracy": "94.44%"
+    },
+    "medium": {
+      "predicted": 4521,
+      "actual": 4725,
+      "error": 204,
+      "accuracy": "95.68%"
+    },
+    "large": null
+  },
+  "xai/grok-3": {
+    "model": "xai/grok-3",
+    "configHash": "9adaa525",
+    "small": {
+      "predicted": 462,
+      "actual": 464,
+      "error": 2,
+      "accuracy": "99.57%"
+    },
+    "medium": {
+      "predicted": 4529,
+      "actual": 4590,
+      "error": 61,
+      "accuracy": "98.67%"
+    },
+    "large": {
+      "predicted": 45030,
+      "actual": 45378,
+      "error": 348,
+      "accuracy": "99.23%"
+    }
+  },
+  "xai/grok-3-fast": {
+    "model": "xai/grok-3-fast",
+    "configHash": "9adaa525",
+    "small": {
+      "predicted": 462,
+      "actual": 464,
+      "error": 2,
+      "accuracy": "99.57%"
+    },
+    "medium": {
+      "predicted": 4531,
+      "actual": 4596,
+      "error": 65,
+      "accuracy": "98.59%"
+    },
+    "large": {
+      "predicted": 45043,
+      "actual": 45440,
+      "error": 397,
+      "accuracy": "99.13%"
+    }
+  },
+  "xai/grok-3-mini": {
+    "model": "xai/grok-3-mini",
+    "configHash": "059c0051",
+    "small": {
+      "predicted": 485,
+      "actual": 487,
+      "error": 2,
+      "accuracy": "99.59%"
+    },
+    "medium": {
+      "predicted": 4540,
+      "actual": 4597,
+      "error": 57,
+      "accuracy": "98.76%"
+    },
+    "large": {
+      "predicted": 45008,
+      "actual": 45382,
+      "error": 374,
+      "accuracy": "99.18%"
+    }
+  },
+  "xai/grok-3-mini-fast": {
+    "model": "xai/grok-3-mini-fast",
+    "configHash": "059c0051",
+    "small": {
+      "predicted": 484,
+      "actual": 486,
+      "error": 2,
+      "accuracy": "99.59%"
+    },
+    "medium": {
+      "predicted": 4542,
+      "actual": 4607,
+      "error": 65,
+      "accuracy": "98.59%"
+    },
+    "large": {
+      "predicted": 45016,
+      "actual": 45410,
+      "error": 394,
+      "accuracy": "99.13%"
+    }
+  },
+  "xai/grok-4-fast-non-reasoning": {
+    "model": "xai/grok-4-fast-non-reasoning",
+    "configHash": "ee4745a1",
+    "small": {
+      "predicted": 628,
+      "actual": 571,
+      "error": 57,
+      "accuracy": "90.02%"
+    },
+    "medium": {
+      "predicted": 4761,
+      "actual": 2142,
+      "error": 2619,
+      "accuracy": "-22.27%"
+    },
+    "large": {
+      "predicted": 45116,
+      "actual": 17884,
+      "error": 27232,
+      "accuracy": "-52.27%"
+    }
+  },
+  "xai/grok-4-fast-reasoning": {
+    "model": "xai/grok-4-fast-reasoning",
+    "configHash": "ab6d7c52",
+    "small": {
+      "predicted": 564,
+      "actual": 560,
+      "error": 4,
+      "accuracy": "99.29%"
+    },
+    "medium": {
+      "predicted": 4504,
+      "actual": 3496,
+      "error": 1008,
+      "accuracy": "71.17%"
+    },
+    "large": {
+      "predicted": 45034,
+      "actual": 33789,
+      "error": 11245,
+      "accuracy": "66.72%"
+    }
+  },
+  "xai/grok-code-fast-1": {
+    "model": "xai/grok-code-fast-1",
+    "configHash": "df801032",
+    "small": {
+      "predicted": 706,
+      "actual": 589,
+      "error": 117,
+      "accuracy": "80.14%"
+    },
+    "medium": {
+      "predicted": 4514,
+      "actual": 2113,
+      "error": 2401,
+      "accuracy": "-13.63%"
+    },
+    "large": {
+      "predicted": 45090,
+      "actual": 17955,
+      "error": 27135,
+      "accuracy": "-51.13%"
+    }
+  },
+  "alibaba/qwen-3-14b": {
+    "model": "alibaba/qwen-3-14b",
+    "configHash": "c11f7563",
+    "small": {
+      "predicted": 525,
+      "actual": 507,
+      "error": 18,
+      "accuracy": "96.45%"
+    },
+    "medium": {
+      "predicted": 4565,
+      "actual": 4733,
+      "error": 168,
+      "accuracy": "96.45%"
+    },
+    "large": null
+  },
+  "alibaba/qwen-3-235b": {
+    "model": "alibaba/qwen-3-235b",
+    "configHash": "d40abc48",
+    "small": {
+      "predicted": 452,
+      "actual": 460,
+      "error": 8,
+      "accuracy": "98.26%"
+    },
+    "medium": {
+      "predicted": 4578,
+      "actual": 4750,
+      "error": 172,
+      "accuracy": "96.38%"
+    },
+    "large": null
+  },
+  "alibaba/qwen-3-30b": {
+    "model": "alibaba/qwen-3-30b",
+    "configHash": "c11f7563",
+    "small": {
+      "predicted": 525,
+      "actual": 507,
+      "error": 18,
+      "accuracy": "96.45%"
+    },
+    "medium": {
+      "predicted": 4567,
+      "actual": 4744,
+      "error": 177,
+      "accuracy": "96.27%"
+    },
+    "large": null
+  },
+  "alibaba/qwen-3-32b": {
+    "model": "alibaba/qwen-3-32b",
+    "configHash": "81536f93",
+    "small": {
+      "predicted": 527,
+      "actual": 505,
+      "error": 22,
+      "accuracy": "95.64%"
+    },
+    "medium": {
+      "predicted": 4589,
+      "actual": 4795,
+      "error": 206,
+      "accuracy": "95.70%"
+    },
+    "large": null
+  },
+  "alibaba/qwen3-coder": {
+    "model": "alibaba/qwen3-coder",
+    "configHash": "72b88fe1",
+    "small": {
+      "predicted": 580,
+      "actual": 550,
+      "error": 30,
+      "accuracy": "94.55%"
+    },
+    "medium": {
+      "predicted": 4547,
+      "actual": 4702,
+      "error": 155,
+      "accuracy": "96.70%"
+    },
+    "large": {
+      "predicted": 45040,
+      "actual": 47626,
+      "error": 2586,
+      "accuracy": "94.57%"
+    }
+  },
+  "alibaba/qwen3-coder-plus": {
+    "model": "alibaba/qwen3-coder-plus",
+    "configHash": "f02ba797",
+    "small": {
+      "predicted": 611,
+      "actual": 581,
+      "error": 30,
+      "accuracy": "94.84%"
+    },
+    "medium": {
+      "predicted": 4543,
+      "actual": 4695,
+      "error": 152,
+      "accuracy": "96.76%"
+    },
+    "large": {
+      "predicted": 45015,
+      "actual": 47614,
+      "error": 2599,
+      "accuracy": "94.54%"
+    }
+  },
+  "alibaba/qwen3-max": {
+    "model": "alibaba/qwen3-max",
+    "configHash": "538711d7",
+    "small": {
+      "predicted": 530,
+      "actual": 538,
+      "error": 8,
+      "accuracy": "98.51%"
+    },
+    "medium": {
+      "predicted": 4531,
+      "actual": 4740,
+      "error": 209,
+      "accuracy": "95.59%"
+    },
+    "large": {
+      "predicted": 45102,
+      "actual": 47814,
+      "error": 2712,
+      "accuracy": "94.33%"
+    }
+  },
+  "alibaba/qwen3-next-80b-a3b-instruct": {
+    "model": "alibaba/qwen3-next-80b-a3b-instruct",
+    "configHash": "fdc33906",
+    "small": {
+      "predicted": 529,
+      "actual": 507,
+      "error": 22,
+      "accuracy": "95.66%"
+    },
+    "medium": {
+      "predicted": 4588,
+      "actual": 4744,
+      "error": 156,
+      "accuracy": "96.71%"
+    },
+    "large": {
+      "predicted": 45027,
+      "actual": 46997,
+      "error": 1970,
+      "accuracy": "95.81%"
+    }
+  },
+  "alibaba/qwen3-next-80b-a3b-thinking": {
+    "model": "alibaba/qwen3-next-80b-a3b-thinking",
+    "configHash": "0ddf97d3",
+    "small": {
+      "predicted": 523,
+      "actual": 503,
+      "error": 20,
+      "accuracy": "96.02%"
+    },
+    "medium": {
+      "predicted": 4582,
+      "actual": 4788,
+      "error": 206,
+      "accuracy": "95.70%"
+    },
+    "large": {
+      "predicted": 45034,
+      "actual": 47358,
+      "error": 2324,
+      "accuracy": "95.09%"
+    }
+  },
+  "alibaba/qwen3-vl-instruct": {
+    "model": "alibaba/qwen3-vl-instruct",
+    "configHash": "81536f93",
+    "small": {
+      "predicted": 533,
+      "actual": 508,
+      "error": 25,
+      "accuracy": "95.08%"
+    },
+    "medium": {
+      "predicted": 4579,
+      "actual": 4734,
+      "error": 155,
+      "accuracy": "96.73%"
+    },
+    "large": {
+      "predicted": 45035,
+      "actual": 46893,
+      "error": 1858,
+      "accuracy": "96.04%"
+    }
+  },
+  "amazon/nova-lite": {
+    "model": "amazon/nova-lite",
+    "configHash": "9988a17c",
+    "small": {
+      "predicted": 672,
+      "actual": 685,
+      "error": 13,
+      "accuracy": "98.10%"
+    },
+    "medium": {
+      "predicted": 4503,
+      "actual": 4859,
+      "error": 356,
+      "accuracy": "92.67%"
+    },
+    "large": {
+      "predicted": 45028,
+      "actual": 49938,
+      "error": 4910,
+      "accuracy": "90.17%"
+    }
+  },
+  "amazon/nova-micro": {
+    "model": "amazon/nova-micro",
+    "configHash": "9988a17c",
+    "small": {
+      "predicted": 671,
+      "actual": 684,
+      "error": 13,
+      "accuracy": "98.10%"
+    },
+    "medium": {
+      "predicted": 4532,
+      "actual": 4921,
+      "error": 389,
+      "accuracy": "92.10%"
+    },
+    "large": {
+      "predicted": 45090,
+      "actual": 50548,
+      "error": 5458,
+      "accuracy": "89.20%"
+    }
+  },
+  "amazon/nova-pro": {
+    "model": "amazon/nova-pro",
+    "configHash": "9988a17c",
+    "small": {
+      "predicted": 672,
+      "actual": 685,
+      "error": 13,
+      "accuracy": "98.10%"
+    },
+    "medium": {
+      "predicted": 4525,
+      "actual": 4875,
+      "error": 350,
+      "accuracy": "92.82%"
+    },
+    "large": {
+      "predicted": 45029,
+      "actual": 49942,
+      "error": 4913,
+      "accuracy": "90.16%"
+    }
+  },
+  "deepseek/deepseek-r1": {
+    "model": "deepseek/deepseek-r1",
+    "configHash": "5afa070c",
+    "small": {
+      "predicted": 497,
+      "actual": 479,
+      "error": 18,
+      "accuracy": "96.24%"
+    },
+    "medium": {
+      "predicted": 4505,
+      "actual": 4446,
+      "error": 59,
+      "accuracy": "98.67%"
+    },
+    "large": {
+      "predicted": 45036,
+      "actual": 44198,
+      "error": 838,
+      "accuracy": "98.10%"
+    }
+  },
+  "deepseek/deepseek-r1-distill-llama-70b": {
+    "model": "deepseek/deepseek-r1-distill-llama-70b",
+    "configHash": "caedd5df",
+    "small": {
+      "predicted": 491,
+      "actual": 500,
+      "error": 9,
+      "accuracy": "98.20%"
+    },
+    "medium": {
+      "predicted": 4540,
+      "actual": 4582,
+      "error": 42,
+      "accuracy": "99.08%"
+    },
+    "large": null
+  },
+  "deepseek/deepseek-v3": {
+    "model": "deepseek/deepseek-v3",
+    "configHash": "2793fade",
+    "small": {
+      "predicted": 487,
+      "actual": 511,
+      "error": 24,
+      "accuracy": "95.30%"
+    },
+    "medium": {
+      "predicted": 4549,
+      "actual": 4770,
+      "error": 221,
+      "accuracy": "95.37%"
+    },
+    "large": {
+      "predicted": 45119,
+      "actual": 47397,
+      "error": 2278,
+      "accuracy": "95.19%"
+    }
+  },
+  "deepseek/deepseek-v3.1": {
+    "model": "deepseek/deepseek-v3.1",
+    "configHash": "a27b86ae",
+    "small": {
+      "predicted": 450,
+      "actual": 462,
+      "error": 12,
+      "accuracy": "97.40%"
+    },
+    "medium": {
+      "predicted": 4518,
+      "actual": 4338,
+      "error": 180,
+      "accuracy": "95.85%"
+    },
+    "large": {
+      "predicted": 45038,
+      "actual": 43500,
+      "error": 1538,
+      "accuracy": "96.46%"
+    }
+  },
+  "deepseek/deepseek-v3.1-terminus": {
+    "model": "deepseek/deepseek-v3.1-terminus",
+    "configHash": "f0995e7d",
+    "small": {
+      "predicted": 481,
+      "actual": 500,
+      "error": 19,
+      "accuracy": "96.20%"
+    },
+    "medium": {
+      "predicted": 4542,
+      "actual": 4655,
+      "error": 113,
+      "accuracy": "97.57%"
+    },
+    "large": {
+      "predicted": 45121,
+      "actual": 46255,
+      "error": 1134,
+      "accuracy": "97.55%"
+    }
+  },
+  "deepseek/deepseek-v3.2-exp": {
+    "model": "deepseek/deepseek-v3.2-exp",
+    "configHash": "17fccad7",
+    "small": {
+      "predicted": 476,
+      "actual": 497,
+      "error": 21,
+      "accuracy": "95.77%"
+    },
+    "medium": {
+      "predicted": 4547,
+      "actual": 4658,
+      "error": 111,
+      "accuracy": "97.62%"
+    },
+    "large": {
+      "predicted": 45078,
+      "actual": 46258,
+      "error": 1180,
+      "accuracy": "97.45%"
+    }
+  },
+  "deepseek/deepseek-v3.2-exp-thinking": {
+    "model": "deepseek/deepseek-v3.2-exp-thinking",
+    "configHash": "17fccad7",
+    "small": {
+      "predicted": 477,
+      "actual": 497,
+      "error": 20,
+      "accuracy": "95.98%"
+    },
+    "medium": {
+      "predicted": 4503,
+      "actual": 4616,
+      "error": 113,
+      "accuracy": "97.55%"
+    },
+    "large": {
+      "predicted": 45049,
+      "actual": 46178,
+      "error": 1129,
+      "accuracy": "97.56%"
+    }
+  },
+  "meituan/longcat-flash-chat": {
+    "model": "meituan/longcat-flash-chat",
+    "configHash": "b56e0066",
+    "small": {
+      "predicted": 503,
+      "actual": 712,
+      "error": 209,
+      "accuracy": "70.65%"
+    },
+    "medium": {
+      "predicted": 4551,
+      "actual": 4590,
+      "error": 39,
+      "accuracy": "99.15%"
+    },
+    "large": {
+      "predicted": 45069,
+      "actual": 43390,
+      "error": 1679,
+      "accuracy": "96.13%"
+    }
+  },
+  "meta/llama-3.1-8b": {
+    "model": "meta/llama-3.1-8b",
+    "configHash": "42532853",
+    "small": {
+      "predicted": 451,
+      "actual": 457,
+      "error": 6,
+      "accuracy": "98.69%"
+    },
+    "medium": {
+      "predicted": 4580,
+      "actual": 4189,
+      "error": 391,
+      "accuracy": "90.67%"
+    },
+    "large": {
+      "predicted": 45058,
+      "actual": 40848,
+      "error": 4210,
+      "accuracy": "89.69%"
+    }
+  },
+  "meta/llama-4-scout": {
+    "model": "meta/llama-4-scout",
+    "configHash": "1283469c",
+    "small": {
+      "predicted": 934,
+      "actual": 467,
+      "error": 467,
+      "accuracy": "0.00%"
+    },
+    "medium": {
+      "predicted": 4567,
+      "actual": 3186,
+      "error": 1381,
+      "accuracy": "56.65%"
+    },
+    "large": {
+      "predicted": 45043,
+      "actual": 33622,
+      "error": 11421,
+      "accuracy": "66.03%"
+    }
+  },
+  "mistral/codestral": {
+    "model": "mistral/codestral",
+    "configHash": "17636bc8",
+    "small": {
+      "predicted": 558,
+      "actual": 595,
+      "error": 37,
+      "accuracy": "93.78%"
+    },
+    "medium": {
+      "predicted": 4524,
+      "actual": 4925,
+      "error": 401,
+      "accuracy": "91.86%"
+    },
+    "large": {
+      "predicted": 45044,
+      "actual": 49017,
+      "error": 3973,
+      "accuracy": "91.89%"
+    }
+  },
+  "mistral/devstral-small": {
+    "model": "mistral/devstral-small",
+    "configHash": "17636bc8",
+    "small": {
+      "predicted": 562,
+      "actual": 569,
+      "error": 7,
+      "accuracy": "98.77%"
+    },
+    "medium": {
+      "predicted": 4541,
+      "actual": 4826,
+      "error": 285,
+      "accuracy": "94.09%"
+    },
+    "large": {
+      "predicted": 45032,
+      "actual": 48052,
+      "error": 3020,
+      "accuracy": "93.72%"
+    }
+  },
+  "mistral/magistral-medium": {
+    "model": "mistral/magistral-medium",
+    "configHash": "17636bc8",
+    "small": {
+      "predicted": 557,
+      "actual": 567,
+      "error": 10,
+      "accuracy": "98.24%"
+    },
+    "medium": {
+      "predicted": 4527,
+      "actual": 4804,
+      "error": 277,
+      "accuracy": "94.23%"
+    },
+    "large": {
+      "predicted": 45068,
+      "actual": 48092,
+      "error": 3024,
+      "accuracy": "93.71%"
+    }
+  },
+  "mistral/magistral-small": {
+    "model": "mistral/magistral-small",
+    "configHash": "17636bc8",
+    "small": {
+      "predicted": 557,
+      "actual": 569,
+      "error": 12,
+      "accuracy": "97.89%"
+    },
+    "medium": {
+      "predicted": 4532,
+      "actual": 4805,
+      "error": 273,
+      "accuracy": "94.32%"
+    },
+    "large": {
+      "predicted": 45009,
+      "actual": 48063,
+      "error": 3054,
+      "accuracy": "93.65%"
+    }
+  },
+  "moonshotai/kimi-k2": {
+    "model": "moonshotai/kimi-k2",
+    "configHash": "bced8513",
+    "small": {
+      "predicted": 495,
+      "actual": 448,
+      "error": 47,
+      "accuracy": "89.51%"
+    },
+    "medium": {
+      "predicted": 4523,
+      "error": null,
+      "accuracy": "NaN%"
+    },
+    "large": {
+      "predicted": 45090,
+      "actual": 38473,
+      "error": 6617,
+      "accuracy": "82.80%"
+    }
+  },
+  "moonshotai/kimi-k2-0905": {
+    "model": "moonshotai/kimi-k2-0905",
+    "configHash": "bced8513",
+    "small": {
+      "predicted": 500,
+      "actual": 437,
+      "error": 63,
+      "accuracy": "85.58%"
+    },
+    "medium": {
+      "predicted": 4517,
+      "actual": 3796,
+      "error": 721,
+      "accuracy": "81.01%"
+    },
+    "large": {
+      "predicted": 45080,
+      "actual": 37744,
+      "error": 7336,
+      "accuracy": "80.56%"
+    }
+  },
+  "moonshotai/kimi-k2-turbo": {
+    "model": "moonshotai/kimi-k2-turbo",
+    "configHash": "9280df29",
+    "small": {
+      "predicted": 465,
+      "actual": 492,
+      "error": 27,
+      "accuracy": "94.51%"
+    },
+    "medium": {
+      "predicted": 4511,
+      "actual": 4884,
+      "error": 373,
+      "accuracy": "92.36%"
+    },
+    "large": {
+      "predicted": 45038,
+      "actual": 49045,
+      "error": 4007,
+      "accuracy": "91.83%"
+    }
+  },
+  "stealth/sonoma-dusk-alpha": {
+    "model": "stealth/sonoma-dusk-alpha",
+    "configHash": "8ea9b170",
+    "small": {
+      "predicted": 574,
+      "actual": 571,
+      "error": 3,
+      "accuracy": "99.47%"
+    },
+    "medium": {
+      "predicted": 4509,
+      "actual": 3513,
+      "error": 996,
+      "accuracy": "71.65%"
+    },
+    "large": {
+      "predicted": 45054,
+      "actual": 33797,
+      "error": 11257,
+      "accuracy": "66.69%"
+    }
+  },
+  "stealth/sonoma-sky-alpha": {
+    "model": "stealth/sonoma-sky-alpha",
+    "configHash": "ab6d7c52",
+    "small": {
+      "predicted": 563,
+      "actual": 560,
+      "error": 3,
+      "accuracy": "99.46%"
+    },
+    "medium": {
+      "predicted": 4615,
+      "actual": 3537,
+      "error": 1078,
+      "accuracy": "69.52%"
+    },
+    "large": {
+      "predicted": 45013,
+      "actual": 33714,
+      "error": 11299,
+      "accuracy": "66.49%"
+    }
+  },
+  "vercel/v0-1.0-md": {
+    "model": "vercel/v0-1.0-md",
+    "configHash": "52271efe",
+    "small": {
+      "predicted": 2850,
+      "actual": 2879,
+      "error": 29,
+      "accuracy": "98.99%"
+    },
+    "medium": {
+      "predicted": 4574,
+      "actual": 8557,
+      "error": 3983,
+      "accuracy": "53.45%"
+    },
+    "large": {
+      "predicted": 45008,
+      "actual": 48698,
+      "error": 3690,
+      "accuracy": "92.42%"
+    }
+  },
+  "vercel/v0-1.5-md": {
+    "model": "vercel/v0-1.5-md",
+    "configHash": "52271efe",
+    "small": {
+      "predicted": 2850,
+      "actual": 2880,
+      "error": 30,
+      "accuracy": "98.96%"
+    },
+    "medium": {
+      "predicted": 4585,
+      "actual": 8562,
+      "error": 3977,
+      "accuracy": "53.55%"
+    },
+    "large": {
+      "predicted": 45021,
+      "actual": 48731,
+      "error": 3710,
+      "accuracy": "92.39%"
+    }
+  },
+  "zai/glm-4.5": {
+    "model": "zai/glm-4.5",
+    "configHash": "c6835b74",
+    "small": {
+      "predicted": 522,
+      "actual": 495,
+      "error": 27,
+      "accuracy": "94.55%"
+    },
+    "medium": {
+      "predicted": 4554,
+      "actual": 4390,
+      "error": 164,
+      "accuracy": "96.26%"
+    },
+    "large": {
+      "predicted": 45009,
+      "actual": 43345,
+      "error": 1664,
+      "accuracy": "96.16%"
+    }
+  },
+  "zai/glm-4.5-air": {
+    "model": "zai/glm-4.5-air",
+    "configHash": "185004d1",
+    "small": {
+      "predicted": 473,
+      "actual": 489,
+      "error": 16,
+      "accuracy": "96.73%"
+    },
+    "medium": {
+      "predicted": 4509,
+      "actual": 4675,
+      "error": 166,
+      "accuracy": "96.45%"
+    },
+    "large": {
+      "predicted": 45008,
+      "actual": 46545,
+      "error": 1537,
+      "accuracy": "96.70%"
+    }
+  },
+  "zai/glm-4.5v": {
+    "model": "zai/glm-4.5v",
+    "configHash": "6d080b21",
+    "small": {
+      "predicted": 521,
+      "actual": 497,
+      "error": 24,
+      "accuracy": "95.17%"
+    },
+    "medium": {
+      "predicted": 4516,
+      "actual": 4324,
+      "error": 192,
+      "accuracy": "95.56%"
+    },
+    "large": {
+      "predicted": 45034,
+      "actual": 43038,
+      "error": 1996,
+      "accuracy": "95.36%"
+    }
+  },
+  "meta/llama-3.3-70b": {
+    "model": "meta/llama-3.3-70b",
+    "configHash": "6fdd52d2",
+    "small": {
+      "predicted": 458,
+      "actual": 458,
+      "error": 0,
+      "accuracy": "100.00%"
+    },
+    "medium": {
+      "predicted": 4519,
+      "actual": 3477,
+      "error": 1042,
+      "accuracy": "70.03%"
+    },
+    "large": {
+      "predicted": 45001,
+      "actual": 33895,
+      "error": 11106,
+      "accuracy": "67.23%"
+    }
+  },
+  "mistral/mistral-large": {
+    "model": "mistral/mistral-large",
+    "configHash": "17636bc8",
+    "small": {
+      "predicted": 554,
+      "actual": 564,
+      "error": 10,
+      "accuracy": "98.23%"
+    },
+    "medium": {
+      "predicted": 4520,
+      "actual": 4804,
+      "error": 284,
+      "accuracy": "94.09%"
+    },
+    "large": null
+  },
+  "mistral/mistral-medium": {
+    "model": "mistral/mistral-medium",
+    "configHash": "17636bc8",
+    "small": {
+      "predicted": 556,
+      "actual": 567,
+      "error": 11,
+      "accuracy": "98.06%"
+    },
+    "medium": {
+      "predicted": 4526,
+      "actual": 4817,
+      "error": 291,
+      "accuracy": "93.96%"
+    },
+    "large": {
+      "predicted": 45057,
+      "actual": 48040,
+      "error": 2983,
+      "accuracy": "93.79%"
+    }
+  },
+  "mistral/mistral-small": {
+    "model": "mistral/mistral-small",
+    "configHash": "17636bc8",
+    "small": {
+      "predicted": 562,
+      "actual": 581,
+      "error": 19,
+      "accuracy": "96.73%"
+    },
+    "medium": {
+      "predicted": 4501,
+      "actual": 4851,
+      "error": 350,
+      "accuracy": "92.78%"
+    },
+    "large": null
+  },
+  "mistral/pixtral-large": {
+    "model": "mistral/pixtral-large",
+    "configHash": "54261df4",
+    "small": {
+      "predicted": 466,
+      "actual": 471,
+      "error": 5,
+      "accuracy": "98.94%"
+    },
+    "medium": {
+      "predicted": 4506,
+      "actual": 4781,
+      "error": 275,
+      "accuracy": "94.25%"
+    },
+    "large": {
+      "predicted": 45018,
+      "actual": 47754,
+      "error": 2736,
+      "accuracy": "94.27%"
+    }
+  },
+  "openai/gpt-4.1-mini": {
+    "model": "openai/gpt-4.1-mini",
+    "configHash": "317ea230",
+    "small": {
+      "predicted": 464,
+      "actual": 464,
+      "error": 0,
+      "accuracy": "100.00%"
+    },
+    "medium": {
+      "predicted": 4501,
+      "actual": 4504,
+      "error": 3,
+      "accuracy": "99.93%"
+    },
+    "large": {
+      "predicted": 45000,
+      "actual": 45035,
+      "error": 35,
+      "accuracy": "99.92%"
+    }
+  },
+  "openai/gpt-5-nano": {
+    "model": "openai/gpt-5-nano",
+    "configHash": "242287a4",
+    "small": {
+      "predicted": 474,
+      "actual": 478,
+      "error": 4,
+      "accuracy": "99.16%"
+    },
+    "medium": {
+      "predicted": 4525,
+      "actual": 4551,
+      "error": 26,
+      "accuracy": "99.43%"
+    },
+    "large": {
+      "predicted": 45016,
+      "actual": 45259,
+      "error": 243,
+      "accuracy": "99.46%"
+    }
+  },
+  "xai/grok-4": {
+    "model": "xai/grok-4",
+    "configHash": "d05f64f2",
+    "small": {
+      "predicted": 1091,
+      "actual": 1088,
+      "error": 3,
+      "accuracy": "99.72%"
+    },
+    "medium": {
+      "predicted": 4505,
+      "actual": 3574,
+      "error": 931,
+      "accuracy": "73.95%"
+    },
+    "large": {
+      "predicted": 45079,
+      "actual": 34004,
+      "error": 11075,
+      "accuracy": "67.43%"
+    }
+  },
+  "openai/gpt-5-codex": {
+    "model": "openai/gpt-5-codex",
+    "configHash": "8af03534",
+    "small": {
+      "predicted": 479,
+      "actual": 483,
+      "error": 4,
+      "accuracy": "99.17%"
+    },
+    "medium": {
+      "predicted": 4519,
+      "actual": 4545,
+      "error": 26,
+      "accuracy": "99.43%"
+    },
+    "large": {
+      "predicted": 45024,
+      "actual": 45266,
+      "error": 242,
+      "accuracy": "99.47%"
+    }
+  },
+  "openai/gpt-5-pro": {
+    "model": "openai/gpt-5-pro",
+    "configHash": "8af03534",
+    "small": {
+      "predicted": 477,
+      "actual": 481,
+      "error": 4,
+      "accuracy": "99.17%"
+    },
+    "medium": {
+      "predicted": 4522,
+      "actual": 4548,
+      "error": 26,
+      "accuracy": "99.43%"
+    },
+    "large": {
+      "predicted": 45040,
+      "actual": 45282,
+      "error": 242,
+      "accuracy": "99.47%"
+    }
+  },
+  "google/gemini-2.0-flash": {
+    "model": "google/gemini-2.0-flash",
+    "configHash": "f3a77939",
+    "small": {
+      "predicted": 503,
+      "actual": 493,
+      "error": 10,
+      "accuracy": "97.97%"
+    },
+    "medium": {
+      "predicted": 4505,
+      "actual": 4491,
+      "error": 14,
+      "accuracy": "99.69%"
+    },
+    "large": {
+      "predicted": 45017,
+      "actual": 44993,
+      "error": 24,
+      "accuracy": "99.95%"
+    }
+  },
+  "google/gemini-2.0-flash-lite": {
+    "model": "google/gemini-2.0-flash-lite",
+    "configHash": "f3a77939",
+    "small": {
+      "predicted": 504,
+      "actual": 495,
+      "error": 9,
+      "accuracy": "98.18%"
+    },
+    "medium": {
+      "predicted": 4524,
+      "actual": 4508,
+      "error": 16,
+      "accuracy": "99.65%"
+    },
+    "large": {
+      "predicted": 45041,
+      "actual": 44937,
+      "error": 104,
+      "accuracy": "99.77%"
+    }
+  },
+  "google/gemini-2.5-flash": {
+    "model": "google/gemini-2.5-flash",
+    "configHash": "f3a77939",
+    "small": {
+      "predicted": 498,
+      "actual": 492,
+      "error": 6,
+      "accuracy": "98.78%"
+    },
+    "medium": {
+      "predicted": 4533,
+      "actual": 4515,
+      "error": 18,
+      "accuracy": "99.60%"
+    },
+    "large": {
+      "predicted": 45020,
+      "actual": 44954,
+      "error": 66,
+      "accuracy": "99.85%"
+    }
+  },
+  "google/gemini-2.5-flash-lite": {
+    "model": "google/gemini-2.5-flash-lite",
+    "configHash": "f3a77939",
+    "small": {
+      "predicted": 499,
+      "actual": 495,
+      "error": 4,
+      "accuracy": "99.19%"
+    },
+    "medium": {
+      "predicted": 4512,
+      "actual": 4482,
+      "error": 30,
+      "accuracy": "99.33%"
+    },
+    "large": {
+      "predicted": 45015,
+      "actual": 44942,
+      "error": 73,
+      "accuracy": "99.84%"
+    }
+  },
+  "google/gemini-2.5-flash-lite-preview-09-2025": {
+    "model": "google/gemini-2.5-flash-lite-preview-09-2025",
+    "configHash": "2cdd3c95",
+    "small": {
+      "predicted": 460,
+      "actual": 496,
+      "error": 36,
+      "accuracy": "92.74%"
+    },
+    "medium": {
+      "predicted": 4519,
+      "actual": 4536,
+      "error": 17,
+      "accuracy": "99.63%"
+    },
+    "large": {
+      "predicted": 45040,
+      "actual": 44925,
+      "error": 115,
+      "accuracy": "99.74%"
+    }
+  },
+  "google/gemini-2.5-flash-preview-09-2025": {
+    "model": "google/gemini-2.5-flash-preview-09-2025",
+    "configHash": "2cdd3c95",
+    "small": {
+      "predicted": 458,
+      "actual": 495,
+      "error": 37,
+      "accuracy": "92.53%"
+    },
+    "medium": {
+      "predicted": 4531,
+      "actual": 4545,
+      "error": 14,
+      "accuracy": "99.69%"
+    },
+    "large": {
+      "predicted": 45024,
+      "actual": 44908,
+      "error": 116,
+      "accuracy": "99.74%"
+    }
+  },
+  "google/gemini-2.5-pro": {
+    "model": "google/gemini-2.5-pro",
+    "configHash": "f3a77939",
+    "small": {
+      "predicted": 499,
+      "actual": 491,
+      "error": 8,
+      "accuracy": "98.37%"
+    },
+    "medium": {
+      "predicted": 4534,
+      "actual": 4508,
+      "error": 26,
+      "accuracy": "99.42%"
+    },
+    "large": {
+      "predicted": 45074,
+      "actual": 44991,
+      "error": 83,
+      "accuracy": "99.82%"
+    }
+  }
+}

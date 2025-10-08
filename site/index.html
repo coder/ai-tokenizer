@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Primary Meta Tags -->
+  <title>ai-tokenizer - Fast BPE Tokenizer for GPT, Claude, Gemini & More</title>
+  <meta name="title" content="AI Tokenizer - Fast BPE Tokenizer for GPT, Claude, Gemini & More">
+  <meta name="description" content="Free online tokenizer for 70+ AI models including GPT-5, Claude Sonnet, Gemini Pro. 5-7x faster than tiktoken with 95%+ accuracy. Real-time token counting for OpenAI, Anthropic, and Google models.">
+  <meta name="keywords" content="tokenizer, BPE, GPT tokenizer, Claude tokenizer, AI tokenizer, token counter, GPT-5, GPT-4, Claude Sonnet, Gemini, tiktoken alternative, token counting, OpenAI, Anthropic, token calculator">
+  <meta name="author" content="Kyle Carberry">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://coder.github.io/ai-tokenizer/">
+  <meta property="og:title" content="AI Tokenizer - Fast BPE Tokenizer for 70+ AI Models">
+  <meta property="og:description" content="Free online tokenizer for GPT, Claude, Gemini and more. 5-7x faster than tiktoken with real-time token counting.">
+  <meta property="og:image" content="https://coder.github.io/ai-tokenizer/og-image.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://coder.github.io/ai-tokenizer/">
+  <meta property="twitter:title" content="AI Tokenizer - Fast BPE Tokenizer for 70+ AI Models">
+  <meta property="twitter:description" content="Free online tokenizer for GPT, Claude, Gemini and more. 5-7x faster than tiktoken with real-time token counting.">
+  <meta property="twitter:image" content="https://coder.github.io/ai-tokenizer/og-image.png">
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://coder.github.io/ai-tokenizer/">
+  
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#0a0a0a">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/ai-tokenizer/manifest.json">
+  
+  <link rel="stylesheet" href="./style.css">
+  
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "AI Tokenizer",
+    "applicationCategory": "DeveloperApplication",
+    "description": "Performance-focused BPE tokenizer with support for 70+ AI models including GPT-5, Claude Sonnet 4.5, and Gemini Pro. 5-7x faster than tiktoken.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "operatingSystem": "Web Browser",
+    "author": {
+      "@type": "Person",
+      "name": "Kyle Carberry"
+    },
+    "url": "https://coder.github.io/ai-tokenizer/",
+    "sameAs": [
+      "https://github.com/coder/ai-tokenizer",
+      "https://www.npmjs.com/package/ai-tokenizer"
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <header role="banner">
+      <h1>ai-tokenizer</h1>
+      <p class="subtitle">A faster than tiktoken tokenizer with first-class support for Vercel's AI SDK.</p>
+      <div class="header-actions">
+        <a href="https://github.com/coder/ai-tokenizer" target="_blank" rel="noopener" class="header-link" aria-label="View on GitHub">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.840 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.430.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+          </svg>
+          GitHub
+        </a>
+        <a href="https://www.npmjs.com/package/ai-tokenizer" target="_blank" rel="noopener" class="header-link" aria-label="View on NPM">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M0 7.334v8h6.666v1.332H12v-1.332h12v-8H0zm6.666 6.664H5.334v-4H3.999v4H1.335V8.667h5.331v5.331zm4 0v1.336H8.001V8.667h5.334v5.332h-2.669v-.001zm12.001 0h-1.33v-4h-1.336v4h-1.335v-4h-1.33v4h-2.671V8.667h8.002v5.331zM10.665 10H12v2.667h-1.335V10z"/>
+          </svg>
+          NPM
+        </a>
+      </div>
+    </header>
+
+    <div class="top-models">
+      <label>Popular models:</label>
+      <div class="model-chips">
+        <button class="model-chip" data-model="openai/gpt-5">GPT-5</button>
+        <button class="model-chip" data-model="anthropic/claude-sonnet-4.5">Claude Sonnet 4.5</button>
+        <button class="model-chip" data-model="google/gemini-2.5-pro">Gemini 2.5 Pro</button>
+        <button class="model-chip" data-model="openai/gpt-4o">GPT-4o</button>
+        <button class="model-chip" data-model="deepseek/deepseek-v3">DeepSeek V3</button>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="control-group">
+        <label for="model-select">All models</label>
+        <select id="model-select">
+          <option value="">Select a model...</option>
+        </select>
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <span class="stat-label">Tokens</span>
+          <span class="stat-value" id="token-count">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Characters</span>
+          <span class="stat-value" id="char-count">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Encoding</span>
+          <span class="stat-value" id="encoding-name">-</span>
+        </div>
+        <div class="stat" id="time-stat" style="display: none;">
+          <span class="stat-label">Encode Time</span>
+          <span class="stat-value" id="encode-time">-</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="split-view">
+      <div class="editor-section">
+        <div class="editor-header">
+          <h2>Input Text</h2>
+          <div class="editor-controls">
+            <label class="toggle-control" id="render-toggle-label">
+              <input type="checkbox" id="render-toggle" checked>
+              <span>Render</span>
+            </label>
+            <button id="tokenize-btn" class="btn-secondary" style="display: none;">Tokenize Now</button>
+            <button id="clear-btn" class="btn-secondary">Clear</button>
+          </div>
+        </div>
+      <textarea 
+        id="input-text" 
+        placeholder="Type or paste text here to see it tokenized..."
+        spellcheck="false"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        data-gramm="false"
+        data-gramm_editor="false"
+        data-enable-grammarly="false"
+      ></textarea>
+      </div>
+
+      <div class="output-section">
+        <div class="output-header">
+          <h2>Tokens</h2>
+        </div>
+        <div id="tokens-output" class="tokens-container">
+          <div class="empty-state">Select a model and enter text to see tokens</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>Note:</strong> Token counts are approximations based on the best available encoding for each model.
+      Accuracy varies by model and context (typically 95-100%). See <a href="https://github.com/coder/ai-tokenizer#accuracy" target="_blank" rel="noopener">accuracy table</a> for details.
+    </div>
+  </div>
+
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
+

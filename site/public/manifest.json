@@ -1,0 +1,11 @@
+{
+  "name": "AI Tokenizer",
+  "short_name": "AI Tokenizer",
+  "description": "Fast BPE tokenizer for 70+ AI models",
+  "start_url": "/ai-tokenizer/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#3b82f6",
+  "icons": []
+}
+
