@@ -186,7 +186,7 @@ Validated against actual API responses with pseudo-random messages:
 
 <!-- ACCURACY_TABLE_END -->
 
-*Accuracy shows percentage within actual token count. Error shows absolute token difference.*
+*Accuracy shows percentage within actual token count.*
 
 > [!WARNING]
 > Not every tool/token scenario is tested for accuracy. There will be edge-cases where this is more/less accurate. If you find this inaccurate for your scenario, please open an issue.
