@@ -1,14 +1,12 @@
 {
   "name": "ai-tokenizer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "Kyle Carberry",
     "email": "kyle@coder.com",
     "url": "https://coder.com"
   },
   "devDependencies": {
-    "@ai-sdk/anthropic": "^1.0.10",
-    "@ai-sdk/openai": "^2.0.44",
     "@types/bun": "latest",
     "ai": "^5.0.61",
     "base64-js": "^1.5.1",
@@ -16,11 +14,9 @@
     "mitata": "^1.0.34",
     "prettier": "^3.6.2",
     "tiktoken": "^1.0.22",
-    "tsdown": "^0.15.6",
-    "zod-to-json-schema": "^3.24.6"
+    "tsdown": "^0.15.6"
   },
   "peerDependencies": {
-    "typescript": "^5",
     "ai": "^5.0.0"
   },
   "peerDependenciesMeta": {

@@ -21,7 +21,7 @@ A faster than tiktoken tokenizer with first-class support for Vercel's AI SDK.
 
 [Try it on the website:](https://coder.github.io/ai-tokenizer/)
 
-[![Demo](./demo.png)](https://coder.github.io/ai-tokenizer/)
+[![Demo](https://raw.githubusercontent.com/coder/ai-tokenizer/main/demo.png)](https://coder.github.io/ai-tokenizer/)
 
 ## Usage
 
@@ -189,7 +189,7 @@ Validated against actual API responses with pseudo-random messages:
 *Accuracy shows percentage within actual token count. Error shows absolute token difference.*
 
 > [!WARNING]
-> Not every tool/token scenario is tested for accuracy. There will be edge-cases where this is more/less accurate. If you find accuracy to be inaccurate for your scenario, please open an issue.
+> Not every tool/token scenario is tested for accuracy. There will be edge-cases where this is more/less accurate. If you find this inaccurate for your scenario, please open an issue.
 
 Run `bun run scripts/generate-accuracy.ts` to update this table. Refer to [accuracy.json](./accuracy.json) for greater detail.
 
