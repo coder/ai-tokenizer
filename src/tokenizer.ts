@@ -20,9 +20,9 @@ export interface Encoding {
   name: string;
   pat_str: string;
   special_tokens: Record<string, number>;
-  stringEncoder: Map<string, number>;
+  stringEncoder: Record<string, number>;
   binaryEncoder: Array<[Uint8Array, number]>;
-  decoder: Map<number, string | Uint8Array>;
+  decoder: Record<number, string | Uint8Array>;
 }
 
 /**
@@ -36,9 +36,9 @@ export default class Tokenizer {
   private readonly inverseSpecialTokens: Record<number, Uint8Array>;
 
   // Optimized dual storage (pre-built at generation time)
-  private readonly stringRankEncoder: Map<string, number>;
+  private readonly stringRankEncoder: Record<string, number>;
   private readonly binaryRankEncoder: Array<[Uint8Array, number]>;
-  private readonly decoder: Map<number, string | Uint8Array>;
+  private readonly decoder: Record<number, string | Uint8Array>;
   private readonly binaryFirstByteIndex: Array<Array<
     [Uint8Array, number]
   > | null>;
@@ -216,7 +216,7 @@ export default class Tokenizer {
   private encodeOrdinary(text: string): number[] {
     // Quick single-token check for very short text
     if (text.length < 10) {
-      const direct = this.stringRankEncoder.get(text);
+      const direct = this.stringRankEncoder[text];
       if (direct !== undefined) return [direct];
     }
 
@@ -229,7 +229,7 @@ export default class Tokenizer {
       const piece = m[0];
 
       // Direct rank check (most common case)
-      const directRank = this.stringRankEncoder.get(piece);
+      const directRank = this.stringRankEncoder[piece];
       if (directRank !== undefined) {
         result.push(directRank);
         continue;
@@ -274,7 +274,7 @@ export default class Tokenizer {
       const piece = m[0];
 
       // Direct rank check
-      const directRank = this.stringRankEncoder.get(piece);
+      const directRank = this.stringRankEncoder[piece];
       if (directRank !== undefined) {
         result.push(directRank);
         continue;
@@ -297,8 +297,7 @@ export default class Tokenizer {
 
     for (let i = 0; i < tokens.length; i++) {
       const token = tokens[i]!;
-      const value =
-        this.decoder.get(token) ?? this.inverseSpecialTokens[token]!;
+      const value = this.decoder[token] ?? this.inverseSpecialTokens[token]!;
 
       if (value === undefined) continue;
 
@@ -472,7 +471,7 @@ function escapeRegex(str: string): string {
  */
 function bytePairMerge(
   piece: Uint8Array,
-  stringRanks: Map<string, number>,
+  stringRanks: Record<string, number>,
   binaryFirstByteIndex: Array<Array<[Uint8Array, number]> | null>
 ): number[] {
   const len = piece.length;
@@ -482,7 +481,7 @@ function bytePairMerge(
     // Try string conversion (has inline ASCII fast path)
     const asString = tryBytesToString(slice);
     if (asString !== undefined) {
-      const rank = stringRanks.get(asString);
+      const rank = stringRanks[asString];
       if (rank !== undefined) return rank;
     }
 

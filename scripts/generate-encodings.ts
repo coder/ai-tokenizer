@@ -83,15 +83,15 @@ for (const inputFile of jsonFiles) {
     const asString = tryBytesToString(bytes);
     
     if (asString !== undefined) {
-      // Store as string (fast Map lookup)
+      // Store as string (fast object property lookup)
       const escaped = asString.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t');
-      stringEncoderEntries.push(`  ["${escaped}", ${rank}]`);
-      decoderEntries.push(`  [${rank}, "${escaped}"]`);
+      stringEncoderEntries.push(`  "${escaped}": ${rank}`);
+      decoderEntries.push(`  ${rank}: "${escaped}"`);
       stringCount++;
     } else {
       // Store as binary (will be sorted for binary search)
       binaryEncoderPairs.push({ bytes: Array.from(bytes), rank: rank as number });
-      decoderEntries.push(`  [${rank}, new Uint8Array([${bytes.join(",")}])]`);
+      decoderEntries.push(`  ${rank}: new Uint8Array([${bytes.join(",")}])`);
       binaryCount++;
     }
   }
@@ -129,20 +129,20 @@ export const pat_str = ${JSON.stringify(source.pat_str)};
 
 export const special_tokens = ${JSON.stringify(source.special_tokens, null, 2)};
 
-// String-based encoder (UTF-8 tokens) - fast Map lookup
-export const stringEncoder = new Map<string, number>([
+// String-based encoder (UTF-8 tokens) - fast object lookup (mobile-friendly!)
+export const stringEncoder: Record<string, number> = {
 ${stringEncoderEntries.join(",\n")}
-]);
+};
 
 // Binary encoder (non-UTF-8 tokens) - pre-sorted for binary search
 export const binaryEncoder: Array<[Uint8Array, number]> = [
 ${binaryEncoderEntries.join(",\n")}
 ];
 
-// Decoder map - strings where possible for faster decode
-export const decoder = new Map<number, string | Uint8Array>([
+// Decoder - plain object for mobile compatibility
+export const decoder: Record<number, string | Uint8Array> = {
 ${decoderEntries.join(",\n")}
-]);
+};
 `;
 
   // Write output
