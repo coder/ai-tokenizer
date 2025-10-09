@@ -16,7 +16,9 @@ export class OffscreenCanvasManager {
   
   setupCanvas() {
     const rect = this.container.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
+    // Use lower DPR on mobile for better performance
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
+    const dpr = isMobile ? Math.min(window.devicePixelRatio || 1, 1.5) : Math.min(window.devicePixelRatio || 1, 2);
     
     this.canvas.width = rect.width * dpr;
     this.canvas.height = rect.height * dpr;
@@ -32,7 +34,9 @@ export class OffscreenCanvasManager {
       type: 'init-canvas',
       canvas: offscreen,
       width: rect.width,
-      height: rect.height
+      height: rect.height,
+      dpr: dpr,
+      isMobile: isMobile
     }, [offscreen]);
   }
   
@@ -43,7 +47,9 @@ export class OffscreenCanvasManager {
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(() => {
         const rect = this.container.getBoundingClientRect();
-        const dpr = window.devicePixelRatio || 1;
+        // Use lower DPR on mobile for better performance
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
+        const dpr = isMobile ? Math.min(window.devicePixelRatio || 1, 1.5) : Math.min(window.devicePixelRatio || 1, 2);
         
         this.canvas.width = rect.width * dpr;
         this.canvas.height = rect.height * dpr;
@@ -56,7 +62,9 @@ export class OffscreenCanvasManager {
         this.worker.postMessage({
           type: 'resize',
           width: rect.width,
-          height: rect.height
+          height: rect.height,
+          dpr: dpr,
+          isMobile: isMobile
         });
       }, 150); // Debounce resize events
     };
@@ -67,11 +75,7 @@ export class OffscreenCanvasManager {
     let scrollTimeout;
     let pendingScroll = null;
     
-    this.canvas.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      this.scrollTop += e.deltaY;
-      
-      // Throttle scroll messages to worker (but accumulate deltas)
+    const sendScroll = () => {
       if (!scrollTimeout) {
         this.worker.postMessage({
           type: 'scroll',
@@ -92,7 +96,39 @@ export class OffscreenCanvasManager {
       } else {
         pendingScroll = this.scrollTop;
       }
+    };
+    
+    this.canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      this.scrollTop += e.deltaY;
+      sendScroll();
     }, { passive: false });
+    
+    // Touch support for mobile
+    let touchStartY = 0;
+    let touchStartScrollTop = 0;
+    
+    this.canvas.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        touchStartY = e.touches[0].clientY;
+        touchStartScrollTop = this.scrollTop;
+      }
+    }, { passive: true });
+    
+    this.canvas.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 1) {
+        e.preventDefault();
+        const touchY = e.touches[0].clientY;
+        const deltaY = touchStartY - touchY;
+        this.scrollTop = touchStartScrollTop + deltaY;
+        sendScroll();
+      }
+    }, { passive: false });
+    
+    this.canvas.addEventListener('touchend', () => {
+      touchStartY = 0;
+      touchStartScrollTop = 0;
+    }, { passive: true });
     
     // Mouse move for hover (throttled for performance)
     let mouseMoveTimeout;

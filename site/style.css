@@ -26,6 +26,10 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Prevent bounce/overscroll on mobile */
+  overscroll-behavior: none;
+  /* Improve touch scrolling */
+  -webkit-overflow-scrolling: touch;
 }
 
 .container {
@@ -115,6 +119,8 @@ h1 {
   font-family: var(--font-mono);
   cursor: pointer;
   transition: all 0.2s;
+  /* Better touch feedback */
+  -webkit-tap-highlight-color: rgba(59, 130, 246, 0.2);
 }
 
 .model-chip:hover {
@@ -302,6 +308,8 @@ textarea::placeholder {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
+  /* Better touch feedback */
+  -webkit-tap-highlight-color: rgba(59, 130, 246, 0.2);
 }
 
 .btn-secondary:hover {
@@ -325,6 +333,21 @@ textarea::placeholder {
   line-height: 1.6;
   overflow: hidden;
   position: relative;
+  /* Prevent text selection on touch devices */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  /* Improve touch interactions */
+  touch-action: pan-y;
+}
+
+.tokens-container canvas {
+  /* Prevent touch callout on long press */
+  -webkit-touch-callout: none;
+  /* Make sure canvas is not selectable */
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .empty-state {
@@ -462,6 +485,11 @@ textarea:disabled {
     width: 100%;
     justify-content: space-between;
   }
+  
+  .stat-value {
+    font-size: 1.25rem;
+    min-width: 80px;
+  }
 
   .editor-header,
   .output-header {
@@ -477,6 +505,53 @@ textarea:disabled {
   textarea,
   .tokens-container {
     min-height: 300px;
+  }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 480px) {
+  .container {
+    padding: 0.75rem;
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  .header-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .header-link {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .model-chips {
+    gap: 0.25rem;
+  }
+  
+  .model-chip {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.6rem;
+  }
+  
+  .stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  
+  .stat-value {
+    font-size: 1.1rem;
+  }
+  
+  .split-view {
+    gap: 1rem;
+  }
+  
+  select {
+    font-size: 0.8rem;
   }
 }
 

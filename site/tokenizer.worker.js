@@ -27,6 +27,8 @@ const colors = [
 
 let viewportWidth = 0;
 let viewportHeight = 0;
+let isMobile = false;
+let maxRenderTokens = 1000;
 
 // Load encoding dynamically
 async function loadEncoding(encodingType) {
@@ -75,7 +77,11 @@ self.onmessage = async function(e) {
       ctx = offscreenCanvas.getContext('2d', { alpha: false });
       viewportWidth = width;
       viewportHeight = height;
-      const dpr = 2; // High DPI
+      isMobile = e.data.isMobile || false;
+      // Reduce render limit on mobile for better performance
+      maxRenderTokens = isMobile ? 500 : 1000;
+      // Use lower DPR on mobile for better performance
+      const dpr = e.data.dpr || 2;
       offscreenCanvas.width = width * dpr;
       offscreenCanvas.height = height * dpr;
       ctx.scale(dpr, dpr);
@@ -84,7 +90,11 @@ self.onmessage = async function(e) {
     } else if (type === 'resize') {
       viewportWidth = width;
       viewportHeight = height;
-      const dpr = 2;
+      isMobile = e.data.isMobile || false;
+      // Reduce render limit on mobile for better performance
+      maxRenderTokens = isMobile ? 500 : 1000;
+      // Use lower DPR on mobile for better performance
+      const dpr = e.data.dpr || 2;
       offscreenCanvas.width = width * dpr;
       offscreenCanvas.height = height * dpr;
       ctx.scale(dpr, dpr);
@@ -184,17 +194,24 @@ function getTokenLayout(index) {
   }
 
   const lineHeightPx = fontSize * lineHeight;
+  
+  // Find the last cached layout before this index
+  let startIndex = 0;
   let x = padding;
   let y = padding;
-
-  for (let i = 0; i <= index; i++) {
+  
+  for (let i = index; i >= 0; i--) {
     if (tokenLayouts.has(i)) {
       const layout = tokenLayouts.get(i);
+      startIndex = i + 1;
       x = layout.x + layout.width + 2;
       y = layout.y;
-      continue;
+      break;
     }
+  }
 
+  // Calculate layouts from startIndex to index
+  for (let i = startIndex; i <= index; i++) {
     const tokenId = tokens[i];
     const text = currentTokenizer.decode([tokenId]);
     const metrics = ctx.measureText(text);
@@ -241,7 +258,7 @@ function render() {
   const visibleBottom = scrollTop + viewportHeight;
 
   let rendered = 0;
-  for (let i = 0; i < tokens.length && rendered < 1000; i++) {
+  for (let i = 0; i < tokens.length && rendered < maxRenderTokens; i++) {
     const layout = getTokenLayout(i);
     if (!layout) continue;
 
