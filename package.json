@@ -1,6 +1,6 @@
 {
   "name": "ai-tokenizer",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "author": {
     "name": "Kyle Carberry",
     "email": "kyle@coder.com",
@@ -22,6 +22,19 @@
   "peerDependenciesMeta": {
     "ai": {
       "optional": true
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "sdk": ["./dist/sdk.d.ts"],
+      "encoding": ["./dist/encoding/index.d.ts"],
+      "encoding/cl100k_base": ["./dist/encoding/cl100k_base.d.ts"],
+      "encoding/o200k_base": ["./dist/encoding/o200k_base.d.ts"],
+      "encoding/p50k_base": ["./dist/encoding/p50k_base.d.ts"],
+      "encoding/claude": ["./dist/encoding/claude.d.ts"]
     }
   },
   "exports": {
