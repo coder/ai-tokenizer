@@ -1,6 +1,6 @@
 {
   "name": "ai-tokenizer",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "author": {
     "name": "Kyle Carberry",
     "email": "kyle@coder.com",
@@ -8,7 +8,7 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "ai": "^5.0.61",
+    "ai": "^5.0.105",
     "base64-js": "^1.5.1",
     "gpt-tokenizer": "^3.0.1",
     "mitata": "^1.0.34",

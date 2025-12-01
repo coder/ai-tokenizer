@@ -38,9 +38,12 @@ const IGNORE_MODELS = [
     "openai/gpt-3.5-turbo",
     "openai/gpt-3.5-turbo-instruct",
     "openai/gpt-4.1-nano",
+    "openai/o3-deep-research",
 
     "google/gemma-2-9b",
     "google/gemini-2.5-flash-image",
+    "google/gemini-2.5-flash-image-preview",
+    "google/gemini-3-pro-image",
 
     "alibaba/qwen3-max-preview",
     "alibaba/qwen3-vl-thinking",
