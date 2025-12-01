@@ -13,9 +13,9 @@ A faster than tiktoken tokenizer with first-class support for Vercel's AI SDK.
 <!-- POPULAR_MODELS_TABLE_START -->
 | Model | ~500 tokens | ~5k tokens | ~50k tokens |
 |-------|-------------|------------|-------------|
-| openai/gpt-5 | 99.16% | 99.43% | 99.47% |
-| anthropic/claude-sonnet-4.5 | 98.48% | 98.91% | 99.70% |
-| google/gemini-2.5-pro | 98.37% | 99.42% | 99.82% |
+| openai/gpt-5.1-codex | 79.84% | 98.72% | 99.65% |
+| anthropic/claude-opus-4.5 | 98.48% | 98.56% | 99.79% |
+| google/gemini-3-pro-preview | 98.70% | 98.77% | 98.91% |
 
 <!-- POPULAR_MODELS_TABLE_END -->
 
@@ -102,6 +102,7 @@ Validated against actual API responses with pseudo-random messages:
 | alibaba/qwen-3-235b | 98.26% | 96.38% | N/A |
 | alibaba/qwen-3-30b | 96.45% | 96.27% | N/A |
 | alibaba/qwen-3-32b | 95.64% | 95.70% | N/A |
+| alibaba/qwen3-235b-a22b-thinking | 96.06% | 96.34% | 95.98% |
 | alibaba/qwen3-coder | 94.55% | 96.70% | 94.57% |
 | alibaba/qwen3-coder-plus | 94.84% | 96.76% | 94.54% |
 | alibaba/qwen3-max | 98.51% | 95.59% | 94.33% |
@@ -117,8 +118,10 @@ Validated against actual API responses with pseudo-random messages:
 | anthropic/claude-3.5-sonnet | 97.93% | 99.26% | 99.67% |
 | anthropic/claude-3.5-sonnet-20240620 | 98.01% | 99.98% | 99.86% |
 | anthropic/claude-3.7-sonnet | 98.07% | 99.59% | 99.74% |
+| anthropic/claude-haiku-4.5 | 98.48% | 98.67% | 99.62% |
 | anthropic/claude-opus-4 | 98.07% | 99.39% | 99.74% |
 | anthropic/claude-opus-4.1 | 97.78% | 99.83% | 99.80% |
+| anthropic/claude-opus-4.5 | 98.48% | 98.56% | 99.79% |
 | anthropic/claude-sonnet-4 | 98.22% | 99.89% | 99.83% |
 | anthropic/claude-sonnet-4.5 | 98.48% | 98.91% | 99.70% |
 | deepseek/deepseek-r1 | 96.24% | 98.67% | 98.10% |
@@ -135,10 +138,12 @@ Validated against actual API responses with pseudo-random messages:
 | google/gemini-2.5-flash-lite-preview-09-2025 | 92.74% | 99.63% | 99.74% |
 | google/gemini-2.5-flash-preview-09-2025 | 92.53% | 99.69% | 99.74% |
 | google/gemini-2.5-pro | 98.37% | 99.42% | 99.82% |
+| google/gemini-3-pro-preview | 98.70% | 98.77% | 98.91% |
 | meituan/longcat-flash-chat | 70.65% | 99.15% | 96.13% |
 | meta/llama-3.1-8b | 98.69% | 90.67% | 89.69% |
 | meta/llama-3.3-70b | 100.00% | 70.03% | 67.23% |
 | meta/llama-4-scout | 0.00% | 56.65% | 66.03% |
+| minimax/minimax-m2 | 94.13% | 74.53% | 72.83% |
 | mistral/codestral | 93.78% | 91.86% | 91.89% |
 | mistral/devstral-small | 98.77% | 94.09% | 93.72% |
 | mistral/magistral-medium | 98.24% | 94.23% | 93.71% |
@@ -149,6 +154,8 @@ Validated against actual API responses with pseudo-random messages:
 | mistral/pixtral-large | 98.94% | 94.25% | 94.27% |
 | moonshotai/kimi-k2 | 89.51% | NaN% | 82.80% |
 | moonshotai/kimi-k2-0905 | 85.58% | 81.01% | 80.56% |
+| moonshotai/kimi-k2-thinking | 95.02% | 92.80% | 91.96% |
+| moonshotai/kimi-k2-thinking-turbo | 95.03% | 92.38% | 91.91% |
 | moonshotai/kimi-k2-turbo | 94.51% | 92.36% | 91.83% |
 | openai/gpt-4-turbo | 99.79% | 99.89% | 99.86% |
 | openai/gpt-4.1 | 100.00% | 99.93% | 99.92% |
@@ -156,16 +163,23 @@ Validated against actual API responses with pseudo-random messages:
 | openai/gpt-4o | 100.00% | 99.93% | 99.92% |
 | openai/gpt-4o-mini | 100.00% | 99.93% | 99.92% |
 | openai/gpt-5 | 99.16% | 99.43% | 99.47% |
+| openai/gpt-5-chat | 100.00% | 99.93% | 99.92% |
 | openai/gpt-5-codex | 99.17% | 99.43% | 99.47% |
 | openai/gpt-5-mini | 99.16% | 99.43% | 99.47% |
 | openai/gpt-5-nano | 99.16% | 99.43% | 99.46% |
 | openai/gpt-5-pro | 99.17% | 99.43% | 99.47% |
+| openai/gpt-5.1-codex | 79.84% | 98.72% | 99.65% |
+| openai/gpt-5.1-codex-mini | 99.17% | 99.43% | 99.47% |
+| openai/gpt-5.1-instant | 79.84% | 98.72% | 99.65% |
+| openai/gpt-5.1-thinking | 79.84% | 98.72% | 99.64% |
 | openai/gpt-oss-120b | 80.77% | 69.64% | 69.62% |
 | openai/gpt-oss-20b | 68.55% | 60.79% | 60.98% |
+| openai/gpt-oss-safeguard-20b | 75.60% | 64.08% | 63.67% |
 | openai/o1 | 94.77% | 99.30% | 99.86% |
 | openai/o3 | 99.16% | 99.43% | 99.46% |
 | openai/o3-mini | 100.00% | NaN% | 99.92% |
 | openai/o4-mini | 99.16% | 99.43% | 99.47% |
+| prime-intellect/intellect-3 | 93.08% | 95.64% | 97.12% |
 | stealth/sonoma-dusk-alpha | 99.47% | 71.65% | 66.69% |
 | stealth/sonoma-sky-alpha | 99.46% | 69.52% | 66.49% |
 | vercel/v0-1.0-md | 98.99% | 53.45% | 92.42% |
@@ -179,6 +193,8 @@ Validated against actual API responses with pseudo-random messages:
 | xai/grok-4 | 99.72% | 73.95% | 67.43% |
 | xai/grok-4-fast-non-reasoning | 90.02% | -22.27% | -52.27% |
 | xai/grok-4-fast-reasoning | 99.29% | 71.17% | 66.72% |
+| xai/grok-4.1-fast-non-reasoning | 99.65% | 71.70% | 66.76% |
+| xai/grok-4.1-fast-reasoning | 99.28% | 71.50% | 66.62% |
 | xai/grok-code-fast-1 | 80.14% | -13.63% | -51.13% |
 | zai/glm-4.5 | 94.55% | 96.26% | 96.16% |
 | zai/glm-4.5-air | 96.73% | 96.45% | 96.70% |

@@ -177,7 +177,8 @@ async function testModelAtScale(modelName: ModelName, targetTokens: number): Pro
                     { type: "text", text: fillTemplate("Additionally, can you help with {TECH1}?") }
                 ]
             });
-        } else if (role === "assistant" && messageIdx % 13 === 3) {
+            // Gemini 3 Pro Preview requies thought signatures for tool calls :/
+        } else if (role === "assistant" && messageIdx % 13 === 3 && modelName !== "google/gemini-3-pro-preview") {
             // Include tool calls in some assistant messages
             const toolCallId = `call${messageIdx.toString().padStart(5, '0')}`;
             messages.push({
@@ -217,7 +218,7 @@ async function testModelAtScale(modelName: ModelName, targetTokens: number): Pro
                                 message: fillTemplate("Analysis complete for {TECH1}. Found {NUM1} records."),
                                 count: Math.floor(Math.random() * 10000)
                             }
-                        }
+                        },
                     }
                 ]
             });
@@ -325,9 +326,9 @@ async function generateAccuracyMetrics(cache: AccuracyCache): Promise<AccuracyCa
 function generateMarkdownTable(cache: AccuracyCache): { popularTable: string; fullTable: string } {
     // Popular models to highlight
     const popularModels: ModelName[] = [
-        "openai/gpt-5",
-        "anthropic/claude-sonnet-4.5",
-        "google/gemini-2.5-pro"
+        "openai/gpt-5.1-codex",
+        "anthropic/claude-opus-4.5",
+        "google/gemini-3-pro-preview",
     ];
 
     // Generate popular models table

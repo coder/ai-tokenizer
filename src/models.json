@@ -2283,7 +2283,7 @@
       "perEnum": 0,
       "perNestedObject": -1,
       "perArrayOfObjects": 0,
-      "contentMultiplier": 1
+      "contentMultiplier": 1.08
     },
     "name": "Gemini 3 Pro Preview",
     "contextWindow": 1000000,

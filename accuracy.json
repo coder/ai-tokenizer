@@ -1826,5 +1826,357 @@
       "error": 83,
       "accuracy": "99.82%"
     }
+  },
+  "anthropic/claude-haiku-4.5": {
+    "model": "anthropic/claude-haiku-4.5",
+    "configHash": "5ea49093",
+    "small": {
+      "predicted": 843,
+      "actual": 856,
+      "error": 13,
+      "accuracy": "98.48%"
+    },
+    "medium": {
+      "predicted": 4541,
+      "actual": 4602,
+      "error": 61,
+      "accuracy": "98.67%"
+    },
+    "large": {
+      "predicted": 45054,
+      "actual": 45226,
+      "error": 172,
+      "accuracy": "99.62%"
+    }
+  },
+  "minimax/minimax-m2": {
+    "model": "minimax/minimax-m2",
+    "configHash": "e0614fca",
+    "small": {
+      "predicted": 469,
+      "actual": 443,
+      "error": 26,
+      "accuracy": "94.13%"
+    },
+    "medium": {
+      "predicted": 4508,
+      "actual": 3593,
+      "error": 915,
+      "accuracy": "74.53%"
+    },
+    "large": {
+      "predicted": 45007,
+      "actual": 35392,
+      "error": 9615,
+      "accuracy": "72.83%"
+    }
+  },
+  "moonshotai/kimi-k2-thinking": {
+    "model": "moonshotai/kimi-k2-thinking",
+    "configHash": "7dffbcb2",
+    "small": {
+      "predicted": 477,
+      "actual": 502,
+      "error": 25,
+      "accuracy": "95.02%"
+    },
+    "medium": {
+      "predicted": 4553,
+      "actual": 4906,
+      "error": 353,
+      "accuracy": "92.80%"
+    },
+    "large": {
+      "predicted": 45038,
+      "actual": 48977,
+      "error": 3939,
+      "accuracy": "91.96%"
+    }
+  },
+  "moonshotai/kimi-k2-thinking-turbo": {
+    "model": "moonshotai/kimi-k2-thinking-turbo",
+    "configHash": "7dffbcb2",
+    "small": {
+      "predicted": 478,
+      "actual": 503,
+      "error": 25,
+      "accuracy": "95.03%"
+    },
+    "medium": {
+      "predicted": 4560,
+      "actual": 4936,
+      "error": 376,
+      "accuracy": "92.38%"
+    },
+    "large": {
+      "predicted": 45000,
+      "actual": 48960,
+      "error": 3960,
+      "accuracy": "91.91%"
+    }
+  },
+  "openai/gpt-5-chat": {
+    "model": "openai/gpt-5-chat",
+    "configHash": "56ef9737",
+    "small": {
+      "predicted": 462,
+      "actual": 462,
+      "error": 0,
+      "accuracy": "100.00%"
+    },
+    "medium": {
+      "predicted": 4529,
+      "actual": 4532,
+      "error": 3,
+      "accuracy": "99.93%"
+    },
+    "large": {
+      "predicted": 45028,
+      "actual": 45063,
+      "error": 35,
+      "accuracy": "99.92%"
+    }
+  },
+  "openai/gpt-oss-safeguard-20b": {
+    "model": "openai/gpt-oss-safeguard-20b",
+    "configHash": "770e7c55",
+    "small": {
+      "predicted": 469,
+      "actual": 377,
+      "error": 92,
+      "accuracy": "75.60%"
+    },
+    "medium": {
+      "predicted": 4556,
+      "actual": 3352,
+      "error": 1204,
+      "accuracy": "64.08%"
+    },
+    "large": {
+      "predicted": 45033,
+      "actual": 33032,
+      "error": 12001,
+      "accuracy": "63.67%"
+    }
+  },
+  "alibaba/qwen3-235b-a22b-thinking": {
+    "model": "alibaba/qwen3-235b-a22b-thinking",
+    "configHash": "837637dc",
+    "small": {
+      "predicted": 527,
+      "actual": 507,
+      "error": 20,
+      "accuracy": "96.06%"
+    },
+    "medium": {
+      "predicted": 4555,
+      "actual": 4728,
+      "error": 173,
+      "accuracy": "96.34%"
+    },
+    "large": {
+      "predicted": 45034,
+      "actual": 46920,
+      "error": 1886,
+      "accuracy": "95.98%"
+    }
+  },
+  "anthropic/claude-opus-4.5": {
+    "model": "anthropic/claude-opus-4.5",
+    "configHash": "5ea49093",
+    "small": {
+      "predicted": 843,
+      "actual": 856,
+      "error": 13,
+      "accuracy": "98.48%"
+    },
+    "medium": {
+      "predicted": 4531,
+      "actual": 4597,
+      "error": 66,
+      "accuracy": "98.56%"
+    },
+    "large": {
+      "predicted": 45045,
+      "actual": 45140,
+      "error": 95,
+      "accuracy": "99.79%"
+    }
+  },
+  "google/gemini-3-pro-preview": {
+    "model": "google/gemini-3-pro-preview",
+    "configHash": "56bec3bd",
+    "small": {
+      "predicted": 455,
+      "actual": 461,
+      "error": 6,
+      "accuracy": "98.70%"
+    },
+    "medium": {
+      "predicted": 4565,
+      "actual": 4622,
+      "error": 57,
+      "accuracy": "98.77%"
+    },
+    "large": {
+      "predicted": 45021,
+      "actual": 45517,
+      "error": 496,
+      "accuracy": "98.91%"
+    }
+  },
+  "prime-intellect/intellect-3": {
+    "model": "prime-intellect/intellect-3",
+    "configHash": "2673748c",
+    "small": {
+      "predicted": 618,
+      "actual": 578,
+      "error": 40,
+      "accuracy": "93.08%"
+    },
+    "medium": {
+      "predicted": 4502,
+      "actual": 4314,
+      "error": 188,
+      "accuracy": "95.64%"
+    },
+    "large": {
+      "predicted": 45004,
+      "actual": 43745,
+      "error": 1259,
+      "accuracy": "97.12%"
+    }
+  },
+  "xai/grok-4.1-fast-non-reasoning": {
+    "model": "xai/grok-4.1-fast-non-reasoning",
+    "configHash": "37d266af",
+    "small": {
+      "predicted": 573,
+      "actual": 571,
+      "error": 2,
+      "accuracy": "99.65%"
+    },
+    "medium": {
+      "predicted": 4506,
+      "actual": 3512,
+      "error": 994,
+      "accuracy": "71.70%"
+    },
+    "large": {
+      "predicted": 45012,
+      "actual": 33782,
+      "error": 11230,
+      "accuracy": "66.76%"
+    }
+  },
+  "xai/grok-4.1-fast-reasoning": {
+    "model": "xai/grok-4.1-fast-reasoning",
+    "configHash": "007240a5",
+    "small": {
+      "predicted": 563,
+      "actual": 559,
+      "error": 4,
+      "accuracy": "99.28%"
+    },
+    "medium": {
+      "predicted": 4500,
+      "actual": 3502,
+      "error": 998,
+      "accuracy": "71.50%"
+    },
+    "large": {
+      "predicted": 45034,
+      "actual": 33763,
+      "error": 11271,
+      "accuracy": "66.62%"
+    }
+  },
+  "openai/gpt-5.1-instant": {
+    "model": "openai/gpt-5.1-instant",
+    "configHash": "07ca5833",
+    "small": {
+      "predicted": 465,
+      "actual": 387,
+      "error": 78,
+      "accuracy": "79.84%"
+    },
+    "medium": {
+      "predicted": 4512,
+      "actual": 4455,
+      "error": 57,
+      "accuracy": "98.72%"
+    },
+    "large": {
+      "predicted": 45009,
+      "actual": 45169,
+      "error": 160,
+      "accuracy": "99.65%"
+    }
+  },
+  "openai/gpt-5.1-thinking": {
+    "model": "openai/gpt-5.1-thinking",
+    "configHash": "07ca5833",
+    "small": {
+      "predicted": 465,
+      "actual": 387,
+      "error": 78,
+      "accuracy": "79.84%"
+    },
+    "medium": {
+      "predicted": 4509,
+      "actual": 4452,
+      "error": 57,
+      "accuracy": "98.72%"
+    },
+    "large": {
+      "predicted": 45020,
+      "actual": 45181,
+      "error": 161,
+      "accuracy": "99.64%"
+    }
+  },
+  "openai/gpt-5.1-codex-mini": {
+    "model": "openai/gpt-5.1-codex-mini",
+    "configHash": "3ee51b5d",
+    "small": {
+      "predicted": 478,
+      "actual": 482,
+      "error": 4,
+      "accuracy": "99.17%"
+    },
+    "medium": {
+      "predicted": 4521,
+      "actual": 4547,
+      "error": 26,
+      "accuracy": "99.43%"
+    },
+    "large": {
+      "predicted": 45023,
+      "actual": 45265,
+      "error": 242,
+      "accuracy": "99.47%"
+    }
+  },
+  "openai/gpt-5.1-codex": {
+    "model": "openai/gpt-5.1-codex",
+    "configHash": "07ca5833",
+    "small": {
+      "predicted": 465,
+      "actual": 387,
+      "error": 78,
+      "accuracy": "79.84%"
+    },
+    "medium": {
+      "predicted": 4508,
+      "actual": 4451,
+      "error": 57,
+      "accuracy": "98.72%"
+    },
+    "large": {
+      "predicted": 45009,
+      "actual": 45169,
+      "error": 160,
+      "accuracy": "99.65%"
+    }
   }
 }

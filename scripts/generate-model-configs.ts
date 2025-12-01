@@ -29,6 +29,7 @@ const MODEL_MULTIPLIER_OVERRIDES: Record<string, number> = {
     "google/gemini-2.5-flash": 1.08,
     "google/gemini-2.5-flash-lite": 1.08,
     "google/gemini-2.5-pro": 1.08,
+    "google/gemini-3-pro-preview": 1.08,
     // Preview models undercount more (~10-11%)
     "google/gemini-2.5-flash-preview-09-2025": 1.11,
     "google/gemini-2.5-flash-lite-preview-09-2025": 1.11,
