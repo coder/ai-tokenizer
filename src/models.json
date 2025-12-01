@@ -854,7 +854,8 @@
     "maxTokens": 256000,
     "pricing": {
       "input": 2e-7,
-      "output": 0.0000015
+      "output": 0.0000015,
+      "input_cache_read": 2e-8
     }
   },
   "alibaba/qwen-3-14b": {
@@ -973,8 +974,8 @@
     "contextWindow": 262144,
     "maxTokens": 66536,
     "pricing": {
-      "input": 4e-7,
-      "output": 0.0000016
+      "input": 3.8e-7,
+      "output": 0.00000153
     }
   },
   "alibaba/qwen3-coder-plus": {
@@ -995,7 +996,7 @@
     },
     "name": "Qwen3 Coder Plus",
     "contextWindow": 1000000,
-    "maxTokens": 1000000,
+    "maxTokens": 65536,
     "pricing": {
       "input": 0.000001,
       "output": 0.000005
@@ -1067,11 +1068,11 @@
       "perArrayOfObjects": 11
     },
     "name": "Qwen3 Next 80B A3B Thinking",
-    "contextWindow": 163840,
-    "maxTokens": 32768,
+    "contextWindow": 65536,
+    "maxTokens": 65536,
     "pricing": {
-      "input": 1.4e-7,
-      "output": 0.0000014
+      "input": 1.5e-7,
+      "output": 0.0000015
     }
   },
   "alibaba/qwen3-vl-instruct": {
@@ -1210,12 +1211,12 @@
       "perNestedObject": 10,
       "perArrayOfObjects": 11
     },
-    "name": "DeepSeek V3.1",
+    "name": "DeepSeek-V3.1",
     "contextWindow": 163840,
-    "maxTokens": 8192,
+    "maxTokens": 128000,
     "pricing": {
-      "input": 1.999e-7,
-      "output": 8.001e-7
+      "input": 3e-7,
+      "output": 0.000001
     }
   },
   "deepseek/deepseek-v3.1-terminus": {
@@ -1260,10 +1261,10 @@
     },
     "name": "DeepSeek V3.2 Exp",
     "contextWindow": 163840,
-    "maxTokens": 65536,
+    "maxTokens": 163840,
     "pricing": {
       "input": 2.7e-7,
-      "output": 4.1e-7
+      "output": 4e-7
     }
   },
   "deepseek/deepseek-v3.2-exp-thinking": {
@@ -1379,8 +1380,8 @@
       "perNestedObject": 9,
       "perArrayOfObjects": 11
     },
-    "name": "Mistral Codestral 25.01",
-    "contextWindow": 256000,
+    "name": "Mistral Codestral",
+    "contextWindow": 128000,
     "maxTokens": 4000,
     "pricing": {
       "input": 3e-7,
@@ -1888,11 +1889,12 @@
       "perArrayOfObjects": 0
     },
     "name": "Gemini 2.0 Flash",
-    "contextWindow": 1048576,
+    "contextWindow": 1000000,
     "maxTokens": 8192,
     "pricing": {
-      "input": 1.5e-7,
-      "output": 6e-7
+      "input": 1e-7,
+      "output": 4e-7,
+      "input_cache_read": 2.5e-8
     }
   },
   "google/gemini-2.0-flash-lite": {
@@ -1937,10 +1939,11 @@
     },
     "name": "Gemini 2.5 Flash",
     "contextWindow": 1000000,
-    "maxTokens": 65536,
+    "maxTokens": 64000,
     "pricing": {
       "input": 3e-7,
-      "output": 0.0000025
+      "output": 0.0000025,
+      "input_cache_read": 3e-8
     }
   },
   "google/gemini-2.5-flash-lite": {
@@ -1964,7 +1967,8 @@
     "maxTokens": 65536,
     "pricing": {
       "input": 1e-7,
-      "output": 4e-7
+      "output": 4e-7,
+      "input_cache_read": 1e-8
     }
   },
   "google/gemini-2.5-flash-lite-preview-09-2025": {
@@ -2012,7 +2016,8 @@
     "maxTokens": 65536,
     "pricing": {
       "input": 3e-7,
-      "output": 0.0000025
+      "output": 0.0000025,
+      "input_cache_read": 3e-8
     }
   },
   "google/gemini-2.5-pro": {
@@ -2035,8 +2040,9 @@
     "contextWindow": 1048576,
     "maxTokens": 65536,
     "pricing": {
-      "input": 0.0000025,
-      "output": 0.00001
+      "input": 0.00000125,
+      "output": 0.00001,
+      "input_cache_read": 1.25e-7
     }
   },
   "deepseek/deepseek-r1": {
@@ -2056,11 +2062,335 @@
       "perArrayOfObjects": 1
     },
     "name": "DeepSeek-R1",
-    "contextWindow": 163840,
+    "contextWindow": 160000,
     "maxTokens": 16384,
     "pricing": {
-      "input": 7.9e-7,
-      "output": 0.000004
+      "input": 5e-7,
+      "output": 0.00000215,
+      "input_cache_read": 4e-7
+    }
+  },
+  "alibaba/qwen3-235b-a22b-thinking": {
+    "encoding": "cl100k_base",
+    "tokens": {
+      "baseOverhead": 7,
+      "perMessage": 4,
+      "toolsExist": 138,
+      "perTool": 56,
+      "perDesc": 0,
+      "perFirstProp": 14,
+      "perAdditionalProp": 11,
+      "perPropDesc": 5,
+      "perEnum": 9,
+      "perNestedObject": 9,
+      "perArrayOfObjects": 11,
+      "contentMultiplier": 1
+    },
+    "name": "Qwen3 235B A22B Thinking 2507",
+    "contextWindow": 262114,
+    "maxTokens": 262114,
+    "pricing": {
+      "input": 3e-7,
+      "output": 0.0000029
+    }
+  },
+  "anthropic/claude-haiku-4.5": {
+    "encoding": "claude",
+    "tokens": {
+      "baseOverhead": 6,
+      "perMessage": 2,
+      "toolsExist": 549,
+      "perTool": 53,
+      "perDesc": 5,
+      "perFirstProp": 13,
+      "perAdditionalProp": 12,
+      "perPropDesc": 5,
+      "perEnum": 9,
+      "perNestedObject": 12,
+      "perArrayOfObjects": 13,
+      "contentMultiplier": 1.1
+    },
+    "name": "Claude Haiku 4.5",
+    "contextWindow": 200000,
+    "maxTokens": 64000,
+    "pricing": {
+      "input": 0.000001,
+      "output": 0.000005,
+      "input_cache_read": 1e-7,
+      "input_cache_write": 0.00000125
+    }
+  },
+  "anthropic/claude-opus-4.5": {
+    "encoding": "claude",
+    "tokens": {
+      "baseOverhead": 6,
+      "perMessage": 2,
+      "toolsExist": 549,
+      "perTool": 53,
+      "perDesc": 5,
+      "perFirstProp": 13,
+      "perAdditionalProp": 12,
+      "perPropDesc": 5,
+      "perEnum": 9,
+      "perNestedObject": 12,
+      "perArrayOfObjects": 13,
+      "contentMultiplier": 1.1
+    },
+    "name": "Claude Opus 4.5",
+    "contextWindow": 200000,
+    "maxTokens": 64000,
+    "pricing": {
+      "input": 0.000005,
+      "output": 0.000025,
+      "input_cache_read": 5e-7,
+      "input_cache_write": 0.00000625
+    }
+  },
+  "google/gemini-3-pro-preview": {
+    "encoding": "o200k_base",
+    "tokens": {
+      "baseOverhead": -1,
+      "perMessage": -1,
+      "toolsExist": 0,
+      "perTool": 0,
+      "perDesc": 0,
+      "perFirstProp": 3,
+      "perAdditionalProp": 2,
+      "perPropDesc": 0,
+      "perEnum": 0,
+      "perNestedObject": -1,
+      "perArrayOfObjects": 0,
+      "contentMultiplier": 1
+    },
+    "name": "Gemini 3 Pro Preview",
+    "contextWindow": 1000000,
+    "maxTokens": 64000,
+    "pricing": {
+      "input": 0.000002,
+      "output": 0.000012,
+      "input_cache_read": 2e-7
+    }
+  },
+  "minimax/minimax-m2": {
+    "encoding": "claude",
+    "tokens": {
+      "baseOverhead": 40,
+      "perMessage": 4,
+      "toolsExist": 147,
+      "perTool": 51,
+      "perDesc": 1,
+      "perFirstProp": 14,
+      "perAdditionalProp": 11,
+      "perPropDesc": 5,
+      "perEnum": 9,
+      "perNestedObject": 10,
+      "perArrayOfObjects": 11,
+      "contentMultiplier": 1.1
+    },
+    "name": "MiniMax M2",
+    "contextWindow": 262114,
+    "maxTokens": 262114,
+    "pricing": {
+      "input": 2.7e-7,
+      "output": 0.00000115
+    }
+  },
+  "moonshotai/kimi-k2-thinking": {
+    "encoding": "o200k_base",
+    "tokens": {
+      "baseOverhead": 6,
+      "perMessage": 4,
+      "toolsExist": 33,
+      "perTool": 17,
+      "perDesc": 2,
+      "perFirstProp": 4,
+      "perAdditionalProp": 4,
+      "perPropDesc": 3,
+      "perEnum": 6,
+      "perNestedObject": 9,
+      "perArrayOfObjects": 11,
+      "contentMultiplier": 1
+    },
+    "name": "Kimi K2 Thinking",
+    "contextWindow": 262114,
+    "maxTokens": 262114,
+    "pricing": {
+      "input": 6e-7,
+      "output": 0.0000025
+    }
+  },
+  "moonshotai/kimi-k2-thinking-turbo": {
+    "encoding": "o200k_base",
+    "tokens": {
+      "baseOverhead": 6,
+      "perMessage": 4,
+      "toolsExist": 33,
+      "perTool": 17,
+      "perDesc": 2,
+      "perFirstProp": 4,
+      "perAdditionalProp": 4,
+      "perPropDesc": 3,
+      "perEnum": 6,
+      "perNestedObject": 9,
+      "perArrayOfObjects": 11,
+      "contentMultiplier": 1
+    },
+    "name": "Kimi K2 Thinking Turbo",
+    "contextWindow": 262114,
+    "maxTokens": 262114,
+    "pricing": {
+      "input": 0.00000115,
+      "output": 0.000008,
+      "input_cache_read": 1.5e-7
+    }
+  },
+  "openai/gpt-5-chat": {
+    "encoding": "o200k_base",
+    "tokens": {
+      "baseOverhead": 6,
+      "perMessage": 3,
+      "toolsExist": 16,
+      "perTool": 6,
+      "perDesc": 1,
+      "perFirstProp": 5,
+      "perAdditionalProp": 3,
+      "perPropDesc": 2,
+      "perEnum": 7,
+      "perNestedObject": -3,
+      "perArrayOfObjects": 1,
+      "contentMultiplier": 1
+    },
+    "name": "GPT-5 Chat",
+    "contextWindow": 128000,
+    "maxTokens": 16384,
+    "pricing": {
+      "input": 0.00000125,
+      "output": 0.00001,
+      "input_cache_read": 1.25e-7
+    }
+  },
+  "openai/gpt-oss-safeguard-20b": {
+    "encoding": "p50k_base",
+    "tokens": {
+      "baseOverhead": 70,
+      "perMessage": 4,
+      "toolsExist": 42,
+      "perTool": 15,
+      "perDesc": 1,
+      "perFirstProp": 3,
+      "perAdditionalProp": 3,
+      "perPropDesc": 1,
+      "perEnum": 6,
+      "perNestedObject": 19,
+      "perArrayOfObjects": 17,
+      "contentMultiplier": 1
+    },
+    "name": "gpt-oss-safeguard-20b",
+    "contextWindow": 131072,
+    "maxTokens": 65536,
+    "pricing": {
+      "input": 7.5e-8,
+      "output": 3e-7,
+      "input_cache_read": 3.7e-8
+    }
+  },
+  "prime-intellect/intellect-3": {
+    "encoding": "cl100k_base",
+    "tokens": {
+      "baseOverhead": 8,
+      "perMessage": 4,
+      "toolsExist": 267,
+      "perTool": 51,
+      "perDesc": -1,
+      "perFirstProp": 27,
+      "perAdditionalProp": 22,
+      "perPropDesc": 6,
+      "perEnum": 12,
+      "perNestedObject": -9,
+      "perArrayOfObjects": -16,
+      "contentMultiplier": 1
+    },
+    "name": "INTELLECT 3",
+    "contextWindow": 131072,
+    "maxTokens": 131072,
+    "pricing": {
+      "input": 2e-7,
+      "output": 0.0000011
+    }
+  },
+  "xai/grok-4.1-fast-non-reasoning": {
+    "encoding": "p50k_base",
+    "tokens": {
+      "baseOverhead": 167,
+      "perMessage": 3,
+      "toolsExist": 186,
+      "perTool": 32,
+      "perDesc": 3,
+      "perFirstProp": 9,
+      "perAdditionalProp": 7,
+      "perPropDesc": 3,
+      "perEnum": 6,
+      "perNestedObject": 7,
+      "perArrayOfObjects": 8,
+      "contentMultiplier": 1
+    },
+    "name": "Grok 4.1 Fast Non-Reasoning",
+    "contextWindow": 2000000,
+    "maxTokens": 2000000,
+    "pricing": {
+      "input": 2e-7,
+      "output": 5e-7,
+      "input_cache_read": 5e-8
+    }
+  },
+  "xai/grok-4.1-fast-reasoning": {
+    "encoding": "p50k_base",
+    "tokens": {
+      "baseOverhead": 155,
+      "perMessage": 3,
+      "toolsExist": 186,
+      "perTool": 32,
+      "perDesc": 3,
+      "perFirstProp": 9,
+      "perAdditionalProp": 7,
+      "perPropDesc": 3,
+      "perEnum": 6,
+      "perNestedObject": 7,
+      "perArrayOfObjects": 8,
+      "contentMultiplier": 1
+    },
+    "name": "Grok 4.1 Fast Reasoning",
+    "contextWindow": 2000000,
+    "maxTokens": 2000000,
+    "pricing": {
+      "input": 2e-7,
+      "output": 5e-7,
+      "input_cache_read": 5e-8
+    }
+  },
+  "openai/gpt-5.1-thinking": {
+    "encoding": "o200k_base",
+    "tokens": {
+      "baseOverhead": 5,
+      "perMessage": 5,
+      "toolsExist": 21,
+      "perTool": 6,
+      "perDesc": 2,
+      "perFirstProp": 5,
+      "perAdditionalProp": 3,
+      "perPropDesc": 2,
+      "perEnum": 7,
+      "perNestedObject": -3,
+      "perArrayOfObjects": 1,
+      "contentMultiplier": 1
+    },
+    "name": "GPT 5.1 Thinking",
+    "contextWindow": 400000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 0.00000125,
+      "output": 0.00001,
+      "input_cache_read": 1.25e-7
     }
   }
 }
