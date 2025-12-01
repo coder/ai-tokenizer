@@ -326,7 +326,7 @@ async function generateAccuracyMetrics(cache: AccuracyCache): Promise<AccuracyCa
 function generateMarkdownTable(cache: AccuracyCache): { popularTable: string; fullTable: string } {
     // Popular models to highlight
     const popularModels: ModelName[] = [
-        "openai/gpt-5.1-codex",
+        "openai/gpt-5",
         "anthropic/claude-opus-4.5",
         "google/gemini-3-pro-preview",
     ];

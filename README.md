@@ -13,7 +13,7 @@ A faster than tiktoken tokenizer with first-class support for Vercel's AI SDK.
 <!-- POPULAR_MODELS_TABLE_START -->
 | Model | ~500 tokens | ~5k tokens | ~50k tokens |
 |-------|-------------|------------|-------------|
-| openai/gpt-5.1-codex | 79.84% | 98.72% | 99.65% |
+| openai/gpt-5 | 99.16% | 99.43% | 99.47% |
 | anthropic/claude-opus-4.5 | 98.48% | 98.56% | 99.79% |
 | google/gemini-3-pro-preview | 98.70% | 98.77% | 98.91% |
 
