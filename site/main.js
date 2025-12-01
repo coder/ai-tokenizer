@@ -4,6 +4,8 @@ import { OffscreenCanvasManager } from './offscreen-canvas-manager.js';
 // State
 let worker = null;
 let currentEncoding = null;
+let pendingEncoding = null; // Track which encoding we're waiting for
+let canvasReady = false; // Track if canvas is initialized in worker
 let currentTokens = [];
 let currentText = '';
 let canvasManager = null;
@@ -32,6 +34,11 @@ function initWorker() {
     worker.terminate();
   }
   
+  // Reset canvas state when recreating worker
+  canvasReady = false;
+  canvasManager = null;
+  pendingEncoding = null;
+  
   worker = new Worker(new URL('./tokenizer.worker.js', import.meta.url), {
     type: 'module'
   });
@@ -39,6 +46,7 @@ function initWorker() {
   worker.onmessage = handleWorkerMessage;
   worker.onerror = (error) => {
     console.error('Worker error:', error);
+    pendingEncoding = null;
     encodingName.textContent = 'Error';
   };
 }
@@ -47,23 +55,45 @@ function handleWorkerMessage(e) {
   const { type, count, encodeTime, encodingType, error } = e.data;
   
   if (type === 'loaded') {
+    // Ignore if this isn't the encoding we're waiting for (rapid model switching)
+    if (pendingEncoding && encodingType !== pendingEncoding) {
+      console.log(`Ignoring loaded message for ${encodingType}, waiting for ${pendingEncoding}`);
+      return;
+    }
+    
+    pendingEncoding = null; // Clear pending state
     encodingName.textContent = encodingType;
     currentEncoding = encodingType;
     
     // Setup canvas on first load
     if (!canvasManager) {
       setupCanvas();
+    } else if (canvasReady && inputText.value) {
+      // Canvas already ready, tokenize immediately
+      updateTokenization(true);
     }
-    
-    // Re-tokenize if we have text (force tokenization on model change)
-    if (inputText.value) {
-      updateTokenization(true); // Force tokenization when encoding loads
-    }
+    // If canvas not ready yet, wait for 'canvas-ready' message
   } else if (type === 'canvas-ready') {
     // Canvas is ready for rendering
+    canvasReady = true;
     console.log('OffscreenCanvas ready');
+    
+    // Now that canvas is ready, tokenize if we have text
+    if (currentEncoding && inputText.value) {
+      updateTokenization(true);
+    }
   } else if (type === 'tokens') {
     tokenizationInProgress = false;
+    
+    // Verify we got results for the current encoding (in case of race condition)
+    if (encodingType && encodingType !== currentEncoding) {
+      console.warn(`Ignoring tokens from ${encodingType}, current encoding is ${currentEncoding}`);
+      // Re-tokenize with the correct encoding
+      if (inputText.value && currentEncoding) {
+        performTokenization(inputText.value, true);
+      }
+      return;
+    }
     
     // Update token count
     tokenCount.textContent = count.toLocaleString();
@@ -141,6 +171,7 @@ function handleModelChange() {
   const modelKey = modelSelect.value;
   if (!modelKey) {
     currentEncoding = null;
+    pendingEncoding = null;
     encodingName.textContent = '-';
     tokenCount.textContent = '0';
     return;
@@ -155,6 +186,9 @@ function handleModelChange() {
   
   // Load encoding in worker if not already loaded
   if (currentEncoding !== encodingType) {
+    // Track which encoding we're expecting
+    pendingEncoding = encodingType;
+    
     worker.postMessage({
       type: 'load',
       encodingType
@@ -162,6 +196,7 @@ function handleModelChange() {
     // Don't set currentEncoding yet - wait for 'loaded' message
   } else {
     // Same encoding, just re-tokenize with current encoding
+    pendingEncoding = null;
     encodingName.textContent = encodingType;
     if (inputText.value) {
       updateTokenization(true); // Force re-tokenization on model switch
@@ -199,6 +234,12 @@ function updateTokenization(force = false) {
   const text = inputText.value;
   currentText = text;
   charCount.textContent = text.length.toLocaleString();
+
+  // Don't tokenize if encoding is loading
+  if (pendingEncoding) {
+    tokenCount.textContent = '-';
+    return;
+  }
 
   if (!currentEncoding || !text) {
     tokenCount.textContent = '0';

@@ -2,10 +2,13 @@ import Tokenizer from 'ai-tokenizer';
 
 let currentTokenizer = null;
 let currentEncoding = null;
+let loadingEncoding = null; // Track encoding currently being loaded
+let isLoading = false; // Mutex for loading state
 
 // OffscreenCanvas rendering state
 let offscreenCanvas = null;
 let ctx = null;
+let canvasReady = false; // Track if canvas is initialized
 let tokens = [];
 let tokenLayouts = new Map();
 let scrollTop = 0;
@@ -31,41 +34,67 @@ let isMobile = false;
 let maxRenderTokens = 1000;
 
 // Load encoding dynamically
+let loadRequestId = 0; // Unique ID for each load request
+
 async function loadEncoding(encodingType) {
+  // Already loaded
   if (currentEncoding === encodingType && currentTokenizer) {
-    return;
+    return encodingType;
   }
 
-  let encodingModule;
-  switch (encodingType) {
-    case 'cl100k_base':
-      encodingModule = await import('ai-tokenizer/encoding/cl100k_base');
-      break;
-    case 'o200k_base':
-      encodingModule = await import('ai-tokenizer/encoding/o200k_base');
-      break;
-    case 'p50k_base':
-      encodingModule = await import('ai-tokenizer/encoding/p50k_base');
-      break;
-    case 'claude':
-      encodingModule = await import('ai-tokenizer/encoding/claude');
-      break;
-    default:
-      throw new Error(`Unknown encoding: ${encodingType}`);
+  // Generate unique request ID
+  const thisRequestId = ++loadRequestId;
+  
+  // Mark as loading
+  isLoading = true;
+  loadingEncoding = encodingType;
+
+  try {
+    let encodingModule;
+    switch (encodingType) {
+      case 'cl100k_base':
+        encodingModule = await import('ai-tokenizer/encoding/cl100k_base');
+        break;
+      case 'o200k_base':
+        encodingModule = await import('ai-tokenizer/encoding/o200k_base');
+        break;
+      case 'p50k_base':
+        encodingModule = await import('ai-tokenizer/encoding/p50k_base');
+        break;
+      case 'claude':
+        encodingModule = await import('ai-tokenizer/encoding/claude');
+        break;
+      default:
+        throw new Error(`Unknown encoding: ${encodingType}`);
+    }
+
+    // Check if a newer load request came in while we were loading
+    // Use request ID to handle concurrent loads of the same encoding
+    if (loadRequestId !== thisRequestId) {
+      console.log(`Abandoning load for ${encodingType} (request ${thisRequestId}), newer request ${loadRequestId}`);
+      return null;
+    }
+
+    // Construct encoding object from named exports
+    const encoding = {
+      name: encodingModule.name,
+      pat_str: encodingModule.pat_str,
+      special_tokens: encodingModule.special_tokens,
+      stringEncoder: encodingModule.stringEncoder,
+      binaryEncoder: encodingModule.binaryEncoder,
+      decoder: encodingModule.decoder
+    };
+
+    currentTokenizer = new Tokenizer(encoding);
+    currentEncoding = encodingType;
+    return encodingType;
+  } finally {
+    // Only clear loading state if this was still the current request
+    if (loadRequestId === thisRequestId) {
+      isLoading = false;
+      loadingEncoding = null;
+    }
   }
-
-  // Construct encoding object from named exports
-  const encoding = {
-    name: encodingModule.name,
-    pat_str: encodingModule.pat_str,
-    special_tokens: encodingModule.special_tokens,
-    stringEncoder: encodingModule.stringEncoder,
-    binaryEncoder: encodingModule.binaryEncoder,
-    decoder: encodingModule.decoder
-  };
-
-  currentTokenizer = new Tokenizer(encoding);
-  currentEncoding = encodingType;
 }
 
 self.onmessage = async function(e) {
@@ -86,6 +115,7 @@ self.onmessage = async function(e) {
       offscreenCanvas.height = height * dpr;
       ctx.scale(dpr, dpr);
       ctx.font = `${fontSize}px 'SF Mono', Monaco, monospace`;
+      canvasReady = true;
       self.postMessage({ type: 'canvas-ready' });
     } else if (type === 'resize') {
       viewportWidth = width;
@@ -103,11 +133,25 @@ self.onmessage = async function(e) {
       estimateTotalHeight();
       render();
     } else if (type === 'load') {
-      await loadEncoding(encodingType);
-      self.postMessage({ type: 'loaded', encodingType });
+      const loadedEncoding = await loadEncoding(encodingType);
+      // Only notify if this load wasn't superseded by a newer request
+      if (loadedEncoding) {
+        self.postMessage({ type: 'loaded', encodingType: loadedEncoding });
+      }
     } else if (type === 'tokenize') {
+      // Skip if we're in the middle of loading a new encoding
+      if (isLoading) {
+        console.log('Skipping tokenize - encoding is loading');
+        return;
+      }
+      
       if (!currentTokenizer) {
         throw new Error('Tokenizer not loaded');
+      }
+      
+      // Verify we're tokenizing with the expected encoding
+      if (encodingType && encodingType !== currentEncoding) {
+        console.warn(`Encoding mismatch: requested ${encodingType}, have ${currentEncoding}`);
       }
 
       const startTime = performance.now();
@@ -118,7 +162,7 @@ self.onmessage = async function(e) {
       tokenLayouts.clear();
       scrollTop = 0;
       
-      if (ctx && renderingEnabled) {
+      if (ctx && canvasReady && renderingEnabled) {
         estimateTotalHeight();
         render();
       }
@@ -126,7 +170,8 @@ self.onmessage = async function(e) {
       self.postMessage({
         type: 'tokens',
         count: tokens.length,
-        encodeTime
+        encodeTime,
+        encodingType: currentEncoding // Send back the actual encoding used
       });
       
       // Log performance stats
