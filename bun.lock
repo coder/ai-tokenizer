@@ -13,9 +13,10 @@
         "prettier": "^3.6.2",
         "tiktoken": "^1.0.22",
         "tsdown": "^0.15.6",
+        "typescript": "^5.9.3",
       },
       "peerDependencies": {
-        "ai": "^5.0.61",
+        "ai": "^5.0.0",
       },
       "optionalPeers": [
         "ai",

@@ -22,14 +22,15 @@ export interface Encoding {
   special_tokens: Record<string, number>;
   stringEncoder: Record<string, number>;
   binaryEncoder: Array<[Uint8Array, number]>;
-  decoder: Record<number, string | Uint8Array>;
+  /** @deprecated decoder is now built lazily — this field is accepted but not required */
+  decoder?: Record<number, string | Uint8Array>;
 }
 
 /**
  * Ultra-optimized tokenizer for BPE encodings
  */
 export default class Tokenizer {
-  private readonly name: string;
+  private readonly _name: string;
   private readonly patternRegex: RegExp;
   private readonly specialTokensRegex: RegExp | null;
   private readonly specialTokens: Record<string, number>;
@@ -38,10 +39,12 @@ export default class Tokenizer {
   // Optimized dual storage (pre-built at generation time)
   private readonly stringRankEncoder: Record<string, number>;
   private readonly binaryRankEncoder: Array<[Uint8Array, number]>;
-  private readonly decoder: Record<number, string | Uint8Array>;
-  private readonly binaryFirstByteIndex: Array<Array<
+
+  // Lazy-built fields — zero cost at construction time
+  private _decoder: Record<number, string | Uint8Array> | null;
+  private _binaryFirstByteIndex: Array<Array<
     [Uint8Array, number]
-  > | null>;
+  > | null> | null = null;
 
   private readonly specialTokenKeys: readonly string[];
   private readonly hasSpecialTokens: boolean;
@@ -55,31 +58,16 @@ export default class Tokenizer {
     extendedSpecialTokens?: Record<string, number>,
     mergeCacheSize: number = 100000
   ) {
-    this.name = data.name;
+    this._name = data.name;
     this.mergeCacheSize = mergeCacheSize;
     this.mergeCache = new Map();
 
     // Use pre-optimized storage directly (zero-cost initialization)
     this.stringRankEncoder = data.stringEncoder;
     this.binaryRankEncoder = data.binaryEncoder;
-    this.decoder = data.decoder;
-    // Build first-byte index to reduce binary search domain size
-    const idx: Array<Array<[Uint8Array, number]> | null> = new Array(256).fill(
-      null
-    );
-    for (let i = 0; i < this.binaryRankEncoder.length; i++) {
-      const entry = this.binaryRankEncoder[i]!;
-      const arr = entry[0];
-      if (arr.length === 0) continue;
-      const first = arr[0]!;
-      let bucket = idx[first]!;
-      if (bucket === null) {
-        bucket = [];
-        idx[first] = bucket;
-      }
-      bucket.push(entry);
-    }
-    this.binaryFirstByteIndex = idx;
+
+    // Accept pre-built decoder if provided (backwards compat), otherwise lazy-build
+    this._decoder = data.decoder ?? null;
 
     // Pre-compile pattern regex
     this.patternRegex = new RegExp(data.pat_str, "ug");
@@ -99,6 +87,42 @@ export default class Tokenizer {
     for (const [text, rank] of Object.entries(this.specialTokens)) {
       this.inverseSpecialTokens[rank] = textEncoder.encode(text);
     }
+  }
+
+  /** Lazy first-byte index — built on first encode that needs binary lookup */
+  private get binaryFirstByteIndex(): Array<Array<
+    [Uint8Array, number]
+  > | null> {
+    if (this._binaryFirstByteIndex === null) {
+      const idx: Array<Array<[Uint8Array, number]> | null> = new Array(
+        256
+      ).fill(null);
+      for (let i = 0; i < this.binaryRankEncoder.length; i++) {
+        const entry = this.binaryRankEncoder[i]!;
+        const arr = entry[0];
+        if (arr.length === 0) continue;
+        const first = arr[0]!;
+        if (idx[first] === null) idx[first] = [];
+        idx[first]!.push(entry);
+      }
+      this._binaryFirstByteIndex = idx;
+    }
+    return this._binaryFirstByteIndex;
+  }
+
+  /** Lazy decoder — built from encoder on first decode() call */
+  private get decoder(): Record<number, string | Uint8Array> {
+    if (this._decoder === null) {
+      const dec: Record<number, string | Uint8Array> = {};
+      for (const [str, rank] of Object.entries(this.stringRankEncoder)) {
+        dec[rank] = str;
+      }
+      for (const [bytes, rank] of this.binaryRankEncoder) {
+        dec[rank] = bytes;
+      }
+      this._decoder = dec;
+    }
+    return this._decoder;
   }
 
   /**
@@ -141,7 +165,7 @@ export default class Tokenizer {
    * Get encoding name
    */
   get encodingName(): string {
-    return this.name;
+    return this._name;
   }
 
   /**
