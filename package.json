@@ -8,13 +8,13 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "ai": "^5.0.105",
+    "ai": "^6.0.116",
     "base64-js": "^1.5.1",
-    "gpt-tokenizer": "^3.0.1",
+    "gpt-tokenizer": "^3.4.0",
     "mitata": "^1.0.34",
-    "prettier": "^3.6.2",
+    "prettier": "^3.8.1",
     "tiktoken": "^1.0.22",
-    "tsdown": "^0.15.6"
+    "tsdown": "^0.21.0"
   },
   "peerDependencies": {
     "ai": "^5.0.0"
@@ -29,6 +29,7 @@
   "types": "./dist/index.d.ts",
   "typesVersions": {
     "*": {
+      "tokenizer": ["./dist/tokenizer.d.ts"],
       "sdk": ["./dist/sdk.d.ts"],
       "encoding": ["./dist/encoding/index.d.ts"],
       "encoding/cl100k_base": ["./dist/encoding/cl100k_base.d.ts"],
@@ -46,6 +47,16 @@
       "require": {
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
+      }
+    },
+    "./tokenizer": {
+      "import": {
+        "types": "./dist/tokenizer.d.ts",
+        "default": "./dist/tokenizer.js"
+      },
+      "require": {
+        "types": "./dist/tokenizer.d.cts",
+        "default": "./dist/tokenizer.cjs"
       }
     },
     "./sdk": {
