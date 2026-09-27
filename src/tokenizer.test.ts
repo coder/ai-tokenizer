@@ -238,3 +238,61 @@ describe("correctness", () => {
     });
   });
 });
+
+describe("merge cache", () => {
+  // Seeded texts full of distinct non-vocabulary pieces (UUIDs, SHAs, long
+  // numbers, base64) so a small cache evicts constantly.
+  function makeTexts(count: number): string[] {
+    let seed = 42;
+    const rand = () => {
+      seed = (Math.imul(seed, 1103515245) + 12345) >>> 0;
+      return seed >>> 8;
+    };
+    const pick = (alphabet: string, length: number) => {
+      let out = "";
+      for (let i = 0; i < length; i++)
+        out += alphabet[rand() % alphabet.length];
+      return out;
+    };
+    const hex = "0123456789abcdef";
+    const lower = "abcdefghijklmnopqrstuvwxyz";
+    const b64 =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    const texts: string[] = [];
+    for (let i = 0; i < count; i++) {
+      const uuid = `${pick(hex, 8)}-${pick(hex, 4)}-${pick(hex, 4)}-${pick(hex, 4)}-${pick(hex, 12)}`;
+      // Repeat some pieces so the small cache also serves hits.
+      const repeat = texts.length > 0 ? texts[rand() % texts.length]! : "";
+      texts.push(
+        `id ${uuid} sha ${pick(hex, 40)} n=${pick("0123456789", 30)} ` +
+          `${pick(b64, 24)}== ${pick(lower, 14)} ${repeat.slice(0, 20)}`
+      );
+    }
+    return texts;
+  }
+
+  test("small cache matches an unbounded cache and stays bounded", () => {
+    const small = new Tokenizer(o200k, undefined, 8);
+    const unbounded = new Tokenizer(o200k, undefined, Infinity);
+    const cache = (small as unknown as { mergeCache: Map<string, number[]> })
+      .mergeCache;
+    for (const text of makeTexts(500)) {
+      expect(small.encode(text)).toEqual(unbounded.encode(text));
+      expect(cache.size).toBeLessThanOrEqual(8);
+    }
+    expect(cache.size).toBe(8);
+  });
+
+  test("evicts in insertion order", () => {
+    const tokenizer = new Tokenizer(o200k, undefined, 3);
+    const cache = (
+      tokenizer as unknown as {
+        mergeCache: Map<string, number[]>;
+      }
+    ).mergeCache;
+    for (const piece of ["qzxvw", "qzxvy", "qzxvz", "qzxvq"]) {
+      tokenizer.encode(piece);
+    }
+    expect([...cache.keys()]).toEqual(["qzxvy", "qzxvz", "qzxvq"]);
+  });
+});

@@ -49,6 +49,10 @@ export default class Tokenizer {
   // Simple piece-level cache
   private readonly mergeCache: Map<string, number[]>;
   private readonly mergeCacheSize: number;
+  // Insertion-ordered ring of cached keys for O(1) FIFO eviction.
+  // Map#keys().next() is O(holes) in V8 once entries have been deleted.
+  private readonly mergeCacheKeys: string[];
+  private mergeCacheHead = 0;
 
   constructor(
     data: Encoding,
@@ -58,6 +62,7 @@ export default class Tokenizer {
     this.name = data.name;
     this.mergeCacheSize = mergeCacheSize;
     this.mergeCache = new Map();
+    this.mergeCacheKeys = [];
 
     // Use pre-optimized storage directly (zero-cost initialization)
     this.stringRankEncoder = data.stringEncoder;
@@ -102,13 +107,20 @@ export default class Tokenizer {
   }
 
   /**
-   * Add to LRU cache - simple approach matching gpt-tokenizer
+   * Add to FIFO cache. Callers only add keys that just missed the cache, so
+   * every key appears in the ring once and the ring's oldest key is always
+   * the oldest live key.
    */
   private addToMergeCache(key: string, value: number[]): void {
-    if (this.mergeCache.size >= this.mergeCacheSize) {
-      // Remove least recently used (first key in Map)
-      const firstKey = this.mergeCache.keys().next().value!;
-      this.mergeCache.delete(firstKey);
+    const keys = this.mergeCacheKeys;
+    if (this.mergeCache.size >= this.mergeCacheSize && keys.length > 0) {
+      // Full: the slot at head holds the oldest live key.
+      const head = this.mergeCacheHead;
+      this.mergeCache.delete(keys[head]!);
+      keys[head] = key;
+      this.mergeCacheHead = (head + 1) % keys.length;
+    } else {
+      keys.push(key);
     }
     this.mergeCache.set(key, value);
   }
