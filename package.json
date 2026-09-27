@@ -14,7 +14,8 @@
     "mitata": "^1.0.34",
     "prettier": "^3.6.2",
     "tiktoken": "^1.0.22",
-    "tsdown": "^0.15.6"
+    "tsdown": "^0.15.6",
+    "typescript": "^5.9.3"
   },
   "peerDependencies": {
     "ai": "^5.0.0"
@@ -29,12 +30,24 @@
   "types": "./dist/index.d.ts",
   "typesVersions": {
     "*": {
-      "sdk": ["./dist/sdk.d.ts"],
-      "encoding": ["./dist/encoding/index.d.ts"],
-      "encoding/cl100k_base": ["./dist/encoding/cl100k_base.d.ts"],
-      "encoding/o200k_base": ["./dist/encoding/o200k_base.d.ts"],
-      "encoding/p50k_base": ["./dist/encoding/p50k_base.d.ts"],
-      "encoding/claude": ["./dist/encoding/claude.d.ts"]
+      "sdk": [
+        "./dist/sdk.d.ts"
+      ],
+      "encoding": [
+        "./dist/encoding/index.d.ts"
+      ],
+      "encoding/cl100k_base": [
+        "./dist/encoding/cl100k_base.d.ts"
+      ],
+      "encoding/o200k_base": [
+        "./dist/encoding/o200k_base.d.ts"
+      ],
+      "encoding/p50k_base": [
+        "./dist/encoding/p50k_base.d.ts"
+      ],
+      "encoding/claude": [
+        "./dist/encoding/claude.d.ts"
+      ]
     }
   },
   "exports": {

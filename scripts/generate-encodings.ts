@@ -2,12 +2,12 @@
  * Generate optimized encodings from JSON files
  * 
  * Generates dual-storage format:
- * - String-based encoder for UTF-8 tokens (fast Map lookup)
+ * - String-based encoder for UTF-8 tokens (JSON.parse for ~2x faster init)
  * - Sorted binary encoder for non-UTF-8 tokens (binary search)
- * - Decoder with strings where possible (faster decode)
+ * - NO decoder (Tokenizer builds it lazily from encoder on first decode())
  * 
  * Usage:
- *   bun run src/encoding/generate.ts
+ *   bun run scripts/generate-encodings.ts
  */
 
 import base64 from "base64-js";
@@ -71,9 +71,8 @@ for (const inputFile of jsonFiles) {
     }, {});
 
   // Separate string vs binary tokens
-  const stringEncoderEntries: string[] = [];
+  const stringEncoderObj: Record<string, number> = {};
   const binaryEncoderPairs: Array<{ bytes: number[]; rank: number }> = [];
-  const decoderEntries: string[] = [];
   
   let stringCount = 0;
   let binaryCount = 0;
@@ -83,15 +82,11 @@ for (const inputFile of jsonFiles) {
     const asString = tryBytesToString(bytes);
     
     if (asString !== undefined) {
-      // Store as string (fast object property lookup)
-      const escaped = asString.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t');
-      stringEncoderEntries.push(`  "${escaped}": ${rank}`);
-      decoderEntries.push(`  ${rank}: "${escaped}"`);
+      stringEncoderObj[asString] = rank as number;
       stringCount++;
     } else {
       // Store as binary (will be sorted for binary search)
       binaryEncoderPairs.push({ bytes: Array.from(bytes), rank: rank as number });
-      decoderEntries.push(`  ${rank}: new Uint8Array([${bytes.join(",")}])`);
       binaryCount++;
     }
   }
@@ -110,13 +105,20 @@ for (const inputFile of jsonFiles) {
     ({ bytes, rank }) => `  [new Uint8Array([${bytes.join(",")}]), ${rank}]`
   );
 
-  // Generate TypeScript module
+  // Build JSON string for stringEncoder — V8 parses JSON ~2x faster than JS object literals
+  const encoderJsonStr = JSON.stringify(stringEncoderObj);
+  // Escape for embedding in a single-quoted JS string
+  const escapedEncoderJson = encoderJsonStr
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'");
+
+  // Generate TypeScript module — NO decoder (Tokenizer builds it lazily)
   const moduleCode = `/**
  * ${name.toUpperCase()} encoding
  * Auto-generated - DO NOT EDIT
- * 
+ *
  * Optimized dual-storage format:
- * - String tokens: ${stringCount.toLocaleString()} (fast Map lookup)
+ * - String tokens: ${stringCount.toLocaleString()} (JSON.parse for fast init)
  * - Binary tokens: ${binaryCount.toLocaleString()} (binary search)
  * - Total tokens: ${(stringCount + binaryCount).toLocaleString()}
  * - Pattern: ${source.pat_str}
@@ -127,22 +129,15 @@ export const name = ${JSON.stringify(name)};
 
 export const pat_str = ${JSON.stringify(source.pat_str)};
 
-export const special_tokens = ${JSON.stringify(source.special_tokens, null, 2)};
+export const special_tokens: Record<string, number> = ${JSON.stringify(source.special_tokens, null, 2)};
 
-// String-based encoder (UTF-8 tokens) - fast object lookup (mobile-friendly!)
-export const stringEncoder: Record<string, number> = {
-${stringEncoderEntries.join(",\n")}
-};
+// String-based encoder (UTF-8 tokens) - JSON.parse is ~2x faster than JS object literals in V8
+export const stringEncoder: Record<string, number> = JSON.parse('${escapedEncoderJson}');
 
 // Binary encoder (non-UTF-8 tokens) - pre-sorted for binary search
 export const binaryEncoder: Array<[Uint8Array, number]> = [
 ${binaryEncoderEntries.join(",\n")}
 ];
-
-// Decoder - plain object for mobile compatibility
-export const decoder: Record<number, string | Uint8Array> = {
-${decoderEntries.join(",\n")}
-};
 `;
 
   // Write output
