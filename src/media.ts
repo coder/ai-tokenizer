@@ -232,6 +232,9 @@ function inlineOf(data: unknown): Uint8Array | string | undefined {
     // inner value is never unwrapped again.
     const payload = isTaggedData(data) ? data.data : data;
     if (typeof payload === "string") return base64Of(payload);
+    if (payload instanceof URL && payload.protocol === "data:") {
+      return base64Of(payload.href);
+    }
     // Any typed array or DataView, a Node Buffer included, as the bytes it views.
     if (ArrayBuffer.isView(payload)) {
       return new Uint8Array(

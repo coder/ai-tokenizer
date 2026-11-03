@@ -13,13 +13,19 @@ export interface PdfPage {
   text: string;
 }
 
-const MAX_STREAM_BYTES = 32 * 1024 * 1024;
-const MAX_DOCUMENT_BYTES = 128 * 1024 * 1024;
-const MAX_OPERATIONS = 20_000_000;
+const MAX_STREAM_BYTES = 8 * 1024 * 1024;
+const MAX_DOCUMENT_BYTES = 32 * 1024 * 1024;
+const MAX_OPERATIONS = 4_000_000;
 const MAX_NESTING = 64;
 const MAX_FETCH_DEPTH = 64;
 const MAX_FORM_DEPTH = 8;
+const STREAM_USE = 64;
+const FONT_COST = 1024;
+const MAX_FONTS = 64;
+const MAX_OBJECTS = 100_000;
 const MAX_PAGES = 100_000;
+// More text than fits in any Anthropic request: the rest cannot be priced.
+const MAX_TEXT = 8_000_000;
 const LETTER: Box = [0, 0, 612, 792];
 
 type Box = [number, number, number, number];
@@ -74,6 +80,17 @@ const OBJ = intern("obj");
 const STREAM = intern("stream");
 const XREF = intern("xref");
 const TRAILER = intern("trailer");
+// Words that only stand between objects: an array or dictionary that reaches
+// one was never closed.
+const OUTSIDE_OBJECTS = new Set<Token>([
+  OBJ,
+  STREAM,
+  XREF,
+  TRAILER,
+  intern("endobj"),
+  intern("endstream"),
+  intern("startxref"),
+]);
 const N = intern("n");
 const F = intern("f");
 const JUNK = new Keyword("");
@@ -141,10 +158,13 @@ function findLast(data: Uint8Array, pattern: Uint8Array): number {
 class Lexer {
   constructor(
     readonly data: Uint8Array,
-    public pos = 0
+    public pos: number,
+    /** Every token costs the file one operation, wherever it is parsed. */
+    readonly work: { operations: number }
   ) {}
 
   next(): Token | undefined {
+    if (--this.work.operations < 0) return undefined;
     const data = this.data;
     let pos = this.pos;
     for (;;) {
@@ -226,7 +246,9 @@ class Lexer {
     while (end < data.length && CHAR_CLASS[data[end]!] === REGULAR) end++;
     this.pos = end;
     let text = "";
-    for (let i = pos; i < end; i++) {
+    // Readers allow 127 bytes: a longer name would cost its length again in
+    // every string built from it.
+    for (let i = pos; i < end && text.length < 127; i++) {
       const c = data[i]!;
       const high = c === 0x23 ? hexDigit(data[i + 1] ?? 0) : -1;
       const low = high >= 0 ? hexDigit(data[i + 2] ?? 0) : -1;
@@ -251,17 +273,23 @@ class Lexer {
       }
       if (c === 0x5c || c === 0x28) break;
     }
-    const out: number[] = [];
+    let out = new Uint8Array(64);
+    let n = 0;
     let depth = 1;
     while (pos < data.length) {
+      if (n === out.length) {
+        const grown = new Uint8Array(2 * n);
+        grown.set(out);
+        out = grown;
+      }
       let c = data[pos++]!;
       if (c === 0x5c) {
         c = data[pos++] ?? 0;
-        if (c === 0x6e) out.push(10);
-        else if (c === 0x72) out.push(13);
-        else if (c === 0x74) out.push(9);
-        else if (c === 0x62) out.push(8);
-        else if (c === 0x66) out.push(12);
+        if (c === 0x6e) out[n++] = 10;
+        else if (c === 0x72) out[n++] = 13;
+        else if (c === 0x74) out[n++] = 9;
+        else if (c === 0x62) out[n++] = 8;
+        else if (c === 0x66) out[n++] = 12;
         else if (c === 0x0d) {
           if (data[pos] === 0x0a) pos++;
         } else if (c === 0x0a) {
@@ -275,18 +303,18 @@ class Lexer {
           ) {
             value = value * 8 + data[pos++]! - 0x30;
           }
-          out.push(value & 0xff);
+          out[n++] = value & 0xff;
         } else {
-          out.push(c);
+          out[n++] = c;
         }
         continue;
       }
       if (c === 0x28) depth++;
       else if (c === 0x29 && --depth === 0) break;
-      out.push(c);
+      out[n++] = c;
     }
     this.pos = pos;
-    return Uint8Array.from(out);
+    return out.subarray(0, n);
   }
 
   private hex(pos: number): Uint8Array {
@@ -298,21 +326,22 @@ class Lexer {
 
 /** Hex digits up to `>`, whitespace skipped; an odd final digit is padded with 0. */
 function readHex(data: Uint8Array, pos: number): [Uint8Array, number] {
-  const out: number[] = [];
+  let end = data.indexOf(0x3e, pos);
+  if (end < 0) end = data.length;
+  const out = new Uint8Array((end - pos + 1) >> 1);
+  let n = 0;
   let high = -1;
-  while (pos < data.length) {
-    const c = data[pos++]!;
-    if (c === 0x3e) break;
-    const digit = hexDigit(c);
+  for (; pos < end; pos++) {
+    const digit = hexDigit(data[pos]!);
     if (digit < 0) continue;
     if (high < 0) high = digit;
     else {
-      out.push(high * 16 + digit);
+      out[n++] = high * 16 + digit;
       high = -1;
     }
   }
-  if (high >= 0) out.push(high * 16);
-  return [Uint8Array.from(out), pos];
+  if (high >= 0) out[n++] = high * 16;
+  return [out.subarray(0, n), Math.min(end + 1, data.length)];
 }
 
 /** The value that starts with `token`; `refs` reads `N G R` as a reference. */
@@ -322,10 +351,11 @@ function parse(
   refs: boolean,
   depth = 0
 ): Value {
+  if ((lexer.work.operations -= 16) < 0) return null;
   if (token === ARRAY_OPEN && depth < MAX_NESTING) {
     const array: Value[] = [];
     for (let t = lexer.next(); t !== undefined && t !== ARRAY_CLOSE; ) {
-      if (t === DICT_CLOSE) break;
+      if (t === DICT_CLOSE || OUTSIDE_OBJECTS.has(t)) break;
       array.push(parse(lexer, t, refs, depth + 1));
       t = lexer.next();
     }
@@ -334,9 +364,16 @@ function parse(
   if (token === DICT_OPEN && depth < MAX_NESTING) {
     const dict: Dict = new Map();
     for (let t = lexer.next(); t !== undefined && t !== DICT_CLOSE; ) {
+      if (OUTSIDE_OBJECTS.has(t)) break;
       if (t instanceof Name) {
         const value = lexer.next();
-        if (value === DICT_CLOSE || value === undefined) break;
+        if (
+          value === DICT_CLOSE ||
+          value === undefined ||
+          OUTSIDE_OBJECTS.has(value)
+        ) {
+          break;
+        }
         dict.set(t.name, parse(lexer, value, refs, depth + 1));
       }
       t = lexer.next();
@@ -374,10 +411,16 @@ class PdfFile {
   private readonly loading = new Set<number>();
   private readonly objectStreams = new Map<number, ObjectStream | null>();
   readonly fonts = new Map<Dict, Font>();
+  private readonly cmaps = new WeakMap<Stream, CMap | undefined>();
   private fetchDepth = 0;
   private endstreamSearch = { from: Infinity, at: -1 };
   private budget = MAX_DOCUMENT_BYTES;
+  // Bytes the object parser may still read. A file reads each object once or
+  // twice, but objects that overlap, or strings that never close, would read
+  // to the end of the file again for every object that starts inside them.
+  private parseLeft: number;
   operations = MAX_OPERATIONS;
+  textLeft = MAX_TEXT;
   readonly trailers: Dict[] = [];
   encrypted = false;
 
@@ -385,7 +428,9 @@ class PdfFile {
     readonly data: Uint8Array,
     /** Bytes before `%PDF-`: some files have xref offsets counted from the header. */
     readonly header: number
-  ) {}
+  ) {
+    this.parseLeft = 8 * data.length;
+  }
 
   resolve(value: Value | undefined): Value {
     for (let i = 0; value instanceof Ref && i < 16; i++) {
@@ -446,17 +491,23 @@ class PdfFile {
 
   /** The indirect object `num G obj ... endobj` at `offset`. */
   private parseAt(offset: number, num?: number): Value | undefined {
-    if (offset < 0 || offset >= this.data.length) return undefined;
-    const lexer = new Lexer(this.data, offset);
-    const found = lexer.next();
-    if (typeof found !== "number" || (num !== undefined && found !== num)) {
+    if (offset < 0 || offset >= this.data.length || this.parseLeft < 0) {
       return undefined;
     }
-    if (typeof lexer.next() !== "number" || lexer.next() !== OBJ)
-      return undefined;
-    const value = parse(lexer, lexer.next(), true);
-    if (!(value instanceof Map) || lexer.next() !== STREAM) return value;
-    return this.readStream(value, lexer.pos);
+    const lexer = new Lexer(this.data, offset, this);
+    try {
+      const found = lexer.next();
+      if (typeof found !== "number" || (num !== undefined && found !== num)) {
+        return undefined;
+      }
+      if (typeof lexer.next() !== "number" || lexer.next() !== OBJ)
+        return undefined;
+      const value = parse(lexer, lexer.next(), true);
+      if (!(value instanceof Map) || lexer.next() !== STREAM) return value;
+      return this.readStream(value, lexer.pos);
+    } finally {
+      this.parseLeft -= lexer.pos - offset;
+    }
   }
 
   private readStream(dict: Dict, pos: number): Stream {
@@ -490,6 +541,7 @@ class PdfFile {
       return last.at < 0 ? this.data.length : last.at;
     }
     const at = find(this.data, ENDSTREAM_BYTES, from);
+    this.parseLeft -= (at < 0 ? this.data.length : at) - from;
     this.endstreamSearch = { from, at };
     return at < 0 ? this.data.length : at;
   }
@@ -502,9 +554,11 @@ class PdfFile {
       this.objectStreams.set(streamNum, objects);
     }
     const offset = objects?.offsets.get(num);
-    if (offset === undefined) return undefined;
-    const lexer = new Lexer(objects!.data, offset);
-    return parse(lexer, lexer.next(), true);
+    if (offset === undefined || this.parseLeft < 0) return undefined;
+    const lexer = new Lexer(objects!.data, offset, this);
+    const value = parse(lexer, lexer.next(), true);
+    this.parseLeft -= lexer.pos - offset;
+    return value;
   }
 
   private objectStream(stream: Stream): ObjectStream | null {
@@ -513,9 +567,10 @@ class PdfFile {
     const count = this.number(stream.dict.get("N"));
     const first = this.number(stream.dict.get("First"));
     if (!data || count === undefined || first === undefined) return null;
-    const lexer = new Lexer(data);
+    this.parseLeft += data.length;
+    const lexer = new Lexer(data, 0, this);
     const offsets = new Map<number, number>();
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < count && offsets.size < MAX_OBJECTS; i++) {
       const num = lexer.next();
       const offset = lexer.next();
       if (typeof num !== "number" || typeof offset !== "number") break;
@@ -526,6 +581,9 @@ class PdfFile {
 
   /** The decoded bytes of a stream, or undefined for filters this reader skips. */
   decode(stream: Stream): Uint8Array | undefined {
+    // Every use is charged, so a stream that every page or form draws is not
+    // free to read again, even when it is raw or empty.
+    if ((this.operations -= STREAM_USE) < 0) return undefined;
     const filters = this.resolve(stream.dict.get("Filter"));
     const params = this.resolve(
       stream.dict.get("DecodeParms") ?? stream.dict.get("DP")
@@ -537,13 +595,30 @@ class PdfFile {
         : [];
     const paramList = Array.isArray(params) ? params : [params];
     let data = stream.raw;
+    this.budget -= data.length;
+    if (this.budget < 0) return undefined;
     for (let i = 0; i < filterList.length; i++) {
-      if (this.budget <= 0) return undefined;
+      if (this.budget <= 0 || --this.operations < 0) return undefined;
       switch (this.name(filterList[i])) {
         case "FlateDecode":
         case "Fl":
           data = inflate(data, Math.min(MAX_STREAM_BYTES, this.budget));
           data = this.unpredict(data, this.dict(paramList[i] ?? null));
+          break;
+        case "LZWDecode":
+        case "LZW": {
+          const params = this.dict(paramList[i] ?? null);
+          data = lzw(
+            data,
+            this.number(params?.get("EarlyChange")) === 0 ? 0 : 1,
+            Math.min(MAX_STREAM_BYTES, this.budget)
+          );
+          data = this.unpredict(data, params);
+          break;
+        }
+        case "RunLengthDecode":
+        case "RL":
+          data = runLength(data, Math.min(MAX_STREAM_BYTES, this.budget));
           break;
         case "ASCIIHexDecode":
         case "AHx":
@@ -551,7 +626,7 @@ class PdfFile {
           break;
         case "ASCII85Decode":
         case "A85":
-          data = ascii85(data);
+          data = ascii85(data, Math.min(MAX_STREAM_BYTES, this.budget));
           break;
         default:
           return undefined;
@@ -559,6 +634,15 @@ class PdfFile {
       this.budget -= data.length;
     }
     return data;
+  }
+
+  /** A CMap stream, parsed once however many fonts share it. */
+  cmap(stream: Stream): CMap | undefined {
+    if (!this.cmaps.has(stream)) {
+      const data = this.decode(stream);
+      this.cmaps.set(stream, data && parseCMap(this, data));
+    }
+    return this.cmaps.get(stream);
   }
 
   /** Undoes a PNG predictor, which xref streams use. */
@@ -602,7 +686,7 @@ class PdfFile {
   readXref(): void {
     const at = findLast(this.data, STARTXREF_BYTES);
     if (at < 0) return;
-    let offset = new Lexer(this.data, at + STARTXREF_BYTES.length).next();
+    let offset = new Lexer(this.data, at + STARTXREF_BYTES.length, this).next();
     const seen = new Set<number>();
     while (
       typeof offset === "number" &&
@@ -622,7 +706,8 @@ class PdfFile {
 
   private readSection(offset: number): Dict | undefined {
     for (const at of this.header ? [offset, offset + this.header] : [offset]) {
-      const lexer = new Lexer(this.data, at);
+      if (this.parseLeft < 0) return undefined;
+      const lexer = new Lexer(this.data, at, this);
       const first = lexer.next();
       const trailer =
         first === XREF
@@ -630,6 +715,7 @@ class PdfFile {
           : typeof first === "number"
             ? this.readXrefStream(at)
             : undefined;
+      this.parseLeft -= lexer.pos - at;
       if (trailer) return trailer;
     }
     return undefined;
@@ -684,6 +770,9 @@ class PdfFile {
       const start = this.number(index[k]) ?? 0;
       const count = this.number(index[k + 1]) ?? 0;
       for (let i = 0; i < count && pos + rowLength <= data.length; i++) {
+        if ((this.operations -= 16) < 0 || this.entries.size >= MAX_OBJECTS) {
+          return stream.dict;
+        }
         const type = field(typeWidth!, 1);
         const a = field(aWidth!, 0);
         field(bWidth!, 0); // a generation, or an index in the object stream
@@ -719,6 +808,7 @@ class PdfFile {
       i >= 0;
       i = find(data, OBJ_BYTES, i + 3)
     ) {
+      if (found.size >= MAX_OBJECTS) break;
       const after = data[i + 3];
       if (after !== undefined && CHAR_CLASS[after] === REGULAR) continue;
       const genEnd = back(i - 1, WHITESPACE);
@@ -744,6 +834,7 @@ class PdfFile {
       }
       for (const objectNum of this.objectStreams.get(num)?.offsets.keys() ??
         []) {
+        if (found.size >= MAX_OBJECTS) break;
         if (!found.has(objectNum)) {
           found.set(objectNum, { stream: num });
         }
@@ -751,11 +842,12 @@ class PdfFile {
     }
     for (
       let i = find(data, TRAILER_BYTES, 0);
-      i >= 0;
+      i >= 0 && this.parseLeft >= 0;
       i = find(data, TRAILER_BYTES, i + 7)
     ) {
-      const lexer = new Lexer(data, i + 7);
+      const lexer = new Lexer(data, i + 7, this);
       const trailer = parse(lexer, lexer.next(), true);
+      this.parseLeft -= lexer.pos - i;
       if (trailer instanceof Map) this.scannedTrailers.push(trailer);
     }
     return found;
@@ -889,41 +981,118 @@ class PdfFile {
   }
 }
 
-function ascii85(data: Uint8Array): Uint8Array {
-  const out: number[] = [];
+/** PDF LZW, MSB first, with clear (256) and end-of-data (257) codes. */
+function lzw(data: Uint8Array, earlyChange: number, limit: number): Uint8Array {
+  const prefix = new Uint16Array(4096);
+  const suffix = new Uint8Array(4096);
+  const stack = new Uint8Array(4096);
+  let out = new Uint8Array(Math.min(limit, 1024 + data.length * 4));
+  let length = 0;
+  let pos = 0;
+  let buffer = 0;
+  let bits = 0;
+  let width = 9;
+  let next = 258;
+  let previous = -1;
+  let first = 0;
+  while (length < limit) {
+    while (bits < width && pos < data.length) {
+      buffer = (buffer << 8) | data[pos++]!;
+      bits += 8;
+    }
+    if (bits < width) break;
+    bits -= width;
+    const code = (buffer >>> bits) & ((1 << width) - 1);
+    if (code === 257) break;
+    if (code === 256) {
+      width = 9;
+      next = 258;
+      previous = -1;
+      continue;
+    }
+    if (code > next || (code === next && previous < 0)) break;
+    let c = code;
+    let n = 0;
+    if (c === next) {
+      stack[n++] = first;
+      c = previous;
+    }
+    while (c >= 258 && n < stack.length - 1) {
+      stack[n++] = suffix[c]!;
+      c = prefix[c]!;
+    }
+    if (c > 255) break;
+    stack[n++] = first = c;
+    if (length + n > out.length) {
+      const grown = new Uint8Array(
+        Math.min(limit, Math.max(2 * out.length, length + n))
+      );
+      grown.set(out);
+      out = grown;
+    }
+    while (n > 0 && length < limit) out[length++] = stack[--n]!;
+    if (previous >= 0 && next < 4096) {
+      prefix[next] = previous;
+      suffix[next++] = first;
+      if (next + earlyChange === 1 << width && width < 12) width++;
+    }
+    previous = code;
+  }
+  return out.subarray(0, length);
+}
+
+function runLength(data: Uint8Array, limit: number): Uint8Array {
+  const out = new Uint8Array(Math.min(limit, data.length * 128));
+  let length = 0;
+  for (let pos = 0; pos < data.length && length < limit; ) {
+    const n = data[pos++]!;
+    if (n === 128) break;
+    if (n < 128) {
+      const count = Math.min(n + 1, data.length - pos, limit - length);
+      out.set(data.subarray(pos, pos + count), length);
+      pos += count;
+      length += count;
+    } else {
+      if (pos >= data.length) break;
+      const end = Math.min(limit, length + 257 - n);
+      out.fill(data[pos++]!, length, end);
+      length = end;
+    }
+  }
+  return out.subarray(0, length);
+}
+
+/** At most `limit` bytes, like `inflate`: each `z` is four. */
+function ascii85(data: Uint8Array, limit: number): Uint8Array {
+  const out = new Uint8Array(Math.min(limit, 4 * data.length));
+  let n = 0;
   let group = 0;
   let count = 0;
-  for (let i = 0; i < data.length; i++) {
+  const write = (bytes: number) => {
+    for (let k = 0; k < bytes && n < out.length; k++) {
+      out[n++] = (group >>> (24 - 8 * k)) & 0xff;
+    }
+  };
+  for (let i = 0; i < data.length && n < out.length; i++) {
     const c = data[i]!;
     if (c === 0x7e) break;
     if (c === 0x7a && count === 0) {
-      out.push(0, 0, 0, 0);
+      n = Math.min(n + 4, out.length);
       continue;
     }
     if (c < 0x21 || c > 0x75) continue;
     group = group * 85 + (c - 0x21);
     if (++count === 5) {
-      out.push(
-        group >>> 24,
-        (group >>> 16) & 0xff,
-        (group >>> 8) & 0xff,
-        group & 0xff
-      );
+      write(4);
       group = 0;
       count = 0;
     }
   }
   if (count > 1) {
     for (let k = count; k < 5; k++) group = group * 85 + 84;
-    const bytes = [
-      group >>> 24,
-      (group >>> 16) & 0xff,
-      (group >>> 8) & 0xff,
-      group & 0xff,
-    ];
-    out.push(...bytes.slice(0, count - 1));
+    write(count - 1);
   }
-  return Uint8Array.from(out);
+  return out.slice(0, n);
 }
 
 // Encodings and glyph names -------------------------------------------------
@@ -1042,6 +1211,9 @@ interface CMap {
 }
 
 const MAX_EXPANDED_RANGE = 256;
+const MAX_GLYPHS = 1 << 16;
+// More codes than a CMap of one- and two-byte codes can map.
+const MAX_CMAP_CODES = 1 << 17;
 
 function codeKey(code: number, bytes: number): number {
   return bytes * 2 ** 32 + code;
@@ -1053,7 +1225,9 @@ function bigEndian(bytes: Uint8Array): number {
   return value;
 }
 
+/** A CMap's text for a code; the CMap format allows 512 bytes at most. */
 function utf16(bytes: Uint8Array): string {
+  if (bytes.length > 512) return "";
   if (bytes.length === 1) return String.fromCharCode(bytes[0]!);
   let text = "";
   for (let i = 0; i + 1 < bytes.length; i += 2) {
@@ -1070,9 +1244,14 @@ function shifted(text: string, by: number): string {
   );
 }
 
-function parseCMap(data: Uint8Array): CMap {
+function parseCMap(file: PdfFile, data: Uint8Array): CMap {
   const cmap: CMap = { spaces: [], chars: new Map(), ranges: [] };
-  const lexer = new Lexer(data);
+  const set = (key: number, text: string) => {
+    if ((file.operations -= 32) > 0 && cmap.chars.size < MAX_CMAP_CODES) {
+      cmap.chars.set(key, text);
+    }
+  };
+  const lexer = new Lexer(data, 0, file);
   const take = (end: string, arity: number, use: (values: Value[]) => void) => {
     for (;;) {
       const values: Value[] = [];
@@ -1096,15 +1275,16 @@ function parseCMap(data: Uint8Array): CMap {
         if (
           low instanceof Uint8Array &&
           high instanceof Uint8Array &&
-          low.length
+          low.length &&
+          low.length <= 4
         ) {
           cmap.spaces.push([low.length, bigEndian(low), bigEndian(high)]);
         }
       });
     } else if (token.word === "beginbfchar") {
       take("endbfchar", 2, ([code, text]) => {
-        if (code instanceof Uint8Array && code.length) {
-          cmap.chars.set(
+        if (code instanceof Uint8Array && code.length && code.length <= 4) {
+          set(
             codeKey(bigEndian(code), code.length),
             text instanceof Uint8Array
               ? utf16(text)
@@ -1121,20 +1301,20 @@ function parseCMap(data: Uint8Array): CMap {
           !(highBytes instanceof Uint8Array)
         )
           return;
+        // Codes are 1 to 4 bytes, so `code++` below always moves.
         const bytes = lowBytes.length;
         const low = bigEndian(lowBytes);
         const high = bigEndian(highBytes);
-        if (!bytes || high < low) return;
+        if (!bytes || bytes > 4 || high < low) return;
         if (Array.isArray(text)) {
           text.slice(0, high - low + 1).forEach((t, i) => {
-            if (t instanceof Uint8Array)
-              cmap.chars.set(codeKey(low + i, bytes), utf16(t));
+            if (t instanceof Uint8Array) set(codeKey(low + i, bytes), utf16(t));
           });
         } else if (text instanceof Uint8Array) {
           const first = utf16(text);
           if (high - low < MAX_EXPANDED_RANGE) {
             for (let code = low; code <= high; code++) {
-              cmap.chars.set(codeKey(code, bytes), shifted(first, code - low));
+              set(codeKey(code, bytes), shifted(first, code - low));
             }
           } else {
             cmap.ranges.push([bytes, low, high, first]);
@@ -1146,10 +1326,16 @@ function parseCMap(data: Uint8Array): CMap {
   return cmap;
 }
 
-function lookup(cmap: CMap, code: number, bytes: number): string | undefined {
+function lookup(
+  file: PdfFile,
+  cmap: CMap,
+  code: number,
+  bytes: number
+): string | undefined {
   const text = cmap.chars.get(codeKey(code, bytes));
   if (text !== undefined) return text;
   for (const [n, low, high, first] of cmap.ranges) {
+    if (--file.operations < 0) break;
     if (n === bytes && code >= low && code <= high)
       return shifted(first, code - low);
   }
@@ -1165,6 +1351,14 @@ function unmapped(code: number): string {
   return code > 0 && code < 0xd800 ? String.fromCharCode(code) : "";
 }
 
+function extractedText(text: string): string {
+  // pdfium drops these controls and spells ligatures out. Do this once per
+  // glyph, not after a CMap repeats a ligature millions of times.
+  return text
+    .replace(/[\u0002\u0003\u0093\u0094\u0096-\u0098\ufffe]/g, "")
+    .replace(/[\ufb00-\ufb06]/g, (c) => c.normalize("NFKC"));
+}
+
 interface Glyph {
   text: string;
   /** Advance in thousandths of an em. */
@@ -1174,7 +1368,7 @@ interface Glyph {
 }
 
 interface Font {
-  glyphs(bytes: Uint8Array): Glyph[];
+  glyphs(bytes: Uint8Array): Iterable<Glyph>;
   /** Above and below the baseline, in thousandths of an em. */
   ascent: number;
   descent: number;
@@ -1275,6 +1469,7 @@ function simpleFont(
       : undefined;
   let code = 0;
   for (const item of differences ?? []) {
+    if (--file.operations < 0) break;
     const value = file.resolve(item);
     if (typeof value === "number") code = value;
     else if (value instanceof Name && code >= 0 && code < 256)
@@ -1287,25 +1482,28 @@ function simpleFont(
   const matrix = file.array(dict.get("FontMatrix"));
   const scale = matrix ? (file.number(matrix[0]) ?? 0.001) * 1000 : 1;
   const text = (code: number) =>
-    (toUnicode && (lookup(toUnicode, code, 1) ?? lookup(toUnicode, code, 2))) ||
+    (toUnicode &&
+      (lookup(file, toUnicode, code, 1) ?? lookup(file, toUnicode, code, 2))) ||
     codes[code] ||
     unmapped(code);
   const advance = new Float64Array(256);
   if (widths) {
     advance.fill(file.number(descriptor?.get("MissingWidth")) ?? 0);
-    widths.forEach((w, i) => {
-      const width = file.number(w);
-      if (width !== undefined && firstChar + i < 256 && firstChar + i >= 0) {
-        advance[firstChar + i] = width;
-      }
-    });
+    for (
+      let code = Math.max(0, firstChar);
+      code < 256 && code - firstChar < widths.length;
+      code++
+    ) {
+      const width = file.number(widths[code - firstChar]);
+      if (width !== undefined) advance[code] = width;
+    }
   } else {
     for (let code = 0; code < 256; code++) {
       advance[code] = standardWidth(baseFont, codes[code] || " ");
     }
   }
   const glyphs = Array.from({ length: 256 }, (_, code) => ({
-    text: text(code),
+    text: extractedText(text(code)),
     width: advance[code]! * scale,
     space: code === 32,
   }));
@@ -1313,10 +1511,8 @@ function simpleFont(
   return {
     ...metrics(file, descriptor),
     spaceWidth: space < 0 ? 0 : glyphs[space]!.width,
-    glyphs(bytes) {
-      const out: Glyph[] = new Array(bytes.length);
-      for (let i = 0; i < bytes.length; i++) out[i] = glyphs[bytes[i]!]!;
-      return out;
+    *glyphs(bytes) {
+      for (const byte of bytes) yield glyphs[byte]!;
     },
   };
 }
@@ -1329,8 +1525,7 @@ function compositeFont(
   const encoding = file.resolve(dict.get("Encoding"));
   let spaces: CMap["spaces"] = [[2, 0, 0xffff]];
   if (encoding instanceof Stream) {
-    const data = file.decode(encoding);
-    const embedded = data && parseCMap(data).spaces;
+    const embedded = file.cmap(encoding)?.spaces;
     if (embedded?.length) spaces = embedded;
   } else if (
     encoding instanceof Name &&
@@ -1347,20 +1542,28 @@ function compositeFont(
   const defaultWidth = file.number(descendant?.get("DW")) ?? 1000;
   const widths = new Map<number, number>();
   const w = file.array(descendant?.get("W")) ?? [];
-  for (let i = 0; i < w.length && widths.size < 65536; ) {
+  for (
+    let i = 0;
+    i < w.length && widths.size < 65536 && file.operations > 0;
+
+  ) {
     const first = file.number(w[i]);
     const next = file.resolve(w[i + 1]);
     if (first === undefined) break;
     if (Array.isArray(next)) {
-      next.forEach((width, k) =>
-        widths.set(first + k, file.number(width) ?? defaultWidth)
-      );
+      for (let k = 0; k < next.length && widths.size < 65536; k++) {
+        if ((file.operations -= 16) < 0) break;
+        widths.set(first + k, file.number(next[k]) ?? defaultWidth);
+      }
       i += 2;
     } else {
-      const last = file.number(next) ?? first;
+      // Counted from 0: past 2 ** 53, `first + 1` is `first`.
+      const count = Math.min((file.number(next) ?? first) - first, 65535);
       const width = file.number(w[i + 2]) ?? defaultWidth;
-      for (let c = first; c <= Math.min(last, first + 65535); c++)
-        widths.set(c, width);
+      for (let k = 0; k <= count; k++) {
+        if ((file.operations -= 16) < 0) break;
+        widths.set(first + k, width);
+      }
       i += 3;
     }
   }
@@ -1368,6 +1571,7 @@ function compositeFont(
   const width = (code: number) =>
     identity ? (widths.get(code) ?? defaultWidth) : defaultWidth;
   let space = -1;
+  file.operations -= toUnicode?.chars.size ?? 0;
   for (const [key, text] of toUnicode?.chars ?? []) {
     if (text === " ") {
       space = key % 2 ** 32;
@@ -1378,9 +1582,9 @@ function compositeFont(
   return {
     ...metrics(file, file.dict(descendant?.get("FontDescriptor"))),
     spaceWidth: space < 0 ? 0 : width(space),
-    glyphs(bytes) {
-      const glyphs: Glyph[] = [];
-      for (let i = 0; i < bytes.length; ) {
+    *glyphs(bytes) {
+      for (let i = 0; i < bytes.length && file.operations > 0; ) {
+        if ((file.operations -= spaces.length) < 0) break;
         let n = lengths.find((length) => {
           const code = bigEndian(bytes.subarray(i, i + length));
           return (
@@ -1396,16 +1600,18 @@ function compositeFont(
         const key = codeKey(code, n);
         let glyph = cache.get(key);
         if (!glyph) {
+          if ((file.operations -= 16) < 0) break;
           glyph = {
-            text: (toUnicode && lookup(toUnicode, code, n)) || unmapped(code),
+            text: extractedText(
+              (toUnicode && lookup(file, toUnicode, code, n)) || unmapped(code)
+            ),
             width: width(code),
             space: n === 1 && code === 32,
           };
-          cache.set(key, glyph);
+          if (cache.size < MAX_GLYPHS) cache.set(key, glyph);
         }
-        glyphs.push(glyph);
+        yield glyph;
       }
-      return glyphs;
     },
   };
 }
@@ -1570,17 +1776,12 @@ class TextSink {
   }
 
   finish(): string {
-    return (
-      this.text
-        .split("\n")
-        .map((line) => line.replace(/ +/g, " "))
-        .filter((line) => line.trim())
-        .join("\n")
-        .trim()
-        // pdfium drops these as control characters and spells ligatures out.
-        .replace(/[\u0002\u0003\u0093\u0094\u0096-\u0098\ufffe]/g, "")
-        .replace(/[\ufb00-\ufb06]/g, (c) => c.normalize("NFKC"))
-    );
+    return this.text
+      .split("\n")
+      .map((line) => line.replace(/ +/g, " "))
+      .filter((line) => line.trim())
+      .join("\n")
+      .trim();
   }
 }
 
@@ -1613,9 +1814,13 @@ class TextExtractor {
     const fonts = this.file.fonts;
     if (!fonts.has(dict)) {
       const stream = this.file.resolve(dict.get("ToUnicode"));
-      const data =
-        stream instanceof Stream ? this.file.decode(stream) : undefined;
-      const toUnicode = data ? parseCMap(data) : undefined;
+      const toUnicode =
+        stream instanceof Stream ? this.file.cmap(stream) : undefined;
+      // A file can name a new font for every Tf: each costs its tables, and
+      // only the most recent are kept.
+      this.file.operations -= FONT_COST;
+      if (this.file.operations < 0) return undefined;
+      if (fonts.size >= MAX_FONTS) fonts.delete(fonts.keys().next().value!);
       fonts.set(
         dict,
         this.file.name(dict.get("Subtype")) === "Type0"
@@ -1654,13 +1859,16 @@ class TextExtractor {
     let kerning = 0;
     let glyphs = 0;
     for (const item of items) {
+      if (--this.file.operations < 0) break;
       if (typeof item === "number") {
         kerning -= item;
         x -= (item / 1000) * state.size * state.scale;
         continue;
       }
       if (!(item instanceof Uint8Array)) continue;
+      const file = this.file;
       for (const glyph of font.glyphs(item)) {
+        if ((file.operations -= Math.max(1, glyph.text.length)) < 0) break;
         const width = (glyph.width / 1000) * state.size * state.scale;
         // Renderers drop text outside the visible page, so its tokens are not charged.
         if (this.visible(m, x, x + width, bottom, top)) {
@@ -1675,6 +1883,7 @@ class TextExtractor {
           }
           if (!run.text) run.firstWidth = glyph.width;
           run.text += glyph.text;
+          if ((file.textLeft -= glyph.text.length) < 0) file.operations = 0;
           run.lastWidth = glyph.width;
           run.end = point(x + width, state.rise);
         }
@@ -1719,7 +1928,7 @@ class TextExtractor {
 
   run(data: Uint8Array, resources: Dict | undefined, depth: number) {
     const file = this.file;
-    const lexer = new Lexer(data);
+    const lexer = new Lexer(data, 0, file);
     const operands: Value[] = [];
     const saved: GraphicsState[] = [];
     const n = (i: number) => {
@@ -1727,7 +1936,6 @@ class TextExtractor {
       return typeof value === "number" ? value : 0;
     };
     for (let token = lexer.next(); token !== undefined; token = lexer.next()) {
-      if (--file.operations < 0) return;
       if (
         !(token instanceof Keyword) ||
         token === ARRAY_OPEN ||
@@ -1870,8 +2078,10 @@ function pageText(file: PdfFile, page: PageNode, box: Box): string {
   const contents = file.resolve(page.dict.get("Contents"));
   const parts: Uint8Array[] = [];
   for (const item of Array.isArray(contents) ? contents : [contents]) {
+    if (file.operations < 0) break;
     const stream = file.resolve(item);
     const data = stream instanceof Stream ? file.decode(stream) : undefined;
+    if (stream instanceof Stream && data === undefined) return "";
     if (data) parts.push(data, NEWLINE);
   }
   const data = new Uint8Array(
@@ -1903,7 +2113,11 @@ function visibleBox(file: PdfFile, page: PageNode): Box {
   return clipped[2] > clipped[0] && clipped[3] > clipped[1] ? clipped : media;
 }
 
-/** Pages of a PDF, best effort, never throws. undefined when the bytes are not a PDF or the page tree cannot be found. */
+/**
+ * Pages of a PDF, best effort, never throws. undefined when the bytes are not
+ * a PDF or the page tree cannot be found. Pages whose content cannot be decoded
+ * have empty text. Work and output are capped for hostile or oversized files.
+ */
 export function readPdf(bytes: Uint8Array): { pages: PdfPage[] } | undefined {
   try {
     const header = find(
@@ -1915,6 +2129,7 @@ export function readPdf(bytes: Uint8Array): { pages: PdfPage[] } | undefined {
     const file = new PdfFile(bytes, header);
     const nodes = file.pageNodes();
     if (nodes.length === 0) return undefined;
+    let textLeft = MAX_TEXT;
     const pages = nodes.map((node) => {
       const box = visibleBox(file, node);
       const quarterTurns = Math.round((file.number(node.rotate) ?? 0) / 90);
@@ -1925,7 +2140,8 @@ export function readPdf(bytes: Uint8Array): { pages: PdfPage[] } | undefined {
       let text = "";
       if (!file.encrypted) {
         try {
-          text = pageText(file, node, box);
+          text = pageText(file, node, box).slice(0, textLeft);
+          textLeft -= text.length;
         } catch {
           // A page whose content cannot be read still counts as a page.
         }
