@@ -11,6 +11,7 @@
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { greyPng, MEASURED_SIZES, randomSizes } from "./media-samples";
 import { mapLimit } from "./anthropic";
+import { boundarySizes } from "./boundary-sizes";
 
 const FIXTURE = new URL(
   "../src/fixtures/media-anthropic.json",
@@ -53,6 +54,11 @@ const EXTRA_SIZES: Array<[number, number]> = [
 const sizes = [...MEASURED_SIZES, ...EXTRA_SIZES];
 // A seeded random sample, to find where a recipe is wrong between the sizes above.
 const DENSE_SIZES = randomSizes(400, 7);
+// Where the recipes whose limits differ by one or two price an image differently.
+const BOUNDARY_SIZES = [
+  ...boundarySizes(1568, 1568),
+  ...boundarySizes(2576, 4784),
+];
 const baseUrl = process.env.ANTHROPIC_BASE_URL ?? "https://api.anthropic.com";
 const headers: Record<string, string> = {
   "anthropic-version": "2023-06-01",
@@ -126,7 +132,7 @@ const filesOut: Record<string, Record<string, number | { error: string }>> = {};
 
 const out: Record<
   string,
-  { baseline: number; cases: Case[]; dense: number[] }
+  { baseline: number; cases: Case[]; dense: number[]; boundary: number[] }
 > = {};
 let measured = 0;
 let rejected = 0;
@@ -154,7 +160,18 @@ for (const model of MODELS) {
     ]);
     return total - baseline;
   });
-  out[model] = { baseline, cases, dense };
+  const boundary = await mapLimit(
+    BOUNDARY_SIZES,
+    6,
+    async ([width, height]) => {
+      measured++;
+      const total = await countTokens(model, [
+        user(text("a"), image(greyPng(width, height))),
+      ]);
+      return total - baseline;
+    }
+  );
+  out[model] = { baseline, cases, dense, boundary };
   for (const file of files) {
     const mediaType = MEDIA_TYPES[file.split(".").at(-1)!]!;
     const data = readFileSync(new URL(file, FILES)).toString("base64");
@@ -189,6 +206,7 @@ writeFileSync(
       measuredAt: new Date().toISOString().slice(0, 10),
       unit: 'image tokens = count_tokens of a user turn with the text "a" and the image, minus count_tokens of the turn with the text "a" alone',
       denseSizes: DENSE_SIZES,
+      boundarySizes: BOUNDARY_SIZES,
       models: out,
       files: filesOut,
     },

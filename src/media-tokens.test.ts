@@ -8,6 +8,7 @@ import { readFileSync } from "node:fs";
 import type { ModelMessage } from "ai";
 import { pngHeader } from "../scripts/media-samples";
 import { count } from "./sdk";
+import { imageTokens as imageTokensOf } from "./image-tokens";
 import { models, Tokenizer, type Model } from "./index";
 import * as o200k from "./encoding/o200k_base";
 import * as claude_v3 from "./encoding/claude_v3";
@@ -72,6 +73,7 @@ describe("Claude images against count_tokens", () => {
       (c) => [c.width, c.height] as const
     ),
     ...(anthropic.denseSizes as Array<[number, number]>),
+    ...(anthropic.boundarySizes as Array<[number, number]>),
   ];
 
   test.each(Object.entries(anthropic.models))("%s", (apiId, measured) => {
@@ -80,6 +82,7 @@ describe("Claude images against count_tokens", () => {
     const costs = [
       ...measured.cases.map((c) => (c as { tokens: number }).tokens),
       ...measured.dense,
+      ...measured.boundary,
     ];
     expect(costs).toHaveLength(sizes.length);
     for (const model of catalog) {
@@ -350,6 +353,42 @@ describe("Claude PDFs against count_tokens", () => {
         ),
       })
     ).toBe(100);
+  });
+});
+
+describe("every image recipe in models.json", () => {
+  const recipes = Object.entries(models).flatMap(([id, model]) =>
+    (model as Model).tokens.media ? [[id, (model as Model).tokens.media!]] : []
+  ) as Array<[string, NonNullable<Model["tokens"]["media"]>]>;
+  const extremes = [
+    [1, 1],
+    [1, 60000],
+    [60000, 1],
+    [2, 64543],
+    [4, 129086],
+    [100000, 100000],
+  ] as const;
+
+  test("prices every size and detail with a whole, positive number", () => {
+    expect(recipes.length).toBeGreaterThanOrEqual(44);
+    for (const [, media] of recipes) {
+      for (const detail of [undefined, "low", "high", "auto", "original"]) {
+        for (const [width, height] of extremes) {
+          const cost = imageTokensOf(
+            media.image,
+            { width, height },
+            { detail }
+          );
+          expect(Number.isSafeInteger(cost) && cost >= 1).toBe(true);
+        }
+      }
+    }
+  });
+
+  test("a recipe of a kind that does not exist throws instead of counting NaN", () => {
+    expect(() =>
+      imageTokensOf({ kind: "nope" } as never, { width: 10, height: 10 })
+    ).toThrow(/Unknown image recipe/);
   });
 });
 

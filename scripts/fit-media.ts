@@ -41,6 +41,10 @@ function anthropicSizes(model: string): { sizes: Measured[]; label: string } {
   (data.denseSizes as Array<[number, number]>).forEach(([width, height], i) =>
     sizes.push({ width, height, tokens: entry.dense[i] as number })
   );
+  (data.boundarySizes as Array<[number, number]>).forEach(
+    ([width, height], i) =>
+      sizes.push({ width, height, tokens: entry.boundary[i] as number })
+  );
   return { sizes, label: `${model} (${sizes.length} sizes)` };
 }
 

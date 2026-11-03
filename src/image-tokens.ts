@@ -38,7 +38,9 @@ export function imageTokens(
 ): number {
   const recipe = "default" in image ? byDetail(image, context.detail) : image;
   const { width, height } =
-    size && size.width >= 1 && size.height >= 1 ? size : UNKNOWN_IMAGE_SIZE;
+    size && isSide(size.width) && isSide(size.height)
+      ? size
+      : UNKNOWN_IMAGE_SIZE;
   switch (recipe.kind) {
     case "flat":
       return recipe.tokens;
@@ -52,8 +54,14 @@ export function imageTokens(
       return cropTokens(recipe, width, height, context.images ?? 1);
     case "budget":
       return budgetTokens(recipe, width, height);
+    default:
+      throw new Error(
+        `Unknown image recipe: ${JSON.stringify((recipe as { kind?: unknown }).kind)}`
+      );
   }
 }
+
+const isSide = (side: number) => Number.isFinite(side) && side >= 1;
 
 function byDetail(image: ImageByDetail, detail: string | undefined) {
   return (
@@ -116,10 +124,12 @@ function areaPatchTokens(
     // Scale to the cap by area, then down to a whole number of patches along
     // the side that has the fewer to spare.
     let scale = Math.sqrt((patch * patch * recipe.maxPatches) / (w * h));
-    scale *= Math.min(
-      Math.floor((w * scale) / patch) / ((w * scale) / patch),
-      Math.floor((h * scale) / patch) / ((h * scale) / patch)
-    );
+    // A side of less than one patch is not rounded down to 0 patches.
+    const wholePatches = (side: number) => {
+      const patches = (side * scale) / patch;
+      return patches < 1 ? 1 : Math.floor(patches) / patches;
+    };
+    scale *= Math.min(wholePatches(w), wholePatches(h));
     w = Math.max(1, Math.floor(w * scale));
     h = Math.max(1, Math.floor(h * scale));
     patches = Math.ceil(w / patch) * Math.ceil(h / patch);
