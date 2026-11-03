@@ -335,6 +335,23 @@ describe("tool schemas", () => {
     expect(reads).toBe(1);
   });
 
+  test("tools that are counted again are not converted again", () => {
+    let conversions = 0;
+    const lazy = () => {
+      conversions++;
+      return jsonSchema(sourceOfTruth as never);
+    };
+    const tools = { t: { inputSchema: lazy } };
+    const first = countTools(tools).definitions.t!.inputSchema;
+    expect(first).toBeGreaterThan(0);
+    expect(countTools(tools).definitions.t!.inputSchema).toBe(first);
+    expect(
+      countTools({ other: { inputSchema: lazy } }).definitions.other!
+        .inputSchema
+    ).toBe(first);
+    expect(conversions).toBe(1);
+  });
+
   const standard = (convert: unknown) => ({
     "~standard": {
       version: 1,
@@ -651,6 +668,78 @@ describe("tool schemas", () => {
       };
       expect(inline(jsonSchema(withSiblings as never))).toBe(
         inline(jsonSchema(flat as never))
+      );
+    });
+
+    test("a sibling keyword that is undefined does not hide the target's", () => {
+      const withUndefined = {
+        type: "object",
+        properties: { u: { $ref: "#/$defs/U", description: undefined } },
+        $defs: { U: { type: "string", description: "Unit" } },
+      };
+      const flat = {
+        type: "object",
+        properties: { u: { type: "string", description: "Unit" } },
+      };
+      expect(inline(jsonSchema(withUndefined as never))).toBe(
+        inline(jsonSchema(flat as never))
+      );
+    });
+
+    test("sibling properties are added to the target's, and win on a clash", () => {
+      const withSiblings = {
+        type: "object",
+        properties: {
+          base: {
+            $ref: "#/$defs/Base",
+            properties: {
+              name: { type: "string", description: "Display name" },
+              extra: { type: "number" },
+            },
+          },
+        },
+        $defs: {
+          Base: {
+            type: "object",
+            properties: {
+              id: { type: "string", description: "Id" },
+              name: { type: "string" },
+            },
+          },
+        },
+      };
+      const flat = {
+        type: "object",
+        properties: {
+          base: {
+            type: "object",
+            properties: {
+              id: { type: "string", description: "Id" },
+              name: { type: "string", description: "Display name" },
+              extra: { type: "number" },
+            },
+          },
+        },
+      };
+      expect(inline(jsonSchema(withSiblings as never))).toBe(
+        inline(jsonSchema(flat as never))
+      );
+    });
+
+    test("a recursive $ref with sibling properties ends", () => {
+      const first = tokens.perFirstProp + tokens.perNestedObject;
+      const tree = {
+        type: "object",
+        properties: {
+          child: { $ref: "#", properties: { note: { type: "string" } } },
+        },
+      };
+      // `child` resolves to the root plus `note`. Inside that, `child` points
+      // back at the same merged object, so it stops there.
+      const merged =
+        enc("child") + first + (enc("note") + tokens.perAdditionalProp);
+      expect(inline(jsonSchema(tree as never))).toBe(
+        enc("child") + first + merged
       );
     });
 

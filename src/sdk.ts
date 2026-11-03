@@ -250,12 +250,29 @@ type InputSchemaRead =
   | { status: "error"; error: unknown };
 
 /**
+ * JSON Schema read from each tool input schema, so repeated `count()` calls on
+ * the same tools do not convert them again. Only complete reads are kept: the
+ * conversion depends on nothing but the input schema.
+ */
+const convertedSchemas = new WeakMap<object, unknown>();
+
+function isCacheKey(value: unknown): value is object {
+  return (
+    (typeof value === "object" && value !== null) || typeof value === "function"
+  );
+}
+
+/**
  * Reads the JSON Schema the provider receives for a tool, whichever schema
  * library defined it. `asSchema` is the AI SDK's own conversion, so zod 3,
  * zod 4, `jsonSchema()` and (v6+) Standard Schema tools all arrive here as
  * JSON Schema.
  */
 function readInputSchema(inputSchema: unknown): InputSchemaRead {
+  const cacheKey = isCacheKey(inputSchema) ? inputSchema : undefined;
+  if (cacheKey && convertedSchemas.has(cacheKey)) {
+    return { status: "ok", jsonSchema: convertedSchemas.get(cacheKey) };
+  }
   try {
     const jsonSchema: unknown = asSchema(
       inputSchema as Parameters<typeof asSchema>[0]
@@ -272,6 +289,9 @@ function readInputSchema(inputSchema: unknown): InputSchemaRead {
     if (!isRecord(jsonSchema)) {
       // For example an arktype schema on ai v5, which converts only zod.
       throw new TypeError("asSchema() returned no JSON Schema object");
+    }
+    if (cacheKey) {
+      convertedSchemas.set(cacheKey, jsonSchema);
     }
     return { status: "ok", jsonSchema };
   } catch (error) {
@@ -295,6 +315,33 @@ function propertiesOf(schema: unknown): Record<string, unknown> | undefined {
   return isRecord(schema) && isRecord(schema.properties)
     ? schema.properties
     : undefined;
+}
+
+/**
+ * The properties of a `$ref` target plus the properties written next to the
+ * `$ref`, which win. The same pair always gives the same object, because the
+ * walk tells a definition it is already inside by object identity.
+ */
+const mergedProperties = new WeakMap<
+  object,
+  WeakMap<object, Record<string, unknown>>
+>();
+
+function mergeProperties(
+  target: Record<string, unknown>,
+  siblings: Record<string, unknown>
+): Record<string, unknown> {
+  let bySiblings = mergedProperties.get(target);
+  if (!bySiblings) {
+    bySiblings = new WeakMap();
+    mergedProperties.set(target, bySiblings);
+  }
+  let merged = bySiblings.get(siblings);
+  if (!merged) {
+    merged = { ...target, ...siblings };
+    bySiblings.set(siblings, merged);
+  }
+  return merged;
 }
 
 /**
@@ -325,8 +372,15 @@ function resolveRef(
   if (!isRecord(target)) {
     return schema;
   }
-  const { $ref: _ref, ...siblings } = schema;
-  return { ...target, ...siblings };
+  const { $ref: _ref, ...rest } = schema;
+  const siblings = Object.fromEntries(
+    Object.entries(rest).filter(([, value]) => value !== undefined)
+  );
+  const merged = { ...target, ...siblings };
+  if (isRecord(target.properties) && isRecord(siblings.properties)) {
+    merged.properties = mergeProperties(target.properties, siblings.properties);
+  }
+  return merged;
 }
 
 /**
