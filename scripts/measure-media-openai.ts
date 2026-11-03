@@ -1,6 +1,6 @@
 /**
  * Measures what OpenAI charges, in input tokens, for one image, and writes
- * src/fixtures/media-openai.json. The fit lives in scripts/fit-media-openai.ts.
+ * src/fixtures/media-openai.json. The recipes are fitted to it by scripts/fit-media.ts.
  *
  *   OPENAI_API_KEY=... bun scripts/measure-media-openai.ts [--dry-run]
  *

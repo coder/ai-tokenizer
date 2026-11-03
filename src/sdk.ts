@@ -6,7 +6,8 @@ import {
   needsImageCount,
   type ImageContext,
 } from "./image-tokens";
-import { imageSizeOf } from "./media";
+import { imageSizeOf, mediaBytesOf } from "./media";
+import { pdfTokens } from "./pdf-tokens";
 
 export interface CountOptions<TOOLS extends ToolSet = ToolSet> {
   /**
@@ -97,15 +98,20 @@ export function count<TOOLS extends ToolSet = ToolSet>(
   options: CountOptions<TOOLS>
 ): CountResult<TOOLS> {
   const config = options.model.tokens;
-  const request = requestMedia(options.messages, config);
+  const price = mediaPricer(options.tokenizer, options.messages, config);
 
   let total = config.baseOverhead;
 
   // Count messages with detailed breakdown
   const messages: CountResultMessage[] = config.anthropic
-    ? countClaudeMessages(options.tokenizer, options.messages, config, request)
+    ? countClaudeMessages(
+        options.tokenizer,
+        options.messages,
+        config.anthropic,
+        price
+      )
     : options.messages.map((message) =>
-        countMessageTokensDetailed(options.tokenizer, message, config, request)
+        countMessageTokensDetailed(options.tokenizer, message, config, price)
       );
   for (const message of messages) {
     total += message.total;
@@ -640,7 +646,7 @@ function countMessageTokensDetailed(
   tokenizer: Tokenizer,
   message: ModelMessage,
   config: ModelTokens,
-  request: ImageContext
+  price: MediaPricer
 ): CountResultMessage {
   let total = config.perMessage;
   const content: CountResultMessageContent[] = [];
@@ -654,7 +660,7 @@ function countMessageTokensDetailed(
       tokenizer,
       message.content,
       config,
-      request
+      price
     );
     content.push(...contentResult);
     total += contentResult.reduce((sum, c) => sum + c.total, 0);
@@ -670,7 +676,7 @@ function countMessageContentTokensDetailed(
   tokenizer: Tokenizer,
   content: ModelMessage["content"],
   config: ModelTokens,
-  request: ImageContext
+  price: MediaPricer
 ): CountResultMessageContent[] {
   const multiplier = config.contentMultiplier;
   const results: CountResultMessageContent[] = [];
@@ -691,7 +697,7 @@ function countMessageContentTokensDetailed(
       if (!isRecord(part)) {
         continue;
       }
-      const tally = createTally(tokenizer, config, request);
+      const tally = createTally(tokenizer, price);
 
       if (part.type === "text") {
         if (typeof part.text === "string") {
@@ -744,11 +750,7 @@ function countMessageContentTokensDetailed(
  * Tokens of one content part. `text` is raw tokenizer tokens and still gets
  * `contentMultiplier`. `media` is a fixed estimate and never does.
  */
-function createTally(
-  tokenizer: Tokenizer,
-  config: ModelTokens,
-  request: ImageContext
-) {
+function createTally(tokenizer: Tokenizer, price: MediaPricer) {
   const tally = {
     text: 0,
     media: 0,
@@ -756,7 +758,7 @@ function createTally(
       tally.text += tokenizer.count(text);
     },
     addMedia(media: Media) {
-      tally.media += countMediaTokens(media, config, request);
+      tally.media += price(media);
     },
   };
   return tally;
@@ -783,28 +785,40 @@ interface Media {
 const FLAT_IMAGE_TOKENS = 85;
 const FLAT_FILE_TOKENS = 100;
 
+type MediaPricer = (media: Media) => number;
+
 /**
  * The single place that prices an image or a file. Every image-like and
  * file-like part reaches it, whatever its AI SDK shape.
  */
-function countMediaTokens(
-  media: Media,
-  config: ModelTokens,
-  request: ImageContext
-): number {
-  if (media.kind === "image") {
-    return config.media
-      ? imageTokens(config.media.image, imageSizeOf(media.data), {
-          ...request,
-          detail: media.detail,
-        })
-      : FLAT_IMAGE_TOKENS;
-  }
-  return FLAT_FILE_TOKENS;
+function mediaPricer(
+  tokenizer: Tokenizer,
+  messages: ModelMessage[],
+  config: ModelTokens
+): MediaPricer {
+  const request = requestMedia(messages, config);
+  return (media) => {
+    if (media.kind === "image") {
+      return config.media
+        ? imageTokens(config.media.image, imageSizeOf(media.data), {
+            ...request,
+            detail: media.detail,
+          })
+        : FLAT_IMAGE_TOKENS;
+    }
+    if (config.media?.pdf && isPdf(media)) {
+      return pdfTokens(config.media.pdf, tokenizer, mediaBytesOf(media.data));
+    }
+    return FLAT_FILE_TOKENS;
+  };
+}
+
+function isPdf(media: Media): boolean {
+  return media.mediaType === "application/pdf";
 }
 
 /**
- * What the price of one image depends on besides the image: for now only how
+ * What the price of an image depends on besides the image: for now only how
  * many images the request holds, which a `crops` recipe reads.
  */
 function requestMedia(
@@ -925,7 +939,7 @@ function tallyMedia(tally: Tally, part: Record<string, unknown>): void {
  * counting only the payload under-counts every result by about 6 tokens.
  *
  * The one exception is a `content` output: its images and files are priced by
- * `countMediaTokens` instead of serialising their base64 or URL.
+ * `price` instead of serialising their base64 or URL.
  */
 function tallyToolOutput(tally: Tally, output: unknown): void {
   if (!output) {
@@ -998,11 +1012,9 @@ interface ClaudeTurn {
 function countClaudeMessages(
   tokenizer: Tokenizer,
   messages: ModelMessage[],
-  config: ModelTokens,
-  request: ImageContext
+  tokens: AnthropicTokens,
+  price: MediaPricer
 ): CountResultMessage[] {
-  const tokens = config.anthropic!;
-  const price = (media: Media) => countMediaTokens(media, config, request);
   const results = messages.map(
     (): CountResultMessage => ({ total: 0, content: [] })
   );
@@ -1058,7 +1070,7 @@ function addClaudeBlocks(
   turn: ClaudeTurn,
   content: ModelMessage["content"],
   result: CountResultMessage,
-  price: (media: Media) => number
+  price: MediaPricer
 ): void {
   const addText = (text: string) => {
     const part: TextContent = { type: "text", total: 0 };
@@ -1119,10 +1131,7 @@ function addClaudeBlocks(
 }
 
 /** The text and media of a tool result, as the provider puts them in `tool_result.content`. */
-function readToolResult(
-  output: unknown,
-  price: (media: Media) => number
-): ToolResultBody {
+function readToolResult(output: unknown, price: MediaPricer): ToolResultBody {
   const plain = (text: string, isError = false): ToolResultBody => ({
     text,
     media: 0,

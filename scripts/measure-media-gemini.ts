@@ -1,7 +1,7 @@
 /**
  * Measures what Gemini charges for one image, through the Vercel AI Gateway,
  * and writes src/fixtures/media-gemini.json. Run: bun scripts/measure-media-gemini.ts
- * (needs AI_GATEWAY_API_KEY; scripts/fit-media-gemini.ts needs no key).
+ * (needs AI_GATEWAY_API_KEY; scripts/fit-media.ts needs no key).
  *
  * The number read is `usage.inputTokens`, which is Google's `promptTokenCount`.
  * The gateway also returns Google's per-modality split in `usage.raw`; the

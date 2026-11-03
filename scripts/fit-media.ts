@@ -14,6 +14,7 @@ import type {
   TileImageTokens,
 } from "../src";
 import { imageTokens } from "../src/image-tokens";
+import { readPdf } from "../src/pdf";
 
 const fixture = (name: string) =>
   JSON.parse(
@@ -226,4 +227,35 @@ export function fitGeminiImage(model: string): MediaTokens {
   throw new Error(
     `${model} (${sizes.length} cases): no recipe fits\n  ${misses.join("\n  ")}`
   );
+}
+
+/**
+ * What a PDF costs when it cannot be read: the mean cost of a page of the PDF
+ * corpus, measured on the model that counts with this encoding.
+ */
+export function unreadablePdfTokens(encoding: string): number {
+  const model = {
+    claude_v3: "claude-opus-4-6",
+    claude_v4_7: "claude-opus-4-7",
+    claude_v4_8: "claude-opus-4-8",
+    claude_v5: "claude-opus-5-5",
+  }[encoding];
+  if (!model) {
+    throw new Error(`no PDF measurements for the encoding ${encoding}`);
+  }
+  const measured = fixture("media-anthropic-pdf.json").models[model] as Record<
+    string,
+    number | { error: string }
+  >;
+  let tokens = 0;
+  let pages = 0;
+  for (const [file, cost] of Object.entries(measured)) {
+    if (typeof cost !== "number") continue;
+    const pdf = readPdf(
+      readFileSync(new URL(`../src/fixtures/pdf/${file}`, import.meta.url))
+    );
+    tokens += cost;
+    pages += pdf?.pages.length ?? 0;
+  }
+  return Math.round(tokens / pages);
 }
