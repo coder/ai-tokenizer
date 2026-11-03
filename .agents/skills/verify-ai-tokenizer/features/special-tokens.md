@@ -9,13 +9,13 @@
 - `allowed-all`: `encode(text, "all")` equals tiktoken `encode(text, "all")`.
 - `disallowed-none`: `encode(text, [], [])` equals tiktoken.
 - `decode-special`: `decode([<special id>])` gives the special token text.
-- `count-matches-encode`: `count(text)` throws exactly when `encode(text)` throws.
+- `count-ordinary`: `count(text)` counts special-token text as ordinary text and equals tiktoken `encode_ordinary(text).length`. It never throws.
 - `claude/*`: the same checks for claude's `<EOT>`, without an oracle.
 
 ## How to get to it (user POV)
 
 - `new Tokenizer(o200k_base).encode(text, allowedSpecial, disallowedSpecial)` from the published package.
-- `tokenizer.count(text)`, which uses the default arguments.
+- `tokenizer.count(text)`, which encodes with `[]`, `[]`.
 - Indirectly through `count()` in `ai-tokenizer/sdk` and the demo site. Those paths are in [sdk-count](./sdk-count.md) and [demo-site](./demo-site.md).
 
 ## Driving it with verify.sh

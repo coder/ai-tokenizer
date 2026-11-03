@@ -29,7 +29,8 @@ for (const name of ["o200k_base", "cl100k_base", "p50k_base"]) {
   check(`${name}/decode-special`, `decode([${eot}])`, "<|endoftext|>", dec, dec.value === "<|endoftext|>");
 
   const cnt = outcome(() => ours.count(text));
-  check(`${name}/count-matches-encode`, `count("${text}") behaves like encode("${text}")`, { encode: dflt[0] }, { count: cnt }, sameJSON("threw" in cnt, "threw" in dflt[0]));
+  const ordinary = oracle.encode_ordinary(text).length;
+  check(`${name}/count-ordinary`, `count("${text}")`, { value: ordinary }, cnt, cnt.value === ordinary);
   oracle.free();
 }
 
