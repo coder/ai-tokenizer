@@ -936,21 +936,19 @@ function countClaudeMessages(
   const system: ClaudeTurn = { role: "system", first: -1, blocks: [] };
   const turns: ClaudeTurn[] = [];
   messages.forEach((message, index) => {
-    let turn: ClaudeTurn;
+    const result = results[index]!;
     if (message.role === "system") {
       system.first = system.first < 0 ? index : system.first;
-      turn = system;
-    } else {
-      const role = message.role === "assistant" ? "assistant" : "user";
-      turn =
-        turns.at(-1)?.role === role
-          ? turns.at(-1)!
-          : { role, first: index, blocks: [] };
-      if (turn !== turns.at(-1)) {
-        turns.push(turn);
-      }
+      addClaudeBlocks(system, message.content, result);
+      return;
     }
-    addClaudeBlocks(turn, message.content, results[index]!);
+    const role = message.role === "assistant" ? "assistant" : "user";
+    let turn = turns.at(-1);
+    if (turn?.role !== role) {
+      turn = { role, first: index, blocks: [] };
+      turns.push(turn);
+    }
+    addClaudeBlocks(turn, message.content, result);
   });
 
   // A final assistant message is what the model continues, and the provider
@@ -961,30 +959,22 @@ function countClaudeMessages(
     lastBlock.text = lastBlock.text.trim();
   }
 
-  let previous: ClaudeTurn | undefined;
-  let previousUser: ClaudeTurn | undefined;
-  for (const turn of [system, ...turns]) {
-    if (turn.first < 0) {
-      continue;
-    }
-    if (turn.role === "system") {
-      results[turn.first]!.total += tokens.system;
-    } else if (turn.role === "user" && previous?.role === "assistant") {
+  if (system.first >= 0) {
+    results[system.first]!.total += tokens.system;
+    countClaudeTurn(tokenizer, tokens, system);
+  }
+  // Turns alternate, so the turn before an assistant turn is a user turn.
+  turns.forEach((turn, i) => {
+    if (turn.role === "user" && turns[i - 1]?.role === "assistant") {
       const answersToolResult =
-        previousUser?.blocks.at(-1)?.kind === "tool-result" &&
+        turns[i - 2]?.blocks.at(-1)?.kind === "tool-result" &&
         turn.blocks[0]?.kind !== "tool-result";
       results[turn.first]!.total +=
         tokens.userTurn +
         (answersToolResult ? tokens.userTurnAfterToolResult : 0);
     }
-    if (turn.role !== "system") {
-      previous = turn;
-    }
-    if (turn.role === "user") {
-      previousUser = turn;
-    }
     countClaudeTurn(tokenizer, tokens, turn);
-  }
+  });
   for (const result of results) {
     result.total += result.content.reduce((sum, part) => sum + part.total, 0);
   }

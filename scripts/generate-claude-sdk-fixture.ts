@@ -9,6 +9,7 @@
  * count_tokens is free.
  */
 import { writeFileSync } from "node:fs";
+import { format, resolveConfig } from "prettier";
 import {
   asSchema,
   jsonSchema,
@@ -139,8 +140,15 @@ for (const source of sources) {
   console.log(`${source.name}: ${gatewayIds.length} models`);
 }
 
+const file = new URL(
+  "../src/fixtures/claude-sdk-count-tokens.json",
+  import.meta.url
+);
 writeFileSync(
-  new URL("../src/fixtures/claude-sdk-count-tokens.json", import.meta.url),
-  JSON.stringify({ models: apiModels, conversations }, null, 2) + "\n"
+  file,
+  await format(JSON.stringify({ models: apiModels, conversations }), {
+    ...(await resolveConfig(file.pathname)),
+    parser: "json",
+  })
 );
 console.log(`conversations: ${conversations.length}`);

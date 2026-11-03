@@ -20,28 +20,22 @@
       "name": "systemAndUser",
       "kind": "exact",
       "messages": [
-        {
-          "role": "system",
-          "content": "You are brief.  "
-        },
-        {
-          "role": "user",
-          "content": "Hello there.  "
-        }
+        { "role": "system", "content": "You are brief.  " },
+        { "role": "user", "content": "Hello there.  " }
       ],
       "api": {
-        "anthropic/claude-sonnet-4.5": 16,
         "anthropic/claude-opus-4.5": 16,
         "anthropic/claude-haiku-4.5": 16,
+        "anthropic/claude-sonnet-4.5": 16,
         "anthropic/claude-fable-5": 19,
+        "anthropic/claude-opus-4.6": 17,
         "anthropic/claude-opus-4.7": 24,
         "anthropic/claude-fable-5.1": 19,
-        "anthropic/claude-opus-4.6": 17,
         "anthropic/claude-haiku-5.5": 19,
-        "anthropic/claude-opus-4.8": 19,
         "anthropic/claude-opus-5": 17,
         "anthropic/claude-opus-5.5": 19,
         "anthropic/claude-sonnet-4.6": 17,
+        "anthropic/claude-opus-4.8": 19,
         "anthropic/claude-sonnet-5": 19,
         "anthropic/claude-sonnet-5.5": 19
       }
@@ -50,25 +44,13 @@
       "name": "joinedUserBlocks",
       "kind": "exact",
       "messages": [
-        {
-          "role": "user",
-          "content": "a"
-        },
-        {
-          "role": "assistant",
-          "content": "b  c  "
-        },
+        { "role": "user", "content": "a" },
+        { "role": "assistant", "content": "b  c  " },
         {
           "role": "user",
           "content": [
-            {
-              "type": "text",
-              "text": "Mixed café 日本語 "
-            },
-            {
-              "type": "text",
-              "text": "second block  "
-            }
+            { "type": "text", "text": "Mixed café 日本語 " },
+            { "type": "text", "text": "second block  " }
           ]
         }
       ],
@@ -77,12 +59,12 @@
         "anthropic/claude-opus-4.5": 28,
         "anthropic/claude-haiku-4.5": 28,
         "anthropic/claude-fable-5": 28,
-        "anthropic/claude-haiku-5.5": 29,
-        "anthropic/claude-fable-5.1": 29,
-        "anthropic/claude-opus-4.7": 39,
         "anthropic/claude-opus-4.6": 28,
-        "anthropic/claude-opus-5": 27,
+        "anthropic/claude-haiku-5.5": 29,
+        "anthropic/claude-opus-4.7": 39,
+        "anthropic/claude-fable-5.1": 29,
         "anthropic/claude-opus-4.8": 28,
+        "anthropic/claude-opus-5": 27,
         "anthropic/claude-opus-5.5": 29,
         "anthropic/claude-sonnet-4.6": 28,
         "anthropic/claude-sonnet-5": 28,
@@ -96,26 +78,20 @@
         {
           "role": "user",
           "content": [
-            {
-              "type": "text",
-              "text": "a  "
-            },
-            {
-              "type": "text",
-              "text": "   "
-            }
+            { "type": "text", "text": "a  " },
+            { "type": "text", "text": "   " }
           ]
         }
       ],
       "api": {
-        "anthropic/claude-sonnet-4.5": 9,
         "anthropic/claude-haiku-4.5": 9,
-        "anthropic/claude-opus-4.5": 9,
         "anthropic/claude-fable-5": 8,
-        "anthropic/claude-fable-5.1": 10,
-        "anthropic/claude-haiku-5.5": 10,
+        "anthropic/claude-sonnet-4.5": 9,
+        "anthropic/claude-opus-4.5": 9,
         "anthropic/claude-opus-4.6": 9,
+        "anthropic/claude-haiku-5.5": 10,
         "anthropic/claude-opus-4.7": 13,
+        "anthropic/claude-fable-5.1": 10,
         "anthropic/claude-opus-4.8": 8,
         "anthropic/claude-opus-5": 8,
         "anthropic/claude-sonnet-4.6": 9,
@@ -128,14 +104,8 @@
       "name": "toolCycles",
       "kind": "calls",
       "messages": [
-        {
-          "role": "system",
-          "content": "Use the tools."
-        },
-        {
-          "role": "user",
-          "content": "Find it"
-        },
+        { "role": "system", "content": "Use the tools." },
+        { "role": "user", "content": "Find it" },
         {
           "role": "assistant",
           "content": [
@@ -143,10 +113,7 @@
               "type": "tool-call",
               "toolCallId": "call_1",
               "toolName": "f",
-              "input": {
-                "query": "needle",
-                "scope": "all"
-              }
+              "input": { "query": "needle", "scope": "all" }
             }
           ]
         },
@@ -157,21 +124,12 @@
               "type": "tool-result",
               "toolCallId": "call_1",
               "toolName": "f",
-              "output": {
-                "type": "text",
-                "value": "Found it in 3 files."
-              }
+              "output": { "type": "text", "value": "Found it in 3 files." }
             }
           ]
         },
-        {
-          "role": "assistant",
-          "content": "Found it."
-        },
-        {
-          "role": "user",
-          "content": "Again"
-        },
+        { "role": "assistant", "content": "Found it." },
+        { "role": "user", "content": "Again" },
         {
           "role": "assistant",
           "content": [
@@ -179,9 +137,7 @@
               "type": "tool-call",
               "toolCallId": "call_1",
               "toolName": "f",
-              "input": {
-                "query": "again"
-              }
+              "input": { "query": "again" }
             }
           ]
         },
@@ -192,10 +148,7 @@
               "type": "tool-result",
               "toolCallId": "call_1",
               "toolName": "f",
-              "output": {
-                "type": "error-text",
-                "value": "boom"
-              }
+              "output": { "type": "error-text", "value": "boom" }
             }
           ]
         },
@@ -206,9 +159,7 @@
               "type": "tool-call",
               "toolCallId": "call_1",
               "toolName": "f",
-              "input": {
-                "query": "retry"
-              }
+              "input": { "query": "retry" }
             }
           ]
         },
@@ -219,10 +170,7 @@
               "type": "tool-result",
               "toolCallId": "call_1",
               "toolName": "f",
-              "output": {
-                "type": "text",
-                "value": ""
-              }
+              "output": { "type": "text", "value": "" }
             }
           ]
         },
@@ -233,9 +181,7 @@
               "type": "tool-call",
               "toolCallId": "call_1",
               "toolName": "f",
-              "input": {
-                "query": "last"
-              }
+              "input": { "query": "last" }
             }
           ]
         },
@@ -246,21 +192,12 @@
               "type": "tool-result",
               "toolCallId": "call_1",
               "toolName": "f",
-              "output": {
-                "type": "text",
-                "value": "ok"
-              }
+              "output": { "type": "text", "value": "ok" }
             }
           ]
         },
-        {
-          "role": "user",
-          "content": "thanks  "
-        },
-        {
-          "role": "assistant",
-          "content": "You are welcome"
-        }
+        { "role": "user", "content": "thanks  " },
+        { "role": "assistant", "content": "You are welcome" }
       ],
       "tools": {
         "f": {
@@ -273,18 +210,18 @@
         }
       },
       "api": {
-        "anthropic/claude-sonnet-4.5": 886,
-        "anthropic/claude-haiku-4.5": 886,
-        "anthropic/claude-fable-5": 657,
         "anthropic/claude-opus-4.5": 886,
-        "anthropic/claude-opus-4.6": 887,
-        "anthropic/claude-opus-4.7": 1156,
-        "anthropic/claude-haiku-5.5": 658,
+        "anthropic/claude-haiku-4.5": 886,
+        "anthropic/claude-sonnet-4.5": 886,
+        "anthropic/claude-fable-5": 657,
         "anthropic/claude-fable-5.1": 658,
-        "anthropic/claude-opus-5": 652,
+        "anthropic/claude-opus-4.6": 887,
+        "anthropic/claude-haiku-5.5": 658,
+        "anthropic/claude-opus-4.7": 1156,
         "anthropic/claude-opus-4.8": 657,
-        "anthropic/claude-opus-5.5": 658,
+        "anthropic/claude-opus-5": 652,
         "anthropic/claude-sonnet-4.6": 887,
+        "anthropic/claude-opus-5.5": 658,
         "anthropic/claude-sonnet-5": 721,
         "anthropic/claude-sonnet-5.5": 658
       }
@@ -293,24 +230,18 @@
       "name": "finalAssistant",
       "kind": "exact",
       "messages": [
-        {
-          "role": "user",
-          "content": "Say hi"
-        },
-        {
-          "role": "assistant",
-          "content": "Hi there  "
-        }
+        { "role": "user", "content": "Say hi" },
+        { "role": "assistant", "content": "Hi there  " }
       ],
       "api": {
         "anthropic/claude-haiku-4.5": 11,
+        "anthropic/claude-fable-5": 14,
         "anthropic/claude-sonnet-4.5": 11,
         "anthropic/claude-opus-4.5": 11,
-        "anthropic/claude-fable-5": 14,
+        "anthropic/claude-opus-4.6": 11,
+        "anthropic/claude-opus-4.7": 19,
         "anthropic/claude-fable-5.1": 16,
         "anthropic/claude-haiku-5.5": 16,
-        "anthropic/claude-opus-4.7": 19,
-        "anthropic/claude-opus-4.6": 11,
         "anthropic/claude-opus-4.8": 14,
         "anthropic/claude-opus-5": 14,
         "anthropic/claude-sonnet-4.6": 11,
@@ -323,10 +254,7 @@
       "name": "nestedInputNumberAndJsonResult",
       "kind": "calls",
       "messages": [
-        {
-          "role": "user",
-          "content": "Find it"
-        },
+        { "role": "user", "content": "Find it" },
         {
           "role": "assistant",
           "content": [
@@ -334,16 +262,7 @@
               "type": "tool-call",
               "toolCallId": "call_1",
               "toolName": "f",
-              "input": {
-                "limit": 3,
-                "nested": {
-                  "a": [
-                    1,
-                    2
-                  ],
-                  "b": null
-                }
-              }
+              "input": { "limit": 3, "nested": { "a": [1, 2], "b": null } }
             }
           ]
         },
@@ -356,21 +275,12 @@
               "toolName": "f",
               "output": {
                 "type": "json",
-                "value": {
-                  "found": true,
-                  "items": [
-                    "a",
-                    "b"
-                  ]
-                }
+                "value": { "found": true, "items": ["a", "b"] }
               }
             }
           ]
         },
-        {
-          "role": "assistant",
-          "content": "Done."
-        }
+        { "role": "assistant", "content": "Done." }
       ],
       "tools": {
         "f": {
@@ -384,19 +294,19 @@
       },
       "api": {
         "anthropic/claude-sonnet-4.5": 666,
+        "anthropic/claude-haiku-4.5": 666,
         "anthropic/claude-opus-4.5": 666,
         "anthropic/claude-fable-5": 474,
-        "anthropic/claude-haiku-4.5": 666,
+        "anthropic/claude-fable-5.1": 472,
+        "anthropic/claude-haiku-5.5": 472,
         "anthropic/claude-opus-4.6": 667,
         "anthropic/claude-opus-4.7": 888,
-        "anthropic/claude-haiku-5.5": 472,
-        "anthropic/claude-fable-5.1": 472,
         "anthropic/claude-opus-5": 470,
         "anthropic/claude-sonnet-4.6": 667,
-        "anthropic/claude-opus-4.8": 474,
         "anthropic/claude-opus-5.5": 472,
         "anthropic/claude-sonnet-5": 538,
-        "anthropic/claude-sonnet-5.5": 472
+        "anthropic/claude-sonnet-5.5": 472,
+        "anthropic/claude-opus-4.8": 474
       }
     },
     {
@@ -419,10 +329,7 @@
             "$schema": "http://json-schema.org/draft-07/schema#",
             "type": "object",
             "properties": {
-              "query": {
-                "type": "string",
-                "description": "Analysis query"
-              },
+              "query": { "type": "string", "description": "Analysis query" },
               "filters": {
                 "type": "object",
                 "properties": {
@@ -442,65 +349,46 @@
                         "description": "End date ISO format"
                       }
                     },
-                    "required": [
-                      "start",
-                      "end"
-                    ],
+                    "required": ["start", "end"],
                     "description": "Date range for filtering",
                     "additionalProperties": false
                   },
                   "tags": {
                     "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
+                    "items": { "type": "string" },
                     "description": "Tag filters"
                   }
                 },
-                "required": [
-                  "category",
-                  "dateRange",
-                  "tags"
-                ],
+                "required": ["category", "dateRange", "tags"],
                 "description": "Data filters",
                 "additionalProperties": false
               },
               "aggregation": {
                 "type": "string",
-                "enum": [
-                  "sum",
-                  "avg",
-                  "min",
-                  "max",
-                  "count"
-                ],
+                "enum": ["sum", "avg", "min", "max", "count"],
                 "description": "Aggregation method"
               }
             },
-            "required": [
-              "query",
-              "filters",
-              "aggregation"
-            ],
+            "required": ["query", "filters", "aggregation"],
             "additionalProperties": false
           }
         }
       },
       "api": {
-        "anthropic/claude-sonnet-4.5": 857,
         "anthropic/claude-opus-4.5": 857,
         "anthropic/claude-haiku-4.5": 857,
         "anthropic/claude-fable-5": 789,
-        "anthropic/claude-fable-5.1": 787,
+        "anthropic/claude-sonnet-4.5": 857,
         "anthropic/claude-opus-4.6": 858,
         "anthropic/claude-haiku-5.5": 787,
         "anthropic/claude-opus-4.7": 1179,
-        "anthropic/claude-opus-4.8": 789,
+        "anthropic/claude-fable-5.1": 787,
         "anthropic/claude-opus-5": 785,
+        "anthropic/claude-opus-4.8": 789,
         "anthropic/claude-sonnet-4.6": 858,
+        "anthropic/claude-opus-5.5": 787,
         "anthropic/claude-sonnet-5": 853,
-        "anthropic/claude-sonnet-5.5": 787,
-        "anthropic/claude-opus-5.5": 787
+        "anthropic/claude-sonnet-5.5": 787
       }
     },
     {
@@ -538,13 +426,8 @@
                 "query": "Q1 analysis",
                 "filters": {
                   "category": "Redis",
-                  "dateRange": {
-                    "start": "2024-01-01",
-                    "end": "2024-12-31"
-                  },
-                  "tags": [
-                    "test"
-                  ]
+                  "dateRange": { "start": "2024-01-01", "end": "2024-12-31" },
+                  "tags": ["test"]
                 },
                 "aggregation": "sum"
               }
@@ -677,10 +560,7 @@
               "type": "text",
               "text": "Mixed content: The café serves pâté 🍮, naïve résumé, Zürich coöperation. Quotes: \"Hello world\". Math: ∀x ∈ ℝ, ∃y. Currency: $100 €85 £375"
             },
-            {
-              "type": "text",
-              "text": "Additionally, can you help with Redis?"
-            }
+            { "type": "text", "text": "Additionally, can you help with Redis?" }
           ]
         },
         {
@@ -698,13 +578,8 @@
                 "query": "Q2 analysis",
                 "filters": {
                   "category": "Elasticsearch",
-                  "dateRange": {
-                    "start": "2024-01-01",
-                    "end": "2024-12-31"
-                  },
-                  "tags": [
-                    "test"
-                  ]
+                  "dateRange": { "start": "2024-01-01", "end": "2024-12-31" },
+                  "tags": ["test"]
                 },
                 "aggregation": "sum"
               }
@@ -780,10 +655,7 @@
               "type": "text",
               "text": "你好！機械学習についての情報を教えてください。한국어로도説명できますか？ Пожалуйста, объясните на русском языке. شكراً لك على المساعدة."
             },
-            {
-              "type": "text",
-              "text": "Additionally, can you help with Redis?"
-            }
+            { "type": "text", "text": "Additionally, can you help with Redis?" }
           ]
         },
         {
@@ -849,13 +721,8 @@
                 "query": "Q1 analysis",
                 "filters": {
                   "category": "Kubernetes",
-                  "dateRange": {
-                    "start": "2024-01-01",
-                    "end": "2024-12-31"
-                  },
-                  "tags": [
-                    "test"
-                  ]
+                  "dateRange": { "start": "2024-01-01", "end": "2024-12-31" },
+                  "tags": ["test"]
                 },
                 "aggregation": "sum"
               }
@@ -892,10 +759,7 @@
             "$schema": "http://json-schema.org/draft-07/schema#",
             "type": "object",
             "properties": {
-              "query": {
-                "type": "string",
-                "description": "Analysis query"
-              },
+              "query": { "type": "string", "description": "Analysis query" },
               "filters": {
                 "type": "object",
                 "properties": {
@@ -915,58 +779,39 @@
                         "description": "End date ISO format"
                       }
                     },
-                    "required": [
-                      "start",
-                      "end"
-                    ],
+                    "required": ["start", "end"],
                     "description": "Date range for filtering",
                     "additionalProperties": false
                   },
                   "tags": {
                     "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
+                    "items": { "type": "string" },
                     "description": "Tag filters"
                   }
                 },
-                "required": [
-                  "category",
-                  "dateRange",
-                  "tags"
-                ],
+                "required": ["category", "dateRange", "tags"],
                 "description": "Data filters",
                 "additionalProperties": false
               },
               "aggregation": {
                 "type": "string",
-                "enum": [
-                  "sum",
-                  "avg",
-                  "min",
-                  "max",
-                  "count"
-                ],
+                "enum": ["sum", "avg", "min", "max", "count"],
                 "description": "Aggregation method"
               }
             },
-            "required": [
-              "query",
-              "filters",
-              "aggregation"
-            ],
+            "required": ["query", "filters", "aggregation"],
             "additionalProperties": false
           }
         }
       },
       "api": {
-        "anthropic/claude-sonnet-4.5": 4524,
-        "anthropic/claude-haiku-4.5": 4524,
         "anthropic/claude-opus-4.5": 4524,
+        "anthropic/claude-haiku-4.5": 4524,
+        "anthropic/claude-sonnet-4.5": 4524,
         "anthropic/claude-fable-5": 5310,
         "anthropic/claude-haiku-5.5": 5312,
-        "anthropic/claude-opus-4.6": 4525,
         "anthropic/claude-opus-4.7": 5925,
+        "anthropic/claude-opus-4.6": 4525,
         "anthropic/claude-fable-5.1": 5312,
         "anthropic/claude-opus-4.8": 5310,
         "anthropic/claude-opus-5": 5306,
