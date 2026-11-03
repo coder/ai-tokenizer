@@ -1,0 +1,4064 @@
+{
+  "provider": "google",
+  "measuredAt": "2026-11-03",
+  "unit": "Image tokens = prompt tokens (usage.inputTokens, Google promptTokenCount) of a request with text \"a\" and one image, minus prompt tokens of a request with text \"a\" alone.",
+  "gateway": "Every request is pinned to one backend with providerOptions.gateway.only. `models` is the Vertex backend, which the gateway tries first. `modelsAiStudio` is the Google AI Studio backend, which the gateway falls back to. mediaResolution is sent as providerOptions.google.mediaResolution.",
+  "models": {
+    "google/gemini-2.5-flash": {
+      "backend": "vertex",
+      "baseline": 1,
+      "cases": [
+        {
+          "width": 1,
+          "height": 1,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 8,
+          "height": 8,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 14,
+          "height": 14,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 27,
+          "height": 27,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 28,
+          "height": 28,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 29,
+          "height": 29,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 56,
+          "height": 56,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 100,
+          "height": 100,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 200,
+          "height": 200,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 256,
+          "height": 256,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 300,
+          "height": 200,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 385,
+          "height": 385,
+          "mediaResolution": "default",
+          "tokens": 1290
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "mediaResolution": "default",
+          "tokens": 1290
+        },
+        {
+          "width": 513,
+          "height": 513,
+          "mediaResolution": "default",
+          "tokens": 1290
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "mediaResolution": "default",
+          "tokens": 1290
+        },
+        {
+          "width": 768,
+          "height": 768,
+          "mediaResolution": "default",
+          "tokens": 1290
+        },
+        {
+          "width": 769,
+          "height": 769,
+          "mediaResolution": "default",
+          "tokens": 1290
+        },
+        {
+          "width": 1000,
+          "height": 1000,
+          "mediaResolution": "default",
+          "tokens": 1290
+        },
+        {
+          "width": 1024,
+          "height": 1024,
+          "mediaResolution": "default",
+          "tokens": 1290
+        },
+        {
+          "width": 1338,
+          "height": 579,
+          "mediaResolution": "default",
+          "tokens": 2322
+        },
+        {
+          "width": 1568,
+          "height": 1568,
+          "mediaResolution": "default",
+          "tokens": 2580
+        },
+        {
+          "width": 1569,
+          "height": 1569,
+          "mediaResolution": "default",
+          "tokens": 2580
+        },
+        {
+          "width": 1920,
+          "height": 1080,
+          "mediaResolution": "default",
+          "tokens": 1806
+        },
+        {
+          "width": 2048,
+          "height": 2048,
+          "mediaResolution": "default",
+          "tokens": 2580
+        },
+        {
+          "width": 2576,
+          "height": 2576,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 2577,
+          "height": 2577,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 3000,
+          "height": 2000,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 4000,
+          "height": 4000,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 10,
+          "height": 1000,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 1000,
+          "height": 10,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 50,
+          "height": 2000,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 2000,
+          "height": 50,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 4000,
+          "height": 300,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 384,
+          "height": 192,
+          "mediaResolution": "default",
+          "tokens": 774
+        },
+        {
+          "width": 384,
+          "height": 193,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 200,
+          "height": 100,
+          "mediaResolution": "default",
+          "tokens": 774
+        },
+        {
+          "width": 200,
+          "height": 101,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 384,
+          "height": 385,
+          "mediaResolution": "default",
+          "tokens": 1290
+        },
+        {
+          "width": 385,
+          "height": 200,
+          "mediaResolution": "default",
+          "tokens": 774
+        },
+        {
+          "width": 255,
+          "height": 600,
+          "mediaResolution": "default",
+          "tokens": 1032
+        },
+        {
+          "width": 256,
+          "height": 600,
+          "mediaResolution": "default",
+          "tokens": 1032
+        },
+        {
+          "width": 257,
+          "height": 600,
+          "mediaResolution": "default",
+          "tokens": 1806
+        },
+        {
+          "width": 300,
+          "height": 600,
+          "mediaResolution": "default",
+          "tokens": 1806
+        },
+        {
+          "width": 600,
+          "height": 800,
+          "mediaResolution": "default",
+          "tokens": 1290
+        },
+        {
+          "width": 600,
+          "height": 801,
+          "mediaResolution": "default",
+          "tokens": 1806
+        },
+        {
+          "width": 601,
+          "height": 802,
+          "mediaResolution": "default",
+          "tokens": 1806
+        },
+        {
+          "width": 602,
+          "height": 802,
+          "mediaResolution": "default",
+          "tokens": 1290
+        },
+        {
+          "width": 602,
+          "height": 803,
+          "mediaResolution": "default",
+          "tokens": 1806
+        },
+        {
+          "width": 1151,
+          "height": 1536,
+          "mediaResolution": "default",
+          "tokens": 1806
+        },
+        {
+          "width": 1152,
+          "height": 1536,
+          "mediaResolution": "default",
+          "tokens": 1290
+        },
+        {
+          "width": 1152,
+          "height": 1537,
+          "mediaResolution": "default",
+          "tokens": 1806
+        },
+        {
+          "width": 1536,
+          "height": 1536,
+          "mediaResolution": "default",
+          "tokens": 1290
+        },
+        {
+          "width": 1537,
+          "height": 1537,
+          "mediaResolution": "default",
+          "tokens": 2580
+        },
+        {
+          "width": 100,
+          "height": 1100,
+          "mediaResolution": "default",
+          "tokens": 3096
+        },
+        {
+          "width": 100,
+          "height": 1200,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 100,
+          "height": 1201,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 2304,
+          "height": 2304,
+          "mediaResolution": "default",
+          "tokens": 2580
+        },
+        {
+          "width": 2305,
+          "height": 2305,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 1600,
+          "height": 2500,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 1600,
+          "height": 2501,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 1598,
+          "height": 2600,
+          "mediaResolution": "default",
+          "tokens": 2322
+        },
+        {
+          "width": 1599,
+          "height": 2600,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 1540,
+          "height": 2501,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 1540,
+          "height": 2505,
+          "mediaResolution": "default",
+          "tokens": 2322
+        },
+        {
+          "width": 1600,
+          "height": 3000,
+          "mediaResolution": "default",
+          "tokens": 2322
+        },
+        {
+          "width": 2000,
+          "height": 4000,
+          "mediaResolution": "default",
+          "tokens": 2322
+        },
+        {
+          "width": 4918,
+          "height": 8000,
+          "mediaResolution": "default",
+          "tokens": 2322
+        },
+        {
+          "width": 4919,
+          "height": 8000,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 1,
+          "height": 2,
+          "mediaResolution": "default",
+          "tokens": 774
+        },
+        {
+          "width": 1,
+          "height": 3,
+          "mediaResolution": "default",
+          "tokens": 1032
+        },
+        {
+          "width": 2,
+          "height": 3,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 10,
+          "height": 4,
+          "mediaResolution": "default",
+          "tokens": 1032
+        },
+        {
+          "width": 1,
+          "height": 1000,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 1,
+          "height": 2500,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 1,
+          "height": 2501,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1,
+          "height": 4000,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 2,
+          "height": 5000,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 2,
+          "height": 5001,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1000,
+          "height": 1,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 640,
+          "height": 360,
+          "mediaResolution": "default",
+          "tokens": 1806
+        },
+        {
+          "width": 1280,
+          "height": 720,
+          "mediaResolution": "default",
+          "tokens": 1806
+        },
+        {
+          "width": 800,
+          "height": 600,
+          "mediaResolution": "default",
+          "tokens": 1290
+        },
+        {
+          "width": 1080,
+          "height": 1920,
+          "mediaResolution": "default",
+          "tokens": 1806
+        },
+        {
+          "width": 4096,
+          "height": 2160,
+          "mediaResolution": "default",
+          "tokens": 2322
+        },
+        {
+          "width": 3000,
+          "height": 1000,
+          "mediaResolution": "default",
+          "tokens": 2838
+        },
+        {
+          "width": 2000,
+          "height": 1000,
+          "mediaResolution": "default",
+          "tokens": 2322
+        },
+        {
+          "width": 1200,
+          "height": 300,
+          "mediaResolution": "default",
+          "tokens": 2838
+        },
+        {
+          "width": 300,
+          "height": 1200,
+          "mediaResolution": "default",
+          "tokens": 2838
+        },
+        {
+          "width": 1000,
+          "height": 700,
+          "mediaResolution": "default",
+          "tokens": 1806
+        },
+        {
+          "width": 700,
+          "height": 1000,
+          "mediaResolution": "default",
+          "tokens": 1806
+        },
+        {
+          "width": 3000,
+          "height": 2100,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 1400,
+          "height": 500,
+          "mediaResolution": "default",
+          "tokens": 2838
+        },
+        {
+          "width": 3274,
+          "height": 1924,
+          "mediaResolution": "default",
+          "tokens": 2322
+        },
+        {
+          "width": 4167,
+          "height": 2143,
+          "mediaResolution": "default",
+          "tokens": 2322
+        },
+        {
+          "width": 2008,
+          "height": 2622,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 3809,
+          "height": 4185,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 3277,
+          "height": 3954,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 5186,
+          "height": 772,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 2640,
+          "height": 4088,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 2515,
+          "height": 3553,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 799,
+          "height": 3331,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 3938,
+          "height": 2761,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 2504,
+          "height": 352,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 2516,
+          "height": 2368,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 3061,
+          "height": 1561,
+          "mediaResolution": "default",
+          "tokens": 2322
+        },
+        {
+          "width": 4350,
+          "height": 5380,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 2602,
+          "height": 1946,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 448,
+          "height": 1557,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 2391,
+          "height": 647,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 1896,
+          "height": 1534,
+          "mediaResolution": "default",
+          "tokens": 1806
+        },
+        {
+          "width": 508,
+          "height": 791,
+          "mediaResolution": "default",
+          "tokens": 1806
+        },
+        {
+          "width": 1072,
+          "height": 891,
+          "mediaResolution": "default",
+          "tokens": 1290
+        },
+        {
+          "width": 865,
+          "height": 924,
+          "mediaResolution": "default",
+          "tokens": 1290
+        },
+        {
+          "width": 589,
+          "height": 328,
+          "mediaResolution": "default",
+          "tokens": 1806
+        },
+        {
+          "width": 149,
+          "height": 1151,
+          "mediaResolution": "default",
+          "tokens": 2322
+        },
+        {
+          "width": 1530,
+          "height": 1457,
+          "mediaResolution": "default",
+          "tokens": 1290
+        },
+        {
+          "width": 432,
+          "height": 1721,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 2276,
+          "height": 1572,
+          "mediaResolution": "default",
+          "tokens": 2580
+        },
+        {
+          "width": 1324,
+          "height": 815,
+          "mediaResolution": "default",
+          "tokens": 1806
+        },
+        {
+          "width": 620,
+          "height": 1014,
+          "mediaResolution": "default",
+          "tokens": 1806
+        },
+        {
+          "width": 1232,
+          "height": 1811,
+          "mediaResolution": "default",
+          "tokens": 1806
+        },
+        {
+          "width": 1550,
+          "height": 1449,
+          "mediaResolution": "default",
+          "tokens": 1806
+        },
+        {
+          "width": 34,
+          "height": 186,
+          "mediaResolution": "default",
+          "tokens": 1806
+        },
+        {
+          "width": 259,
+          "height": 134,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 12,
+          "height": 8,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 63,
+          "height": 23,
+          "mediaResolution": "default",
+          "tokens": 1032
+        },
+        {
+          "width": 133,
+          "height": 224,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 308,
+          "height": 76,
+          "mediaResolution": "default",
+          "tokens": 1548
+        },
+        {
+          "width": 13,
+          "height": 224,
+          "mediaResolution": "default",
+          "tokens": 3354
+        },
+        {
+          "width": 52,
+          "height": 14,
+          "mediaResolution": "default",
+          "tokens": 1290
+        },
+        {
+          "width": 284,
+          "height": 76,
+          "mediaResolution": "default",
+          "tokens": 1290
+        },
+        {
+          "width": 1,
+          "height": 1,
+          "mediaResolution": "low",
+          "tokens": 66
+        },
+        {
+          "width": 100,
+          "height": 100,
+          "mediaResolution": "low",
+          "tokens": 66
+        },
+        {
+          "width": 300,
+          "height": 200,
+          "mediaResolution": "low",
+          "tokens": 66
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "mediaResolution": "low",
+          "tokens": 66
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "mediaResolution": "low",
+          "tokens": 66
+        },
+        {
+          "width": 1000,
+          "height": 1000,
+          "mediaResolution": "low",
+          "tokens": 66
+        },
+        {
+          "width": 1920,
+          "height": 1080,
+          "mediaResolution": "low",
+          "tokens": 66
+        },
+        {
+          "width": 2577,
+          "height": 2577,
+          "mediaResolution": "low",
+          "tokens": 66
+        },
+        {
+          "width": 4000,
+          "height": 300,
+          "mediaResolution": "low",
+          "tokens": 66
+        },
+        {
+          "width": 10,
+          "height": 1000,
+          "mediaResolution": "low",
+          "tokens": 66
+        },
+        {
+          "width": 1,
+          "height": 1,
+          "mediaResolution": "medium",
+          "tokens": 258
+        },
+        {
+          "width": 100,
+          "height": 100,
+          "mediaResolution": "medium",
+          "tokens": 258
+        },
+        {
+          "width": 300,
+          "height": 200,
+          "mediaResolution": "medium",
+          "tokens": 258
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "mediaResolution": "medium",
+          "tokens": 258
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "mediaResolution": "medium",
+          "tokens": 258
+        },
+        {
+          "width": 1000,
+          "height": 1000,
+          "mediaResolution": "medium",
+          "tokens": 258
+        },
+        {
+          "width": 1920,
+          "height": 1080,
+          "mediaResolution": "medium",
+          "tokens": 258
+        },
+        {
+          "width": 2577,
+          "height": 2577,
+          "mediaResolution": "medium",
+          "tokens": 258
+        },
+        {
+          "width": 4000,
+          "height": 300,
+          "mediaResolution": "medium",
+          "tokens": 258
+        },
+        {
+          "width": 10,
+          "height": 1000,
+          "mediaResolution": "medium",
+          "tokens": 258
+        },
+        {
+          "width": 1,
+          "height": 1,
+          "mediaResolution": "high",
+          "tokens": 258
+        },
+        {
+          "width": 100,
+          "height": 100,
+          "mediaResolution": "high",
+          "tokens": 258
+        },
+        {
+          "width": 300,
+          "height": 200,
+          "mediaResolution": "high",
+          "tokens": 258
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "mediaResolution": "high",
+          "tokens": 258
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "mediaResolution": "high",
+          "tokens": 1290
+        },
+        {
+          "width": 1000,
+          "height": 1000,
+          "mediaResolution": "high",
+          "tokens": 1290
+        },
+        {
+          "width": 1920,
+          "height": 1080,
+          "mediaResolution": "high",
+          "tokens": 1806
+        },
+        {
+          "width": 2577,
+          "height": 2577,
+          "mediaResolution": "high",
+          "tokens": 3354
+        },
+        {
+          "width": 4000,
+          "height": 300,
+          "mediaResolution": "high",
+          "tokens": 3354
+        },
+        {
+          "width": 10,
+          "height": 1000,
+          "mediaResolution": "high",
+          "tokens": 3354
+        }
+      ]
+    },
+    "google/gemini-3.5-flash": {
+      "backend": "vertex",
+      "baseline": 1,
+      "cases": [
+        {
+          "width": 1,
+          "height": 1,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 8,
+          "height": 8,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 14,
+          "height": 14,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 27,
+          "height": 27,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 28,
+          "height": 28,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 29,
+          "height": 29,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 56,
+          "height": 56,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 100,
+          "height": 100,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 200,
+          "height": 200,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 256,
+          "height": 256,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 300,
+          "height": 200,
+          "mediaResolution": "default",
+          "tokens": 1080
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 385,
+          "height": 385,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 513,
+          "height": 513,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "mediaResolution": "default",
+          "tokens": 1064
+        },
+        {
+          "width": 768,
+          "height": 768,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 769,
+          "height": 769,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 1000,
+          "height": 1000,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 1024,
+          "height": 1024,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 1338,
+          "height": 579,
+          "mediaResolution": "default",
+          "tokens": 1100
+        },
+        {
+          "width": 1568,
+          "height": 1568,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 1569,
+          "height": 1569,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 1920,
+          "height": 1080,
+          "mediaResolution": "default",
+          "tokens": 1100
+        },
+        {
+          "width": 2048,
+          "height": 2048,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 2576,
+          "height": 2576,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 2577,
+          "height": 2577,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 3000,
+          "height": 2000,
+          "mediaResolution": "default",
+          "tokens": 1080
+        },
+        {
+          "width": 4000,
+          "height": 4000,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 10,
+          "height": 1000,
+          "mediaResolution": "default",
+          "tokens": 1002
+        },
+        {
+          "width": 1000,
+          "height": 10,
+          "mediaResolution": "default",
+          "tokens": 1002
+        },
+        {
+          "width": 50,
+          "height": 2000,
+          "mediaResolution": "default",
+          "tokens": 1055
+        },
+        {
+          "width": 2000,
+          "height": 50,
+          "mediaResolution": "default",
+          "tokens": 1055
+        },
+        {
+          "width": 4000,
+          "height": 300,
+          "mediaResolution": "default",
+          "tokens": 1098
+        },
+        {
+          "width": 384,
+          "height": 192,
+          "mediaResolution": "default",
+          "tokens": 1081
+        },
+        {
+          "width": 384,
+          "height": 193,
+          "mediaResolution": "default",
+          "tokens": 1081
+        },
+        {
+          "width": 200,
+          "height": 100,
+          "mediaResolution": "default",
+          "tokens": 1081
+        },
+        {
+          "width": 200,
+          "height": 101,
+          "mediaResolution": "default",
+          "tokens": 1081
+        },
+        {
+          "width": 384,
+          "height": 385,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 385,
+          "height": 200,
+          "mediaResolution": "default",
+          "tokens": 1104
+        },
+        {
+          "width": 255,
+          "height": 600,
+          "mediaResolution": "default",
+          "tokens": 1071
+        },
+        {
+          "width": 256,
+          "height": 600,
+          "mediaResolution": "default",
+          "tokens": 1071
+        },
+        {
+          "width": 257,
+          "height": 600,
+          "mediaResolution": "default",
+          "tokens": 1071
+        },
+        {
+          "width": 300,
+          "height": 600,
+          "mediaResolution": "default",
+          "tokens": 1081
+        },
+        {
+          "width": 600,
+          "height": 800,
+          "mediaResolution": "default",
+          "tokens": 1064
+        },
+        {
+          "width": 600,
+          "height": 801,
+          "mediaResolution": "default",
+          "tokens": 1064
+        },
+        {
+          "width": 601,
+          "height": 802,
+          "mediaResolution": "default",
+          "tokens": 1064
+        },
+        {
+          "width": 602,
+          "height": 802,
+          "mediaResolution": "default",
+          "tokens": 1064
+        },
+        {
+          "width": 602,
+          "height": 803,
+          "mediaResolution": "default",
+          "tokens": 1064
+        },
+        {
+          "width": 1151,
+          "height": 1536,
+          "mediaResolution": "default",
+          "tokens": 1064
+        },
+        {
+          "width": 1152,
+          "height": 1536,
+          "mediaResolution": "default",
+          "tokens": 1064
+        },
+        {
+          "width": 1152,
+          "height": 1537,
+          "mediaResolution": "default",
+          "tokens": 1064
+        },
+        {
+          "width": 1536,
+          "height": 1536,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 1537,
+          "height": 1537,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 100,
+          "height": 1100,
+          "mediaResolution": "default",
+          "tokens": 1100
+        },
+        {
+          "width": 100,
+          "height": 1200,
+          "mediaResolution": "default",
+          "tokens": 1035
+        },
+        {
+          "width": 100,
+          "height": 1201,
+          "mediaResolution": "default",
+          "tokens": 1035
+        },
+        {
+          "width": 2304,
+          "height": 2304,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 2305,
+          "height": 2305,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 1600,
+          "height": 2500,
+          "mediaResolution": "default",
+          "tokens": 1066
+        },
+        {
+          "width": 1600,
+          "height": 2501,
+          "mediaResolution": "default",
+          "tokens": 1066
+        },
+        {
+          "width": 1598,
+          "height": 2600,
+          "mediaResolution": "default",
+          "tokens": 1092
+        },
+        {
+          "width": 1599,
+          "height": 2600,
+          "mediaResolution": "default",
+          "tokens": 1092
+        },
+        {
+          "width": 1540,
+          "height": 2501,
+          "mediaResolution": "default",
+          "tokens": 1092
+        },
+        {
+          "width": 1540,
+          "height": 2505,
+          "mediaResolution": "default",
+          "tokens": 1092
+        },
+        {
+          "width": 1600,
+          "height": 3000,
+          "mediaResolution": "default",
+          "tokens": 1080
+        },
+        {
+          "width": 2000,
+          "height": 4000,
+          "mediaResolution": "default",
+          "tokens": 1081
+        },
+        {
+          "width": 4918,
+          "height": 8000,
+          "mediaResolution": "default",
+          "tokens": 1092
+        },
+        {
+          "width": 4919,
+          "height": 8000,
+          "mediaResolution": "default",
+          "tokens": 1092
+        },
+        {
+          "width": 1,
+          "height": 2,
+          "mediaResolution": "default",
+          "tokens": 1081
+        },
+        {
+          "width": 1,
+          "height": 3,
+          "mediaResolution": "default",
+          "tokens": 1083
+        },
+        {
+          "width": 2,
+          "height": 3,
+          "mediaResolution": "default",
+          "tokens": 1080
+        },
+        {
+          "width": 10,
+          "height": 4,
+          "mediaResolution": "default",
+          "tokens": 1092
+        },
+        {
+          "width": 1,
+          "height": 1000,
+          "mediaResolution": "default",
+          "tokens": 1058
+        },
+        {
+          "width": 1,
+          "height": 2500,
+          "mediaResolution": "default",
+          "tokens": 1120
+        },
+        {
+          "width": 1,
+          "height": 2501,
+          "mediaResolution": "default",
+          "tokens": 1120
+        },
+        {
+          "width": 1,
+          "height": 4000,
+          "mediaResolution": "default",
+          "tokens": 1120
+        },
+        {
+          "width": 2,
+          "height": 5000,
+          "mediaResolution": "default",
+          "tokens": 1120
+        },
+        {
+          "width": 2,
+          "height": 5001,
+          "mediaResolution": "default",
+          "tokens": 1120
+        },
+        {
+          "width": 1000,
+          "height": 1,
+          "mediaResolution": "default",
+          "tokens": 1058
+        },
+        {
+          "width": 640,
+          "height": 360,
+          "mediaResolution": "default",
+          "tokens": 1100
+        },
+        {
+          "width": 1280,
+          "height": 720,
+          "mediaResolution": "default",
+          "tokens": 1100
+        },
+        {
+          "width": 800,
+          "height": 600,
+          "mediaResolution": "default",
+          "tokens": 1064
+        },
+        {
+          "width": 1080,
+          "height": 1920,
+          "mediaResolution": "default",
+          "tokens": 1100
+        },
+        {
+          "width": 4096,
+          "height": 2160,
+          "mediaResolution": "default",
+          "tokens": 1104
+        },
+        {
+          "width": 3000,
+          "height": 1000,
+          "mediaResolution": "default",
+          "tokens": 1083
+        },
+        {
+          "width": 2000,
+          "height": 1000,
+          "mediaResolution": "default",
+          "tokens": 1081
+        },
+        {
+          "width": 1200,
+          "height": 300,
+          "mediaResolution": "default",
+          "tokens": 1056
+        },
+        {
+          "width": 300,
+          "height": 1200,
+          "mediaResolution": "default",
+          "tokens": 1056
+        },
+        {
+          "width": 1000,
+          "height": 700,
+          "mediaResolution": "default",
+          "tokens": 1120
+        },
+        {
+          "width": 700,
+          "height": 1000,
+          "mediaResolution": "default",
+          "tokens": 1120
+        },
+        {
+          "width": 3000,
+          "height": 2100,
+          "mediaResolution": "default",
+          "tokens": 1120
+        },
+        {
+          "width": 1400,
+          "height": 500,
+          "mediaResolution": "default",
+          "tokens": 1120
+        },
+        {
+          "width": 3274,
+          "height": 1924,
+          "mediaResolution": "default",
+          "tokens": 1075
+        },
+        {
+          "width": 4167,
+          "height": 2143,
+          "mediaResolution": "default",
+          "tokens": 1058
+        },
+        {
+          "width": 2008,
+          "height": 2622,
+          "mediaResolution": "default",
+          "tokens": 1102
+        },
+        {
+          "width": 3809,
+          "height": 4185,
+          "mediaResolution": "default",
+          "tokens": 1085
+        },
+        {
+          "width": 3277,
+          "height": 3954,
+          "mediaResolution": "default",
+          "tokens": 1080
+        },
+        {
+          "width": 5186,
+          "height": 772,
+          "mediaResolution": "default",
+          "tokens": 1032
+        },
+        {
+          "width": 2640,
+          "height": 4088,
+          "mediaResolution": "default",
+          "tokens": 1066
+        },
+        {
+          "width": 2515,
+          "height": 3553,
+          "mediaResolution": "default",
+          "tokens": 1092
+        },
+        {
+          "width": 799,
+          "height": 3331,
+          "mediaResolution": "default",
+          "tokens": 1088
+        },
+        {
+          "width": 3938,
+          "height": 2761,
+          "mediaResolution": "default",
+          "tokens": 1092
+        },
+        {
+          "width": 2504,
+          "height": 352,
+          "mediaResolution": "default",
+          "tokens": 1068
+        },
+        {
+          "width": 2516,
+          "height": 2368,
+          "mediaResolution": "default",
+          "tokens": 1088
+        },
+        {
+          "width": 3061,
+          "height": 1561,
+          "mediaResolution": "default",
+          "tokens": 1058
+        },
+        {
+          "width": 4350,
+          "height": 5380,
+          "mediaResolution": "default",
+          "tokens": 1110
+        },
+        {
+          "width": 2602,
+          "height": 1946,
+          "mediaResolution": "default",
+          "tokens": 1064
+        },
+        {
+          "width": 448,
+          "height": 1557,
+          "mediaResolution": "default",
+          "tokens": 1054
+        },
+        {
+          "width": 2391,
+          "height": 647,
+          "mediaResolution": "default",
+          "tokens": 1088
+        },
+        {
+          "width": 1896,
+          "height": 1534,
+          "mediaResolution": "default",
+          "tokens": 1110
+        },
+        {
+          "width": 508,
+          "height": 791,
+          "mediaResolution": "default",
+          "tokens": 1066
+        },
+        {
+          "width": 1072,
+          "height": 891,
+          "mediaResolution": "default",
+          "tokens": 1080
+        },
+        {
+          "width": 865,
+          "height": 924,
+          "mediaResolution": "default",
+          "tokens": 1088
+        },
+        {
+          "width": 589,
+          "height": 328,
+          "mediaResolution": "default",
+          "tokens": 1056
+        },
+        {
+          "width": 149,
+          "height": 1151,
+          "mediaResolution": "default",
+          "tokens": 1116
+        },
+        {
+          "width": 1530,
+          "height": 1457,
+          "mediaResolution": "default",
+          "tokens": 1088
+        },
+        {
+          "width": 432,
+          "height": 1721,
+          "mediaResolution": "default",
+          "tokens": 1056
+        },
+        {
+          "width": 2276,
+          "height": 1572,
+          "mediaResolution": "default",
+          "tokens": 1080
+        },
+        {
+          "width": 1324,
+          "height": 815,
+          "mediaResolution": "default",
+          "tokens": 1092
+        },
+        {
+          "width": 620,
+          "height": 1014,
+          "mediaResolution": "default",
+          "tokens": 1092
+        },
+        {
+          "width": 1232,
+          "height": 1811,
+          "mediaResolution": "default",
+          "tokens": 1080
+        },
+        {
+          "width": 1550,
+          "height": 1449,
+          "mediaResolution": "default",
+          "tokens": 1088
+        },
+        {
+          "width": 34,
+          "height": 186,
+          "mediaResolution": "default",
+          "tokens": 1092
+        },
+        {
+          "width": 259,
+          "height": 134,
+          "mediaResolution": "default",
+          "tokens": 1104
+        },
+        {
+          "width": 12,
+          "height": 8,
+          "mediaResolution": "default",
+          "tokens": 1080
+        },
+        {
+          "width": 63,
+          "height": 23,
+          "mediaResolution": "default",
+          "tokens": 1100
+        },
+        {
+          "width": 133,
+          "height": 224,
+          "mediaResolution": "default",
+          "tokens": 1075
+        },
+        {
+          "width": 308,
+          "height": 76,
+          "mediaResolution": "default",
+          "tokens": 1072
+        },
+        {
+          "width": 13,
+          "height": 224,
+          "mediaResolution": "default",
+          "tokens": 1104
+        },
+        {
+          "width": 52,
+          "height": 14,
+          "mediaResolution": "default",
+          "tokens": 1088
+        },
+        {
+          "width": 284,
+          "height": 76,
+          "mediaResolution": "default",
+          "tokens": 1088
+        },
+        {
+          "width": 1,
+          "height": 1,
+          "mediaResolution": "low",
+          "tokens": 256
+        },
+        {
+          "width": 100,
+          "height": 100,
+          "mediaResolution": "low",
+          "tokens": 256
+        },
+        {
+          "width": 300,
+          "height": 200,
+          "mediaResolution": "low",
+          "tokens": 260
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "mediaResolution": "low",
+          "tokens": 256
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "mediaResolution": "low",
+          "tokens": 266
+        },
+        {
+          "width": 1000,
+          "height": 1000,
+          "mediaResolution": "low",
+          "tokens": 256
+        },
+        {
+          "width": 1920,
+          "height": 1080,
+          "mediaResolution": "low",
+          "tokens": 264
+        },
+        {
+          "width": 2577,
+          "height": 2577,
+          "mediaResolution": "low",
+          "tokens": 256
+        },
+        {
+          "width": 4000,
+          "height": 300,
+          "mediaResolution": "low",
+          "tokens": 244
+        },
+        {
+          "width": 10,
+          "height": 1000,
+          "mediaResolution": "low",
+          "tokens": 167
+        },
+        {
+          "width": 1,
+          "height": 1,
+          "mediaResolution": "medium",
+          "tokens": 529
+        },
+        {
+          "width": 100,
+          "height": 100,
+          "mediaResolution": "medium",
+          "tokens": 529
+        },
+        {
+          "width": 300,
+          "height": 200,
+          "mediaResolution": "medium",
+          "tokens": 532
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "mediaResolution": "medium",
+          "tokens": 529
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "mediaResolution": "medium",
+          "tokens": 540
+        },
+        {
+          "width": 1000,
+          "height": 1000,
+          "mediaResolution": "medium",
+          "tokens": 529
+        },
+        {
+          "width": 1920,
+          "height": 1080,
+          "mediaResolution": "medium",
+          "tokens": 527
+        },
+        {
+          "width": 2577,
+          "height": 2577,
+          "mediaResolution": "medium",
+          "tokens": 529
+        },
+        {
+          "width": 4000,
+          "height": 300,
+          "mediaResolution": "medium",
+          "tokens": 516
+        },
+        {
+          "width": 10,
+          "height": 1000,
+          "mediaResolution": "medium",
+          "tokens": 472
+        },
+        {
+          "width": 1,
+          "height": 1,
+          "mediaResolution": "high",
+          "tokens": 1089
+        },
+        {
+          "width": 100,
+          "height": 100,
+          "mediaResolution": "high",
+          "tokens": 1089
+        },
+        {
+          "width": 300,
+          "height": 200,
+          "mediaResolution": "high",
+          "tokens": 1080
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "mediaResolution": "high",
+          "tokens": 1089
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "mediaResolution": "high",
+          "tokens": 1064
+        },
+        {
+          "width": 1000,
+          "height": 1000,
+          "mediaResolution": "high",
+          "tokens": 1089
+        },
+        {
+          "width": 1920,
+          "height": 1080,
+          "mediaResolution": "high",
+          "tokens": 1100
+        },
+        {
+          "width": 2577,
+          "height": 2577,
+          "mediaResolution": "high",
+          "tokens": 1089
+        },
+        {
+          "width": 4000,
+          "height": 300,
+          "mediaResolution": "high",
+          "tokens": 1098
+        },
+        {
+          "width": 10,
+          "height": 1000,
+          "mediaResolution": "high",
+          "tokens": 1002
+        }
+      ]
+    }
+  },
+  "modelsAiStudio": {
+    "google/gemini-2.5-flash": {
+      "backend": "google",
+      "baseline": 2,
+      "cases": [
+        {
+          "width": 1,
+          "height": 1,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 8,
+          "height": 8,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 14,
+          "height": 14,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 27,
+          "height": 27,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 28,
+          "height": 28,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 29,
+          "height": 29,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 56,
+          "height": 56,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 100,
+          "height": 100,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 200,
+          "height": 200,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 256,
+          "height": 256,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 300,
+          "height": 200,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 385,
+          "height": 385,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 513,
+          "height": 513,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 768,
+          "height": 768,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 769,
+          "height": 769,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1000,
+          "height": 1000,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1024,
+          "height": 1024,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1338,
+          "height": 579,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1568,
+          "height": 1568,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1569,
+          "height": 1569,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1920,
+          "height": 1080,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 2048,
+          "height": 2048,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 2576,
+          "height": 2576,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 2577,
+          "height": 2577,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 3000,
+          "height": 2000,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 4000,
+          "height": 4000,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 10,
+          "height": 1000,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1000,
+          "height": 10,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 50,
+          "height": 2000,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 2000,
+          "height": 50,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 4000,
+          "height": 300,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 384,
+          "height": 192,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 384,
+          "height": 193,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 200,
+          "height": 100,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 200,
+          "height": 101,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 384,
+          "height": 385,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 385,
+          "height": 200,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 255,
+          "height": 600,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 256,
+          "height": 600,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 257,
+          "height": 600,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 300,
+          "height": 600,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 600,
+          "height": 800,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 600,
+          "height": 801,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 601,
+          "height": 802,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 602,
+          "height": 802,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 602,
+          "height": 803,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1151,
+          "height": 1536,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1152,
+          "height": 1536,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1152,
+          "height": 1537,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1536,
+          "height": 1536,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1537,
+          "height": 1537,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 100,
+          "height": 1100,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 100,
+          "height": 1200,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 100,
+          "height": 1201,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 2304,
+          "height": 2304,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 2305,
+          "height": 2305,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1600,
+          "height": 2500,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1600,
+          "height": 2501,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1598,
+          "height": 2600,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1599,
+          "height": 2600,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1540,
+          "height": 2501,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1540,
+          "height": 2505,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1600,
+          "height": 3000,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 2000,
+          "height": 4000,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 4918,
+          "height": 8000,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 4919,
+          "height": 8000,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1,
+          "height": 2,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1,
+          "height": 3,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 2,
+          "height": 3,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 10,
+          "height": 4,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1,
+          "height": 1000,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1,
+          "height": 2500,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1,
+          "height": 2501,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1,
+          "height": 4000,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 2,
+          "height": 5000,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 2,
+          "height": 5001,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1000,
+          "height": 1,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 640,
+          "height": 360,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1280,
+          "height": 720,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 800,
+          "height": 600,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1080,
+          "height": 1920,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 4096,
+          "height": 2160,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 3000,
+          "height": 1000,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 2000,
+          "height": 1000,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1200,
+          "height": 300,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 300,
+          "height": 1200,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1000,
+          "height": 700,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 700,
+          "height": 1000,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 3000,
+          "height": 2100,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1400,
+          "height": 500,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 3274,
+          "height": 1924,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 4167,
+          "height": 2143,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 2008,
+          "height": 2622,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 3809,
+          "height": 4185,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 3277,
+          "height": 3954,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 5186,
+          "height": 772,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 2640,
+          "height": 4088,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 2515,
+          "height": 3553,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 799,
+          "height": 3331,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 3938,
+          "height": 2761,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 2504,
+          "height": 352,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 2516,
+          "height": 2368,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 3061,
+          "height": 1561,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 4350,
+          "height": 5380,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 2602,
+          "height": 1946,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 448,
+          "height": 1557,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 2391,
+          "height": 647,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1896,
+          "height": 1534,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 508,
+          "height": 791,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1072,
+          "height": 891,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 865,
+          "height": 924,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 589,
+          "height": 328,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 149,
+          "height": 1151,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1530,
+          "height": 1457,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 432,
+          "height": 1721,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 2276,
+          "height": 1572,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1324,
+          "height": 815,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 620,
+          "height": 1014,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1232,
+          "height": 1811,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1550,
+          "height": 1449,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 34,
+          "height": 186,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 259,
+          "height": 134,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 12,
+          "height": 8,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 63,
+          "height": 23,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 133,
+          "height": 224,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 308,
+          "height": 76,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 13,
+          "height": 224,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 52,
+          "height": 14,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 284,
+          "height": 76,
+          "mediaResolution": "default",
+          "tokens": 258
+        },
+        {
+          "width": 1,
+          "height": 1,
+          "mediaResolution": "low",
+          "tokens": 66
+        },
+        {
+          "width": 100,
+          "height": 100,
+          "mediaResolution": "low",
+          "tokens": 66
+        },
+        {
+          "width": 300,
+          "height": 200,
+          "mediaResolution": "low",
+          "tokens": 66
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "mediaResolution": "low",
+          "tokens": 66
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "mediaResolution": "low",
+          "tokens": 66
+        },
+        {
+          "width": 1000,
+          "height": 1000,
+          "mediaResolution": "low",
+          "tokens": 66
+        },
+        {
+          "width": 1920,
+          "height": 1080,
+          "mediaResolution": "low",
+          "tokens": 66
+        },
+        {
+          "width": 2577,
+          "height": 2577,
+          "mediaResolution": "low",
+          "tokens": 66
+        },
+        {
+          "width": 4000,
+          "height": 300,
+          "mediaResolution": "low",
+          "tokens": 66
+        },
+        {
+          "width": 10,
+          "height": 1000,
+          "mediaResolution": "low",
+          "tokens": 66
+        },
+        {
+          "width": 1,
+          "height": 1,
+          "mediaResolution": "medium",
+          "tokens": 258
+        },
+        {
+          "width": 100,
+          "height": 100,
+          "mediaResolution": "medium",
+          "tokens": 258
+        },
+        {
+          "width": 300,
+          "height": 200,
+          "mediaResolution": "medium",
+          "tokens": 258
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "mediaResolution": "medium",
+          "tokens": 258
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "mediaResolution": "medium",
+          "tokens": 258
+        },
+        {
+          "width": 1000,
+          "height": 1000,
+          "mediaResolution": "medium",
+          "tokens": 258
+        },
+        {
+          "width": 1920,
+          "height": 1080,
+          "mediaResolution": "medium",
+          "tokens": 258
+        },
+        {
+          "width": 2577,
+          "height": 2577,
+          "mediaResolution": "medium",
+          "tokens": 258
+        },
+        {
+          "width": 4000,
+          "height": 300,
+          "mediaResolution": "medium",
+          "tokens": 258
+        },
+        {
+          "width": 10,
+          "height": 1000,
+          "mediaResolution": "medium",
+          "tokens": 258
+        },
+        {
+          "width": 1,
+          "height": 1,
+          "mediaResolution": "high",
+          "tokens": 258
+        },
+        {
+          "width": 100,
+          "height": 100,
+          "mediaResolution": "high",
+          "tokens": 258
+        },
+        {
+          "width": 300,
+          "height": 200,
+          "mediaResolution": "high",
+          "tokens": 258
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "mediaResolution": "high",
+          "tokens": 258
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "mediaResolution": "high",
+          "tokens": 1290
+        },
+        {
+          "width": 1000,
+          "height": 1000,
+          "mediaResolution": "high",
+          "tokens": 1290
+        },
+        {
+          "width": 1920,
+          "height": 1080,
+          "mediaResolution": "high",
+          "tokens": 1806
+        },
+        {
+          "width": 2577,
+          "height": 2577,
+          "mediaResolution": "high",
+          "tokens": 3354
+        },
+        {
+          "width": 4000,
+          "height": 300,
+          "mediaResolution": "high",
+          "tokens": 3354
+        },
+        {
+          "width": 10,
+          "height": 1000,
+          "mediaResolution": "high",
+          "tokens": 3354
+        }
+      ]
+    },
+    "google/gemini-3.5-flash": {
+      "backend": "google",
+      "baseline": 2,
+      "cases": [
+        {
+          "width": 1,
+          "height": 1,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 8,
+          "height": 8,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 14,
+          "height": 14,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 27,
+          "height": 27,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 28,
+          "height": 28,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 29,
+          "height": 29,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 56,
+          "height": 56,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 100,
+          "height": 100,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 200,
+          "height": 200,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 256,
+          "height": 256,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 300,
+          "height": 200,
+          "mediaResolution": "default",
+          "tokens": 1080
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 385,
+          "height": 385,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 513,
+          "height": 513,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "mediaResolution": "default",
+          "tokens": 1064
+        },
+        {
+          "width": 768,
+          "height": 768,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 769,
+          "height": 769,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 1000,
+          "height": 1000,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 1024,
+          "height": 1024,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 1338,
+          "height": 579,
+          "mediaResolution": "default",
+          "tokens": 1100
+        },
+        {
+          "width": 1568,
+          "height": 1568,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 1569,
+          "height": 1569,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 1920,
+          "height": 1080,
+          "mediaResolution": "default",
+          "tokens": 1100
+        },
+        {
+          "width": 2048,
+          "height": 2048,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 2576,
+          "height": 2576,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 2577,
+          "height": 2577,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 3000,
+          "height": 2000,
+          "mediaResolution": "default",
+          "tokens": 1080
+        },
+        {
+          "width": 4000,
+          "height": 4000,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 10,
+          "height": 1000,
+          "mediaResolution": "default",
+          "tokens": 1002
+        },
+        {
+          "width": 1000,
+          "height": 10,
+          "mediaResolution": "default",
+          "tokens": 1002
+        },
+        {
+          "width": 50,
+          "height": 2000,
+          "mediaResolution": "default",
+          "tokens": 1055
+        },
+        {
+          "width": 2000,
+          "height": 50,
+          "mediaResolution": "default",
+          "tokens": 1055
+        },
+        {
+          "width": 4000,
+          "height": 300,
+          "mediaResolution": "default",
+          "tokens": 1098
+        },
+        {
+          "width": 384,
+          "height": 192,
+          "mediaResolution": "default",
+          "tokens": 1081
+        },
+        {
+          "width": 384,
+          "height": 193,
+          "mediaResolution": "default",
+          "tokens": 1081
+        },
+        {
+          "width": 200,
+          "height": 100,
+          "mediaResolution": "default",
+          "tokens": 1081
+        },
+        {
+          "width": 200,
+          "height": 101,
+          "mediaResolution": "default",
+          "tokens": 1081
+        },
+        {
+          "width": 384,
+          "height": 385,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 385,
+          "height": 200,
+          "mediaResolution": "default",
+          "tokens": 1104
+        },
+        {
+          "width": 255,
+          "height": 600,
+          "mediaResolution": "default",
+          "tokens": 1071
+        },
+        {
+          "width": 256,
+          "height": 600,
+          "mediaResolution": "default",
+          "tokens": 1071
+        },
+        {
+          "width": 257,
+          "height": 600,
+          "mediaResolution": "default",
+          "tokens": 1071
+        },
+        {
+          "width": 300,
+          "height": 600,
+          "mediaResolution": "default",
+          "tokens": 1081
+        },
+        {
+          "width": 600,
+          "height": 800,
+          "mediaResolution": "default",
+          "tokens": 1064
+        },
+        {
+          "width": 600,
+          "height": 801,
+          "mediaResolution": "default",
+          "tokens": 1064
+        },
+        {
+          "width": 601,
+          "height": 802,
+          "mediaResolution": "default",
+          "tokens": 1064
+        },
+        {
+          "width": 602,
+          "height": 802,
+          "mediaResolution": "default",
+          "tokens": 1064
+        },
+        {
+          "width": 602,
+          "height": 803,
+          "mediaResolution": "default",
+          "tokens": 1064
+        },
+        {
+          "width": 1151,
+          "height": 1536,
+          "mediaResolution": "default",
+          "tokens": 1064
+        },
+        {
+          "width": 1152,
+          "height": 1536,
+          "mediaResolution": "default",
+          "tokens": 1064
+        },
+        {
+          "width": 1152,
+          "height": 1537,
+          "mediaResolution": "default",
+          "tokens": 1064
+        },
+        {
+          "width": 1536,
+          "height": 1536,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 1537,
+          "height": 1537,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 100,
+          "height": 1100,
+          "mediaResolution": "default",
+          "tokens": 1100
+        },
+        {
+          "width": 100,
+          "height": 1200,
+          "mediaResolution": "default",
+          "tokens": 1035
+        },
+        {
+          "width": 100,
+          "height": 1201,
+          "mediaResolution": "default",
+          "tokens": 1035
+        },
+        {
+          "width": 2304,
+          "height": 2304,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 2305,
+          "height": 2305,
+          "mediaResolution": "default",
+          "tokens": 1089
+        },
+        {
+          "width": 1600,
+          "height": 2500,
+          "mediaResolution": "default",
+          "tokens": 1066
+        },
+        {
+          "width": 1600,
+          "height": 2501,
+          "mediaResolution": "default",
+          "tokens": 1066
+        },
+        {
+          "width": 1598,
+          "height": 2600,
+          "mediaResolution": "default",
+          "tokens": 1092
+        },
+        {
+          "width": 1599,
+          "height": 2600,
+          "mediaResolution": "default",
+          "tokens": 1092
+        },
+        {
+          "width": 1540,
+          "height": 2501,
+          "mediaResolution": "default",
+          "tokens": 1092
+        },
+        {
+          "width": 1540,
+          "height": 2505,
+          "mediaResolution": "default",
+          "tokens": 1092
+        },
+        {
+          "width": 1600,
+          "height": 3000,
+          "mediaResolution": "default",
+          "tokens": 1080
+        },
+        {
+          "width": 2000,
+          "height": 4000,
+          "mediaResolution": "default",
+          "tokens": 1081
+        },
+        {
+          "width": 4918,
+          "height": 8000,
+          "mediaResolution": "default",
+          "tokens": 1092
+        },
+        {
+          "width": 4919,
+          "height": 8000,
+          "mediaResolution": "default",
+          "tokens": 1092
+        },
+        {
+          "width": 1,
+          "height": 2,
+          "mediaResolution": "default",
+          "tokens": 1081
+        },
+        {
+          "width": 1,
+          "height": 3,
+          "mediaResolution": "default",
+          "tokens": 1083
+        },
+        {
+          "width": 2,
+          "height": 3,
+          "mediaResolution": "default",
+          "tokens": 1080
+        },
+        {
+          "width": 10,
+          "height": 4,
+          "mediaResolution": "default",
+          "tokens": 1092
+        },
+        {
+          "width": 1,
+          "height": 1000,
+          "mediaResolution": "default",
+          "tokens": 1058
+        },
+        {
+          "width": 1,
+          "height": 2500,
+          "mediaResolution": "default",
+          "tokens": 1120
+        },
+        {
+          "width": 1,
+          "height": 2501,
+          "mediaResolution": "default",
+          "tokens": 1120
+        },
+        {
+          "width": 1,
+          "height": 4000,
+          "mediaResolution": "default",
+          "tokens": 1120
+        },
+        {
+          "width": 2,
+          "height": 5000,
+          "mediaResolution": "default",
+          "tokens": 1120
+        },
+        {
+          "width": 2,
+          "height": 5001,
+          "mediaResolution": "default",
+          "tokens": 1120
+        },
+        {
+          "width": 1000,
+          "height": 1,
+          "mediaResolution": "default",
+          "tokens": 1058
+        },
+        {
+          "width": 640,
+          "height": 360,
+          "mediaResolution": "default",
+          "tokens": 1100
+        },
+        {
+          "width": 1280,
+          "height": 720,
+          "mediaResolution": "default",
+          "tokens": 1100
+        },
+        {
+          "width": 800,
+          "height": 600,
+          "mediaResolution": "default",
+          "tokens": 1064
+        },
+        {
+          "width": 1080,
+          "height": 1920,
+          "mediaResolution": "default",
+          "tokens": 1100
+        },
+        {
+          "width": 4096,
+          "height": 2160,
+          "mediaResolution": "default",
+          "tokens": 1104
+        },
+        {
+          "width": 3000,
+          "height": 1000,
+          "mediaResolution": "default",
+          "tokens": 1083
+        },
+        {
+          "width": 2000,
+          "height": 1000,
+          "mediaResolution": "default",
+          "tokens": 1081
+        },
+        {
+          "width": 1200,
+          "height": 300,
+          "mediaResolution": "default",
+          "tokens": 1056
+        },
+        {
+          "width": 300,
+          "height": 1200,
+          "mediaResolution": "default",
+          "tokens": 1056
+        },
+        {
+          "width": 1000,
+          "height": 700,
+          "mediaResolution": "default",
+          "tokens": 1120
+        },
+        {
+          "width": 700,
+          "height": 1000,
+          "mediaResolution": "default",
+          "tokens": 1120
+        },
+        {
+          "width": 3000,
+          "height": 2100,
+          "mediaResolution": "default",
+          "tokens": 1120
+        },
+        {
+          "width": 1400,
+          "height": 500,
+          "mediaResolution": "default",
+          "tokens": 1120
+        },
+        {
+          "width": 3274,
+          "height": 1924,
+          "mediaResolution": "default",
+          "tokens": 1075
+        },
+        {
+          "width": 4167,
+          "height": 2143,
+          "mediaResolution": "default",
+          "tokens": 1058
+        },
+        {
+          "width": 2008,
+          "height": 2622,
+          "mediaResolution": "default",
+          "tokens": 1102
+        },
+        {
+          "width": 3809,
+          "height": 4185,
+          "mediaResolution": "default",
+          "tokens": 1085
+        },
+        {
+          "width": 3277,
+          "height": 3954,
+          "mediaResolution": "default",
+          "tokens": 1080
+        },
+        {
+          "width": 5186,
+          "height": 772,
+          "mediaResolution": "default",
+          "tokens": 1032
+        },
+        {
+          "width": 2640,
+          "height": 4088,
+          "mediaResolution": "default",
+          "tokens": 1066
+        },
+        {
+          "width": 2515,
+          "height": 3553,
+          "mediaResolution": "default",
+          "tokens": 1092
+        },
+        {
+          "width": 799,
+          "height": 3331,
+          "mediaResolution": "default",
+          "tokens": 1088
+        },
+        {
+          "width": 3938,
+          "height": 2761,
+          "mediaResolution": "default",
+          "tokens": 1092
+        },
+        {
+          "width": 2504,
+          "height": 352,
+          "mediaResolution": "default",
+          "tokens": 1068
+        },
+        {
+          "width": 2516,
+          "height": 2368,
+          "mediaResolution": "default",
+          "tokens": 1088
+        },
+        {
+          "width": 3061,
+          "height": 1561,
+          "mediaResolution": "default",
+          "tokens": 1058
+        },
+        {
+          "width": 4350,
+          "height": 5380,
+          "mediaResolution": "default",
+          "tokens": 1110
+        },
+        {
+          "width": 2602,
+          "height": 1946,
+          "mediaResolution": "default",
+          "tokens": 1064
+        },
+        {
+          "width": 448,
+          "height": 1557,
+          "mediaResolution": "default",
+          "tokens": 1054
+        },
+        {
+          "width": 2391,
+          "height": 647,
+          "mediaResolution": "default",
+          "tokens": 1088
+        },
+        {
+          "width": 1896,
+          "height": 1534,
+          "mediaResolution": "default",
+          "tokens": 1110
+        },
+        {
+          "width": 508,
+          "height": 791,
+          "mediaResolution": "default",
+          "tokens": 1066
+        },
+        {
+          "width": 1072,
+          "height": 891,
+          "mediaResolution": "default",
+          "tokens": 1080
+        },
+        {
+          "width": 865,
+          "height": 924,
+          "mediaResolution": "default",
+          "tokens": 1088
+        },
+        {
+          "width": 589,
+          "height": 328,
+          "mediaResolution": "default",
+          "tokens": 1056
+        },
+        {
+          "width": 149,
+          "height": 1151,
+          "mediaResolution": "default",
+          "tokens": 1116
+        },
+        {
+          "width": 1530,
+          "height": 1457,
+          "mediaResolution": "default",
+          "tokens": 1088
+        },
+        {
+          "width": 432,
+          "height": 1721,
+          "mediaResolution": "default",
+          "tokens": 1056
+        },
+        {
+          "width": 2276,
+          "height": 1572,
+          "mediaResolution": "default",
+          "tokens": 1080
+        },
+        {
+          "width": 1324,
+          "height": 815,
+          "mediaResolution": "default",
+          "tokens": 1092
+        },
+        {
+          "width": 620,
+          "height": 1014,
+          "mediaResolution": "default",
+          "tokens": 1092
+        },
+        {
+          "width": 1232,
+          "height": 1811,
+          "mediaResolution": "default",
+          "tokens": 1080
+        },
+        {
+          "width": 1550,
+          "height": 1449,
+          "mediaResolution": "default",
+          "tokens": 1088
+        },
+        {
+          "width": 34,
+          "height": 186,
+          "mediaResolution": "default",
+          "tokens": 1092
+        },
+        {
+          "width": 259,
+          "height": 134,
+          "mediaResolution": "default",
+          "tokens": 1104
+        },
+        {
+          "width": 12,
+          "height": 8,
+          "mediaResolution": "default",
+          "tokens": 1080
+        },
+        {
+          "width": 63,
+          "height": 23,
+          "mediaResolution": "default",
+          "tokens": 1100
+        },
+        {
+          "width": 133,
+          "height": 224,
+          "mediaResolution": "default",
+          "tokens": 1075
+        },
+        {
+          "width": 308,
+          "height": 76,
+          "mediaResolution": "default",
+          "tokens": 1072
+        },
+        {
+          "width": 13,
+          "height": 224,
+          "mediaResolution": "default",
+          "tokens": 1104
+        },
+        {
+          "width": 52,
+          "height": 14,
+          "mediaResolution": "default",
+          "tokens": 1088
+        },
+        {
+          "width": 284,
+          "height": 76,
+          "mediaResolution": "default",
+          "tokens": 1088
+        },
+        {
+          "width": 1,
+          "height": 1,
+          "mediaResolution": "low",
+          "tokens": 256
+        },
+        {
+          "width": 100,
+          "height": 100,
+          "mediaResolution": "low",
+          "tokens": 256
+        },
+        {
+          "width": 300,
+          "height": 200,
+          "mediaResolution": "low",
+          "tokens": 260
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "mediaResolution": "low",
+          "tokens": 256
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "mediaResolution": "low",
+          "tokens": 266
+        },
+        {
+          "width": 1000,
+          "height": 1000,
+          "mediaResolution": "low",
+          "tokens": 256
+        },
+        {
+          "width": 1920,
+          "height": 1080,
+          "mediaResolution": "low",
+          "tokens": 264
+        },
+        {
+          "width": 2577,
+          "height": 2577,
+          "mediaResolution": "low",
+          "tokens": 256
+        },
+        {
+          "width": 4000,
+          "height": 300,
+          "mediaResolution": "low",
+          "tokens": 244
+        },
+        {
+          "width": 10,
+          "height": 1000,
+          "mediaResolution": "low",
+          "tokens": 167
+        },
+        {
+          "width": 1,
+          "height": 1,
+          "mediaResolution": "medium",
+          "tokens": 529
+        },
+        {
+          "width": 100,
+          "height": 100,
+          "mediaResolution": "medium",
+          "tokens": 529
+        },
+        {
+          "width": 300,
+          "height": 200,
+          "mediaResolution": "medium",
+          "tokens": 532
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "mediaResolution": "medium",
+          "tokens": 529
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "mediaResolution": "medium",
+          "tokens": 540
+        },
+        {
+          "width": 1000,
+          "height": 1000,
+          "mediaResolution": "medium",
+          "tokens": 529
+        },
+        {
+          "width": 1920,
+          "height": 1080,
+          "mediaResolution": "medium",
+          "tokens": 527
+        },
+        {
+          "width": 2577,
+          "height": 2577,
+          "mediaResolution": "medium",
+          "tokens": 529
+        },
+        {
+          "width": 4000,
+          "height": 300,
+          "mediaResolution": "medium",
+          "tokens": 516
+        },
+        {
+          "width": 10,
+          "height": 1000,
+          "mediaResolution": "medium",
+          "tokens": 472
+        },
+        {
+          "width": 1,
+          "height": 1,
+          "mediaResolution": "high",
+          "tokens": 1089
+        },
+        {
+          "width": 100,
+          "height": 100,
+          "mediaResolution": "high",
+          "tokens": 1089
+        },
+        {
+          "width": 300,
+          "height": 200,
+          "mediaResolution": "high",
+          "tokens": 1080
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "mediaResolution": "high",
+          "tokens": 1089
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "mediaResolution": "high",
+          "tokens": 1064
+        },
+        {
+          "width": 1000,
+          "height": 1000,
+          "mediaResolution": "high",
+          "tokens": 1089
+        },
+        {
+          "width": 1920,
+          "height": 1080,
+          "mediaResolution": "high",
+          "tokens": 1100
+        },
+        {
+          "width": 2577,
+          "height": 2577,
+          "mediaResolution": "high",
+          "tokens": 1089
+        },
+        {
+          "width": 4000,
+          "height": 300,
+          "mediaResolution": "high",
+          "tokens": 1098
+        },
+        {
+          "width": 10,
+          "height": 1000,
+          "mediaResolution": "high",
+          "tokens": 1002
+        }
+      ]
+    }
+  },
+  "probes": {
+    "vertex": {
+      "google/gemini-2.5-flash": {
+        "width": 1920,
+        "height": 1080,
+        "identicalImages": {
+          "1": 1806,
+          "2": 516,
+          "3": 774
+        },
+        "twoImagesAtHigh": {
+          "error": "Unable to submit request because the model supports HIGH media resolution only for single images."
+        },
+        "acrossMessages": {
+          "firstMessageOnly": 1806,
+          "lastMessageOnly": 1806,
+          "both": 516
+        },
+        "jpegInsteadOfPng": [
+          {
+            "width": 1920,
+            "height": 1080,
+            "png": 1806,
+            "jpeg": 1806
+          },
+          {
+            "width": 300,
+            "height": 200,
+            "png": 258,
+            "jpeg": 258
+          }
+        ],
+        "mediaResolutionUltraHigh": {
+          "error": "invalid vertex provider options"
+        }
+      },
+      "google/gemini-3.5-flash": {
+        "width": 1920,
+        "height": 1080,
+        "identicalImages": {
+          "1": 1100,
+          "2": 2200,
+          "3": 3300
+        },
+        "twoImagesAtHigh": {
+          "tokens": 2200
+        },
+        "acrossMessages": {
+          "firstMessageOnly": 1100,
+          "lastMessageOnly": 1100,
+          "both": 2200
+        },
+        "jpegInsteadOfPng": [
+          {
+            "width": 1920,
+            "height": 1080,
+            "png": 1100,
+            "jpeg": 1100
+          },
+          {
+            "width": 300,
+            "height": 200,
+            "png": 1080,
+            "jpeg": 1080
+          }
+        ],
+        "mediaResolutionUltraHigh": {
+          "error": "invalid vertex provider options"
+        }
+      }
+    },
+    "google": {
+      "google/gemini-2.5-flash": {
+        "width": 1920,
+        "height": 1080,
+        "identicalImages": {
+          "1": 258,
+          "2": 516,
+          "3": 774
+        },
+        "twoImagesAtHigh": {
+          "tokens": 516
+        },
+        "acrossMessages": {
+          "firstMessageOnly": 258,
+          "lastMessageOnly": 258,
+          "both": 516
+        },
+        "jpegInsteadOfPng": [
+          {
+            "width": 1920,
+            "height": 1080,
+            "png": 258,
+            "jpeg": 258
+          },
+          {
+            "width": 300,
+            "height": 200,
+            "png": 258,
+            "jpeg": 258
+          }
+        ],
+        "mediaResolutionUltraHigh": {
+          "error": "invalid google provider options"
+        }
+      },
+      "google/gemini-3.5-flash": {
+        "width": 1920,
+        "height": 1080,
+        "identicalImages": {
+          "1": 1100,
+          "2": 2200,
+          "3": 3300
+        },
+        "twoImagesAtHigh": {
+          "tokens": 2200
+        },
+        "acrossMessages": {
+          "firstMessageOnly": 1100,
+          "lastMessageOnly": 1100,
+          "both": 2200
+        },
+        "jpegInsteadOfPng": [
+          {
+            "width": 1920,
+            "height": 1080,
+            "png": 1100,
+            "jpeg": 1100
+          },
+          {
+            "width": 300,
+            "height": 200,
+            "png": 1080,
+            "jpeg": 1080
+          }
+        ],
+        "mediaResolutionUltraHigh": {
+          "error": "invalid google provider options"
+        }
+      }
+    }
+  }
+}
