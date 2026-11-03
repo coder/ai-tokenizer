@@ -8,6 +8,7 @@ import { describe, test, expect } from "bun:test";
 import type { ModelMessage, ToolSet } from "ai";
 import { z } from "zod";
 import { count } from "./sdk";
+import { pngHeader } from "../scripts/media-samples";
 import { Tokenizer, type AnthropicTokens, type Model } from "./index";
 import * as claude_v4_8 from "./encoding/claude_v4_8";
 import * as claude_v5 from "./encoding/claude_v5";
@@ -22,9 +23,9 @@ const anthropic: AnthropicTokens = {
   toolResultError: 8,
   emptyToolResult: 14,
   textAfterToolResult: 5,
-  imageInToolResult: 10,
-  toolResultWithImage: 1,
-  textInImageToolResult: 7,
+  imageInToolResult: 12,
+  toolResultWithImage: 3,
+  textInImageToolResult: 9,
 };
 const model = {
   tokens: {
@@ -41,6 +42,7 @@ const model = {
     perNestedObject: 29,
     perArrayOfObjects: 31,
     anthropic,
+    media: { image: { patch: 10, maxEdge: 100, maxPatches: 40, overhead: 5 } },
   },
 } as Model;
 
@@ -327,6 +329,118 @@ describe("tool calls and results", () => {
     expect(
       total([...cycle, call({}), text("b"), assistant("c")], v48, tools)
     ).toBe(total(cycle, v48, tools) + n("f") + 6 + 39 + n("b") + n("c"));
+  });
+});
+
+describe("images", () => {
+  const png = (width: number, height: number) =>
+    pngHeader(width, height).toString("base64");
+  const image = (width: number, height: number) => ({
+    type: "file",
+    mediaType: "image/png",
+    data: png(width, height),
+  });
+  const resultImage = (width: number, height: number) => ({
+    type: "file",
+    mediaType: "image/png",
+    data: { type: "data", data: png(width, height) },
+  });
+  const content = (...value: unknown[]) => result({ type: "content", value });
+  const tools = { f: { inputSchema: z.object({}) } } as unknown as ToolSet;
+  const imageMessage = (...parts: unknown[]): ModelMessage =>
+    ({ role: "user", content: parts }) as ModelMessage;
+
+  test("an image costs its patches and the overhead of the recipe", () => {
+    // 30x20 is 3x2 patches of 10 px.
+    expect(total([imageMessage(image(30, 20))])).toBe(7 + 6 + 5);
+  });
+
+  test("an image over the patch limit is scaled down to fit it", () => {
+    // 100x100 is 10x10 patches. The long edge steps down to 62 px, 7x7 = 49
+    // is still over 40, and at 59 px it is 6x6 = 36.
+    expect(total([imageMessage(image(100, 100))])).toBe(7 + 36 + 5);
+  });
+
+  test("an image whose size cannot be read costs a 1024x1024 image", () => {
+    const unreadable = (part: unknown) => total([imageMessage(part)]);
+    const expected = unreadable({
+      type: "file",
+      mediaType: "image/png",
+      data: png(1024, 1024),
+    });
+    expect(
+      unreadable({
+        type: "image",
+        image: new URL("https://example.com/a.png"),
+      })
+    ).toBe(expected);
+    expect(
+      unreadable({ type: "file", mediaType: "image/png", data: "Zm9v" })
+    ).toBe(expected);
+  });
+
+  test("a part is an image when its media type says so, whatever its shape", () => {
+    const expected = total([imageMessage(image(30, 20))]);
+    for (const part of [
+      { type: "image", image: png(30, 20) },
+      { type: "image", image: pngHeader(30, 20) },
+      {
+        type: "file",
+        mediaType: "image",
+        data: { type: "data", data: png(30, 20) },
+      },
+      {
+        type: "file",
+        mediaType: "image/png",
+        data: `data:image/png;base64,${png(30, 20)}`,
+      },
+    ]) {
+      expect(total([imageMessage(part)])).toBe(expected);
+    }
+  });
+
+  test("an image in a tool result costs imageInToolResult and toolResultWithImage more", () => {
+    const counted = count({
+      tokenizer: v48,
+      model,
+      messages: [user("a"), call({}), content(resultImage(30, 20))],
+      tools,
+    });
+    // 6 patches + overhead 5, then 12 per image and 3 once.
+    expect(counted.messages[2]!.content[0]).toEqual({
+      type: "tool-result",
+      total: 39 + 11 + 12 + 3,
+      output: 11 + 12 + 3,
+    });
+  });
+
+  test("each text block next to an image in a tool result costs textInImageToolResult", () => {
+    const block = (value: string) => ({ type: "text", text: value });
+    const counted = count({
+      tokenizer: v48,
+      model,
+      messages: [
+        user("a"),
+        call({}),
+        content(
+          block("Screenshot"),
+          resultImage(30, 20),
+          block("and its twin"),
+          resultImage(30, 20)
+        ),
+      ],
+      tools,
+    });
+    expect(counted.messages[2]!.content[0]).toMatchObject({
+      output: n("Screenshotand its twin") + 2 * (11 + 12) + 3 + 2 * 9,
+    });
+  });
+
+  test("a text-only content result has no image framing", () => {
+    const block = (value: string) => ({ type: "text", text: value });
+    expect(
+      total([user("a"), call({}), content(block("b"), block("c"))], v48, tools)
+    ).toBe(total([user("a"), call({}), text("bc")], v48, tools));
   });
 });
 

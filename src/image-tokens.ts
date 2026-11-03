@@ -1,9 +1,6 @@
 import type { ImageTokens, PatchImageTokens } from ".";
 
-export interface ImageSize {
-  width: number;
-  height: number;
-}
+import type { ImageSize } from "./media";
 
 /**
  * What an image of this size costs under a model's recipe. `size` is

@@ -8,7 +8,7 @@
  * The cost of an image is count_tokens of a user turn with the text "a" and
  * the image, minus count_tokens of the turn with the text "a" alone.
  */
-import { writeFileSync } from "node:fs";
+import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { greyPng, MEASURED_SIZES, randomSizes } from "./media-samples";
 import { mapLimit } from "./anthropic";
 
@@ -106,11 +106,23 @@ async function countTokens(
   throw new Error(`${model}: retries exhausted`);
 }
 
+const MEDIA_TYPES: Record<string, string> = {
+  png: "image/png",
+  jpg: "image/jpeg",
+  gif: "image/gif",
+  webp: "image/webp",
+};
+const FILES = new URL("../src/fixtures/media/", import.meta.url);
+
 const user = (...content: Block[]) => ({ role: "user", content });
 
 type Case =
   | { width: number; height: number; tokens: number }
   | { width: number; height: number; error: string };
+
+// The real image files of src/fixtures/media, to check that a format costs what its size says.
+const files = readdirSync(FILES).sort();
+const filesOut: Record<string, Record<string, number | { error: string }>> = {};
 
 const out: Record<
   string,
@@ -143,6 +155,24 @@ for (const model of MODELS) {
     return total - baseline;
   });
   out[model] = { baseline, cases, dense };
+  for (const file of files) {
+    const mediaType = MEDIA_TYPES[file.split(".").at(-1)!]!;
+    const data = readFileSync(new URL(file, FILES)).toString("base64");
+    const block = {
+      type: "image",
+      source: { type: "base64", media_type: mediaType, data },
+    };
+    const row = (filesOut[file] ??= {});
+    try {
+      row[model] =
+        (await countTokens(model, [user(text("a"), block)])) - baseline;
+      measured++;
+    } catch (error) {
+      if (!(error instanceof Rejected)) throw error;
+      row[model] = { error: error.message };
+      rejected++;
+    }
+  }
   const ok = cases.filter((c) => "tokens" in c) as Array<
     Extract<Case, { tokens: number }>
   >;
@@ -160,6 +190,7 @@ writeFileSync(
       unit: 'image tokens = count_tokens of a user turn with the text "a" and the image, minus count_tokens of the turn with the text "a" alone',
       denseSizes: DENSE_SIZES,
       models: out,
+      files: filesOut,
     },
     null,
     1

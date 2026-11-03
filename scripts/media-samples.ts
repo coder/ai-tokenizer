@@ -30,21 +30,34 @@ function chunk(type: string, data: Uint8Array): Uint8Array {
   return out;
 }
 
-/** An 8-bit grey PNG. Every pixel is `grey`; a second grey draws a diagonal so no codec shortcut applies. */
-export function greyPng(width: number, height: number, grey = 128): Buffer {
+const PNG_SIGNATURE = Buffer.from([
+  0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
+]);
+
+function ihdr(width: number, height: number): Uint8Array {
   const header = Buffer.alloc(13);
   header.writeUInt32BE(width, 0);
   header.writeUInt32BE(height, 4);
   header[8] = 8; // bit depth
   header[9] = 0; // grey
+  return chunk("IHDR", header);
+}
+
+/** The first 33 bytes of a PNG of this size: enough to read it, no pixels. */
+export function pngHeader(width: number, height: number): Buffer {
+  return Buffer.concat([PNG_SIGNATURE, ihdr(width, height)]);
+}
+
+/** An 8-bit grey PNG. Every pixel is `grey`; a second grey draws a diagonal so no codec shortcut applies. */
+export function greyPng(width: number, height: number, grey = 128): Buffer {
   const rows = Buffer.alloc(height * (width + 1), grey);
   for (let y = 0; y < height; y++) {
     rows[y * (width + 1)] = 0; // filter: none
     rows[y * (width + 1) + 1 + Math.floor((y * width) / height)] = 255 - grey;
   }
   return Buffer.concat([
-    Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
-    chunk("IHDR", header),
+    PNG_SIGNATURE,
+    ihdr(width, height),
     chunk("IDAT", deflateSync(rows)),
     chunk("IEND", new Uint8Array()),
   ]);
