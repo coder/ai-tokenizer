@@ -1,19 +1,30 @@
 {
   "anthropic/claude-3-haiku": {
-    "encoding": "claude",
+    "encoding": "claude_v3",
     "tokens": {
-      "contentMultiplier": 1.1,
-      "baseOverhead": 6,
-      "perMessage": 2,
-      "toolsExist": 317,
+      "contentMultiplier": 1,
+      "baseOverhead": 7,
+      "perMessage": 0,
+      "toolsExist": 549,
       "perTool": 53,
       "perDesc": 5,
       "perFirstProp": 13,
       "perAdditionalProp": 12,
       "perPropDesc": 5,
-      "perEnum": 9,
+      "perEnum": 3,
       "perNestedObject": 12,
-      "perArrayOfObjects": 13
+      "perArrayOfObjects": 12,
+      "anthropic": {
+        "userTurn": 6,
+        "system": 0,
+        "toolUseParam": 15,
+        "perArray": 10,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 39,
+        "toolResultError": 8,
+        "emptyToolResult": 14,
+        "textAfterToolResult": 5
+      }
     },
     "name": "Claude 3 Haiku",
     "contextWindow": 200000,
@@ -26,20 +37,31 @@
     }
   },
   "anthropic/claude-3-opus": {
-    "encoding": "claude",
+    "encoding": "claude_v3",
     "tokens": {
-      "contentMultiplier": 1.1,
-      "baseOverhead": 6,
-      "perMessage": 2,
-      "toolsExist": 586,
+      "contentMultiplier": 1,
+      "baseOverhead": 7,
+      "perMessage": 0,
+      "toolsExist": 549,
       "perTool": 53,
       "perDesc": 5,
       "perFirstProp": 13,
       "perAdditionalProp": 12,
       "perPropDesc": 5,
-      "perEnum": 9,
+      "perEnum": 3,
       "perNestedObject": 12,
-      "perArrayOfObjects": 13
+      "perArrayOfObjects": 12,
+      "anthropic": {
+        "userTurn": 6,
+        "system": 0,
+        "toolUseParam": 15,
+        "perArray": 10,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 39,
+        "toolResultError": 8,
+        "emptyToolResult": 14,
+        "textAfterToolResult": 5
+      }
     },
     "name": "Claude 3 Opus",
     "contextWindow": 200000,
@@ -52,20 +74,31 @@
     }
   },
   "anthropic/claude-3.5-haiku": {
-    "encoding": "claude",
+    "encoding": "claude_v3",
     "tokens": {
-      "contentMultiplier": 1.1,
-      "baseOverhead": 6,
-      "perMessage": 2,
-      "toolsExist": 317,
+      "contentMultiplier": 1,
+      "baseOverhead": 7,
+      "perMessage": 0,
+      "toolsExist": 549,
       "perTool": 53,
       "perDesc": 5,
       "perFirstProp": 13,
       "perAdditionalProp": 12,
       "perPropDesc": 5,
-      "perEnum": 9,
+      "perEnum": 3,
       "perNestedObject": 12,
-      "perArrayOfObjects": 13
+      "perArrayOfObjects": 12,
+      "anthropic": {
+        "userTurn": 6,
+        "system": 0,
+        "toolUseParam": 15,
+        "perArray": 10,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 39,
+        "toolResultError": 8,
+        "emptyToolResult": 14,
+        "textAfterToolResult": 5
+      }
     },
     "name": "Claude 3.5 Haiku",
     "contextWindow": 200000,
@@ -78,20 +111,31 @@
     }
   },
   "anthropic/claude-3.5-sonnet": {
-    "encoding": "claude",
+    "encoding": "claude_v3",
     "tokens": {
-      "contentMultiplier": 1.1,
-      "baseOverhead": 6,
-      "perMessage": 2,
-      "toolsExist": 366,
+      "contentMultiplier": 1,
+      "baseOverhead": 7,
+      "perMessage": 0,
+      "toolsExist": 549,
       "perTool": 53,
       "perDesc": 5,
       "perFirstProp": 13,
       "perAdditionalProp": 12,
       "perPropDesc": 5,
-      "perEnum": 9,
+      "perEnum": 3,
       "perNestedObject": 12,
-      "perArrayOfObjects": 13
+      "perArrayOfObjects": 12,
+      "anthropic": {
+        "userTurn": 6,
+        "system": 0,
+        "toolUseParam": 15,
+        "perArray": 10,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 39,
+        "toolResultError": 8,
+        "emptyToolResult": 14,
+        "textAfterToolResult": 5
+      }
     },
     "name": "Claude 3.5 Sonnet",
     "contextWindow": 200000,
@@ -104,20 +148,31 @@
     }
   },
   "anthropic/claude-3.5-sonnet-20240620": {
-    "encoding": "claude",
+    "encoding": "claude_v3",
     "tokens": {
-      "contentMultiplier": 1.1,
-      "baseOverhead": 6,
-      "perMessage": 2,
-      "toolsExist": 347,
+      "contentMultiplier": 1,
+      "baseOverhead": 7,
+      "perMessage": 0,
+      "toolsExist": 549,
       "perTool": 53,
       "perDesc": 5,
       "perFirstProp": 13,
       "perAdditionalProp": 12,
       "perPropDesc": 5,
-      "perEnum": 9,
+      "perEnum": 3,
       "perNestedObject": 12,
-      "perArrayOfObjects": 13
+      "perArrayOfObjects": 12,
+      "anthropic": {
+        "userTurn": 6,
+        "system": 0,
+        "toolUseParam": 15,
+        "perArray": 10,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 39,
+        "toolResultError": 8,
+        "emptyToolResult": 14,
+        "textAfterToolResult": 5
+      }
     },
     "name": "Claude 3.5 Sonnet (2024-06-20)",
     "contextWindow": 200000,
@@ -128,20 +183,31 @@
     }
   },
   "anthropic/claude-3.7-sonnet": {
-    "encoding": "claude",
+    "encoding": "claude_v3",
     "tokens": {
-      "contentMultiplier": 1.1,
-      "baseOverhead": 6,
-      "perMessage": 2,
-      "toolsExist": 366,
+      "contentMultiplier": 1,
+      "baseOverhead": 7,
+      "perMessage": 0,
+      "toolsExist": 549,
       "perTool": 53,
       "perDesc": 5,
       "perFirstProp": 13,
       "perAdditionalProp": 12,
       "perPropDesc": 5,
-      "perEnum": 9,
+      "perEnum": 3,
       "perNestedObject": 12,
-      "perArrayOfObjects": 13
+      "perArrayOfObjects": 12,
+      "anthropic": {
+        "userTurn": 6,
+        "system": 0,
+        "toolUseParam": 15,
+        "perArray": 10,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 39,
+        "toolResultError": 8,
+        "emptyToolResult": 14,
+        "textAfterToolResult": 5
+      }
     },
     "name": "Claude 3.7 Sonnet",
     "contextWindow": 200000,
@@ -154,20 +220,31 @@
     }
   },
   "anthropic/claude-opus-4": {
-    "encoding": "claude",
+    "encoding": "claude_v3",
     "tokens": {
-      "contentMultiplier": 1.1,
-      "baseOverhead": 6,
-      "perMessage": 2,
-      "toolsExist": 366,
+      "contentMultiplier": 1,
+      "baseOverhead": 7,
+      "perMessage": 0,
+      "toolsExist": 549,
       "perTool": 53,
       "perDesc": 5,
       "perFirstProp": 13,
       "perAdditionalProp": 12,
       "perPropDesc": 5,
-      "perEnum": 9,
+      "perEnum": 3,
       "perNestedObject": 12,
-      "perArrayOfObjects": 13
+      "perArrayOfObjects": 12,
+      "anthropic": {
+        "userTurn": 6,
+        "system": 0,
+        "toolUseParam": 15,
+        "perArray": 10,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 39,
+        "toolResultError": 8,
+        "emptyToolResult": 14,
+        "textAfterToolResult": 5
+      }
     },
     "name": "Claude Opus 4",
     "contextWindow": 200000,
@@ -180,20 +257,31 @@
     }
   },
   "anthropic/claude-opus-4.1": {
-    "encoding": "claude",
+    "encoding": "claude_v3",
     "tokens": {
-      "contentMultiplier": 1.1,
-      "baseOverhead": 6,
-      "perMessage": 2,
-      "toolsExist": 366,
+      "contentMultiplier": 1,
+      "baseOverhead": 7,
+      "perMessage": 0,
+      "toolsExist": 549,
       "perTool": 53,
       "perDesc": 5,
       "perFirstProp": 13,
       "perAdditionalProp": 12,
       "perPropDesc": 5,
-      "perEnum": 9,
+      "perEnum": 3,
       "perNestedObject": 12,
-      "perArrayOfObjects": 13
+      "perArrayOfObjects": 12,
+      "anthropic": {
+        "userTurn": 6,
+        "system": 0,
+        "toolUseParam": 15,
+        "perArray": 10,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 39,
+        "toolResultError": 8,
+        "emptyToolResult": 14,
+        "textAfterToolResult": 5
+      }
     },
     "name": "Claude Opus 4.1",
     "contextWindow": 200000,
@@ -206,20 +294,31 @@
     }
   },
   "anthropic/claude-sonnet-4": {
-    "encoding": "claude",
+    "encoding": "claude_v3",
     "tokens": {
-      "contentMultiplier": 1.1,
-      "baseOverhead": 6,
-      "perMessage": 2,
-      "toolsExist": 366,
+      "contentMultiplier": 1,
+      "baseOverhead": 7,
+      "perMessage": 0,
+      "toolsExist": 549,
       "perTool": 53,
       "perDesc": 5,
       "perFirstProp": 13,
       "perAdditionalProp": 12,
       "perPropDesc": 5,
-      "perEnum": 9,
+      "perEnum": 3,
       "perNestedObject": 12,
-      "perArrayOfObjects": 13
+      "perArrayOfObjects": 12,
+      "anthropic": {
+        "userTurn": 6,
+        "system": 0,
+        "toolUseParam": 15,
+        "perArray": 10,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 39,
+        "toolResultError": 8,
+        "emptyToolResult": 14,
+        "textAfterToolResult": 5
+      }
     },
     "name": "Claude Sonnet 4",
     "contextWindow": 200000,
@@ -232,23 +331,34 @@
     }
   },
   "anthropic/claude-sonnet-4.5": {
-    "encoding": "claude",
+    "encoding": "claude_v3",
     "tokens": {
-      "contentMultiplier": 1.1,
-      "baseOverhead": 6,
-      "perMessage": 2,
+      "contentMultiplier": 1,
+      "baseOverhead": 7,
+      "perMessage": 0,
       "toolsExist": 549,
       "perTool": 53,
       "perDesc": 5,
       "perFirstProp": 13,
       "perAdditionalProp": 12,
       "perPropDesc": 5,
-      "perEnum": 9,
+      "perEnum": 3,
       "perNestedObject": 12,
-      "perArrayOfObjects": 13
+      "perArrayOfObjects": 12,
+      "anthropic": {
+        "userTurn": 6,
+        "system": 0,
+        "toolUseParam": 15,
+        "perArray": 10,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 39,
+        "toolResultError": 8,
+        "emptyToolResult": 14,
+        "textAfterToolResult": 5
+      }
     },
     "name": "Claude Sonnet 4.5",
-    "contextWindow": 200000,
+    "contextWindow": 1000000,
     "maxTokens": 64000,
     "pricing": {
       "input": 0.000003,
@@ -2071,20 +2181,31 @@
     }
   },
   "anthropic/claude-haiku-4.5": {
-    "encoding": "claude",
+    "encoding": "claude_v3",
     "tokens": {
-      "baseOverhead": 6,
-      "perMessage": 2,
+      "contentMultiplier": 1,
+      "baseOverhead": 7,
+      "perMessage": 0,
       "toolsExist": 549,
       "perTool": 53,
       "perDesc": 5,
       "perFirstProp": 13,
       "perAdditionalProp": 12,
       "perPropDesc": 5,
-      "perEnum": 9,
+      "perEnum": 3,
       "perNestedObject": 12,
-      "perArrayOfObjects": 13,
-      "contentMultiplier": 1.1
+      "perArrayOfObjects": 12,
+      "anthropic": {
+        "userTurn": 6,
+        "system": 0,
+        "toolUseParam": 15,
+        "perArray": 10,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 39,
+        "toolResultError": 8,
+        "emptyToolResult": 14,
+        "textAfterToolResult": 5
+      }
     },
     "name": "Claude Haiku 4.5",
     "contextWindow": 200000,
@@ -2244,20 +2365,31 @@
     }
   },
   "anthropic/claude-opus-4.5": {
-    "encoding": "claude",
+    "encoding": "claude_v3",
     "tokens": {
-      "baseOverhead": 6,
-      "perMessage": 2,
+      "contentMultiplier": 1,
+      "baseOverhead": 7,
+      "perMessage": 0,
       "toolsExist": 549,
       "perTool": 53,
       "perDesc": 5,
       "perFirstProp": 13,
       "perAdditionalProp": 12,
       "perPropDesc": 5,
-      "perEnum": 9,
+      "perEnum": 3,
       "perNestedObject": 12,
-      "perArrayOfObjects": 13,
-      "contentMultiplier": 1.1
+      "perArrayOfObjects": 12,
+      "anthropic": {
+        "userTurn": 6,
+        "system": 0,
+        "toolUseParam": 15,
+        "perArray": 10,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 39,
+        "toolResultError": 8,
+        "emptyToolResult": 14,
+        "textAfterToolResult": 5
+      }
     },
     "name": "Claude Opus 4.5",
     "contextWindow": 200000,
@@ -2267,6 +2399,1042 @@
       "output": 0.000025,
       "input_cache_read": 5e-7,
       "input_cache_write": 0.00000625
+    }
+  },
+  "anthropic/claude-fable-5": {
+    "encoding": "claude_v4_8",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 6,
+      "perMessage": 0,
+      "toolsExist": 358,
+      "perTool": 68,
+      "perDesc": 5,
+      "perFirstProp": 18,
+      "perAdditionalProp": 14,
+      "perPropDesc": 5,
+      "perEnum": 5,
+      "perNestedObject": 17,
+      "perArrayOfObjects": 17,
+      "anthropic": {
+        "userTurn": 4,
+        "system": 1,
+        "toolUseParam": 19,
+        "perArray": 12,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 24,
+        "toolResultError": 6,
+        "emptyToolResult": 18,
+        "textAfterToolResult": 2
+      }
+    },
+    "name": "Claude Fable 5",
+    "contextWindow": 1000000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 0.00001,
+      "output": 0.00005,
+      "input_cache_read": 0.000001,
+      "input_cache_write": 0.0000125
+    }
+  },
+  "anthropic/claude-fable-5-batch": {
+    "encoding": "claude_v4_8",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 6,
+      "perMessage": 0,
+      "toolsExist": 358,
+      "perTool": 68,
+      "perDesc": 5,
+      "perFirstProp": 18,
+      "perAdditionalProp": 14,
+      "perPropDesc": 5,
+      "perEnum": 5,
+      "perNestedObject": 17,
+      "perArrayOfObjects": 17,
+      "anthropic": {
+        "userTurn": 4,
+        "system": 1,
+        "toolUseParam": 19,
+        "perArray": 12,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 24,
+        "toolResultError": 6,
+        "emptyToolResult": 18,
+        "textAfterToolResult": 2
+      }
+    },
+    "name": "Claude Fable 5 (Batch)",
+    "contextWindow": 1000000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 0.000005,
+      "output": 0.000025,
+      "input_cache_read": 5e-7,
+      "input_cache_write": 0.00000625
+    }
+  },
+  "anthropic/claude-fable-5.1": {
+    "encoding": "claude_v5",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 8,
+      "perMessage": 0,
+      "toolsExist": 354,
+      "perTool": 68,
+      "perDesc": 5,
+      "perFirstProp": 18,
+      "perAdditionalProp": 14,
+      "perPropDesc": 5,
+      "perEnum": 5,
+      "perNestedObject": 17,
+      "perArrayOfObjects": 17,
+      "anthropic": {
+        "userTurn": 4,
+        "system": 1,
+        "toolUseParam": 19,
+        "perArray": 12,
+        "userTurnAfterToolResult": 2,
+        "toolResult": 24,
+        "toolResultError": 6,
+        "emptyToolResult": 18,
+        "textAfterToolResult": 4
+      }
+    },
+    "name": "Claude Fable 5.1",
+    "contextWindow": 1000000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 0.00001,
+      "output": 0.00005,
+      "input_cache_read": 2.5e-7,
+      "input_cache_write": 0.0000125
+    }
+  },
+  "anthropic/claude-fable-5.1-batch": {
+    "encoding": "claude_v5",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 8,
+      "perMessage": 0,
+      "toolsExist": 354,
+      "perTool": 68,
+      "perDesc": 5,
+      "perFirstProp": 18,
+      "perAdditionalProp": 14,
+      "perPropDesc": 5,
+      "perEnum": 5,
+      "perNestedObject": 17,
+      "perArrayOfObjects": 17,
+      "anthropic": {
+        "userTurn": 4,
+        "system": 1,
+        "toolUseParam": 19,
+        "perArray": 12,
+        "userTurnAfterToolResult": 2,
+        "toolResult": 24,
+        "toolResultError": 6,
+        "emptyToolResult": 18,
+        "textAfterToolResult": 4
+      }
+    },
+    "name": "Claude Fable 5.1 (Batch)",
+    "contextWindow": 1000000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 0.000005,
+      "output": 0.000025,
+      "input_cache_read": 1.25e-7,
+      "input_cache_write": 0.00000625
+    }
+  },
+  "anthropic/claude-haiku-4.5-batch": {
+    "encoding": "claude_v3",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 7,
+      "perMessage": 0,
+      "toolsExist": 549,
+      "perTool": 53,
+      "perDesc": 5,
+      "perFirstProp": 13,
+      "perAdditionalProp": 12,
+      "perPropDesc": 5,
+      "perEnum": 3,
+      "perNestedObject": 12,
+      "perArrayOfObjects": 12,
+      "anthropic": {
+        "userTurn": 6,
+        "system": 0,
+        "toolUseParam": 15,
+        "perArray": 10,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 39,
+        "toolResultError": 8,
+        "emptyToolResult": 14,
+        "textAfterToolResult": 5
+      }
+    },
+    "name": "Claude Haiku 4.5 (Batch)",
+    "contextWindow": 200000,
+    "maxTokens": 64000,
+    "pricing": {
+      "input": 5e-7,
+      "output": 0.0000025,
+      "input_cache_read": 5e-8,
+      "input_cache_write": 6.25e-7
+    }
+  },
+  "anthropic/claude-haiku-5.5": {
+    "encoding": "claude_v5",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 8,
+      "perMessage": 0,
+      "toolsExist": 354,
+      "perTool": 68,
+      "perDesc": 5,
+      "perFirstProp": 18,
+      "perAdditionalProp": 14,
+      "perPropDesc": 5,
+      "perEnum": 5,
+      "perNestedObject": 17,
+      "perArrayOfObjects": 17,
+      "anthropic": {
+        "userTurn": 4,
+        "system": 1,
+        "toolUseParam": 19,
+        "perArray": 12,
+        "userTurnAfterToolResult": 2,
+        "toolResult": 24,
+        "toolResultError": 6,
+        "emptyToolResult": 18,
+        "textAfterToolResult": 4
+      }
+    },
+    "name": "Claude Haiku 5.5",
+    "contextWindow": 1000000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 1e-7,
+      "output": 5e-7,
+      "input_cache_read": 1e-8,
+      "input_cache_write": 1.25e-7
+    }
+  },
+  "anthropic/claude-haiku-5.5-batch": {
+    "encoding": "claude_v5",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 8,
+      "perMessage": 0,
+      "toolsExist": 354,
+      "perTool": 68,
+      "perDesc": 5,
+      "perFirstProp": 18,
+      "perAdditionalProp": 14,
+      "perPropDesc": 5,
+      "perEnum": 5,
+      "perNestedObject": 17,
+      "perArrayOfObjects": 17,
+      "anthropic": {
+        "userTurn": 4,
+        "system": 1,
+        "toolUseParam": 19,
+        "perArray": 12,
+        "userTurnAfterToolResult": 2,
+        "toolResult": 24,
+        "toolResultError": 6,
+        "emptyToolResult": 18,
+        "textAfterToolResult": 4
+      }
+    },
+    "name": "Claude Haiku 5.5 (Batch)",
+    "contextWindow": 1000000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 5e-8,
+      "output": 2.5e-7,
+      "input_cache_read": 5e-9,
+      "input_cache_write": 6.25e-8
+    }
+  },
+  "anthropic/claude-opus-4.5-batch": {
+    "encoding": "claude_v3",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 7,
+      "perMessage": 0,
+      "toolsExist": 549,
+      "perTool": 53,
+      "perDesc": 5,
+      "perFirstProp": 13,
+      "perAdditionalProp": 12,
+      "perPropDesc": 5,
+      "perEnum": 3,
+      "perNestedObject": 12,
+      "perArrayOfObjects": 12,
+      "anthropic": {
+        "userTurn": 6,
+        "system": 0,
+        "toolUseParam": 15,
+        "perArray": 10,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 39,
+        "toolResultError": 8,
+        "emptyToolResult": 14,
+        "textAfterToolResult": 5
+      }
+    },
+    "name": "Claude Opus 4.5 (Batch)",
+    "contextWindow": 200000,
+    "maxTokens": 64000,
+    "pricing": {
+      "input": 0.0000025,
+      "output": 0.0000125,
+      "input_cache_read": 2.5e-7,
+      "input_cache_write": 0.000003125
+    }
+  },
+  "anthropic/claude-opus-4.6": {
+    "encoding": "claude_v3",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 7,
+      "perMessage": 0,
+      "toolsExist": 550,
+      "perTool": 53,
+      "perDesc": 5,
+      "perFirstProp": 13,
+      "perAdditionalProp": 12,
+      "perPropDesc": 5,
+      "perEnum": 3,
+      "perNestedObject": 12,
+      "perArrayOfObjects": 12,
+      "anthropic": {
+        "userTurn": 6,
+        "system": 1,
+        "toolUseParam": 15,
+        "perArray": 10,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 39,
+        "toolResultError": 8,
+        "emptyToolResult": 14,
+        "textAfterToolResult": 5
+      }
+    },
+    "name": "Claude Opus 4.6",
+    "contextWindow": 1000000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 0.000005,
+      "output": 0.000025,
+      "input_cache_read": 5e-7,
+      "input_cache_write": 0.00000625
+    }
+  },
+  "anthropic/claude-opus-4.6-batch": {
+    "encoding": "claude_v3",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 7,
+      "perMessage": 0,
+      "toolsExist": 550,
+      "perTool": 53,
+      "perDesc": 5,
+      "perFirstProp": 13,
+      "perAdditionalProp": 12,
+      "perPropDesc": 5,
+      "perEnum": 3,
+      "perNestedObject": 12,
+      "perArrayOfObjects": 12,
+      "anthropic": {
+        "userTurn": 6,
+        "system": 1,
+        "toolUseParam": 15,
+        "perArray": 10,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 39,
+        "toolResultError": 8,
+        "emptyToolResult": 14,
+        "textAfterToolResult": 5
+      }
+    },
+    "name": "Claude Opus 4.6 (Batch)",
+    "contextWindow": 1000000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 0.0000025,
+      "output": 0.0000125,
+      "input_cache_read": 2.5e-7,
+      "input_cache_write": 0.000003125
+    }
+  },
+  "anthropic/claude-opus-4.7": {
+    "encoding": "claude_v4_7",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 11,
+      "perMessage": 0,
+      "toolsExist": 743,
+      "perTool": 68,
+      "perDesc": 5,
+      "perFirstProp": 18,
+      "perAdditionalProp": 14,
+      "perPropDesc": 5,
+      "perEnum": 4,
+      "perNestedObject": 17,
+      "perArrayOfObjects": 17,
+      "anthropic": {
+        "userTurn": 10,
+        "system": 1,
+        "toolUseParam": 19,
+        "perArray": 12,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 41,
+        "toolResultError": 8,
+        "emptyToolResult": 18,
+        "textAfterToolResult": 9
+      }
+    },
+    "name": "Claude Opus 4.7",
+    "contextWindow": 1000000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 0.000005,
+      "output": 0.000025,
+      "input_cache_read": 5e-7,
+      "input_cache_write": 0.00000625
+    }
+  },
+  "anthropic/claude-opus-4.7-batch": {
+    "encoding": "claude_v4_7",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 11,
+      "perMessage": 0,
+      "toolsExist": 743,
+      "perTool": 68,
+      "perDesc": 5,
+      "perFirstProp": 18,
+      "perAdditionalProp": 14,
+      "perPropDesc": 5,
+      "perEnum": 4,
+      "perNestedObject": 17,
+      "perArrayOfObjects": 17,
+      "anthropic": {
+        "userTurn": 10,
+        "system": 1,
+        "toolUseParam": 19,
+        "perArray": 12,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 41,
+        "toolResultError": 8,
+        "emptyToolResult": 18,
+        "textAfterToolResult": 9
+      }
+    },
+    "name": "Claude Opus 4.7 (Batch)",
+    "contextWindow": 1000000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 0.0000025,
+      "output": 0.0000125,
+      "input_cache_read": 2.5e-7,
+      "input_cache_write": 0.000003125
+    }
+  },
+  "anthropic/claude-opus-4.8": {
+    "encoding": "claude_v4_8",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 6,
+      "perMessage": 0,
+      "toolsExist": 358,
+      "perTool": 68,
+      "perDesc": 5,
+      "perFirstProp": 18,
+      "perAdditionalProp": 14,
+      "perPropDesc": 5,
+      "perEnum": 5,
+      "perNestedObject": 17,
+      "perArrayOfObjects": 17,
+      "anthropic": {
+        "userTurn": 4,
+        "system": 1,
+        "toolUseParam": 19,
+        "perArray": 12,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 24,
+        "toolResultError": 6,
+        "emptyToolResult": 18,
+        "textAfterToolResult": 2
+      }
+    },
+    "name": "Claude Opus 4.8",
+    "contextWindow": 1000000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 0.000005,
+      "output": 0.000025,
+      "input_cache_read": 5e-7,
+      "input_cache_write": 0.00000625
+    }
+  },
+  "anthropic/claude-opus-4.8-batch": {
+    "encoding": "claude_v4_8",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 6,
+      "perMessage": 0,
+      "toolsExist": 358,
+      "perTool": 68,
+      "perDesc": 5,
+      "perFirstProp": 18,
+      "perAdditionalProp": 14,
+      "perPropDesc": 5,
+      "perEnum": 5,
+      "perNestedObject": 17,
+      "perArrayOfObjects": 17,
+      "anthropic": {
+        "userTurn": 4,
+        "system": 1,
+        "toolUseParam": 19,
+        "perArray": 12,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 24,
+        "toolResultError": 6,
+        "emptyToolResult": 18,
+        "textAfterToolResult": 2
+      }
+    },
+    "name": "Claude Opus 4.8 (Batch)",
+    "contextWindow": 1000000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 0.0000025,
+      "output": 0.0000125,
+      "input_cache_read": 2.5e-7,
+      "input_cache_write": 0.000003125
+    }
+  },
+  "anthropic/claude-opus-4.8-fast": {
+    "encoding": "claude_v4_8",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 6,
+      "perMessage": 0,
+      "toolsExist": 358,
+      "perTool": 68,
+      "perDesc": 5,
+      "perFirstProp": 18,
+      "perAdditionalProp": 14,
+      "perPropDesc": 5,
+      "perEnum": 5,
+      "perNestedObject": 17,
+      "perArrayOfObjects": 17,
+      "anthropic": {
+        "userTurn": 4,
+        "system": 1,
+        "toolUseParam": 19,
+        "perArray": 12,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 24,
+        "toolResultError": 6,
+        "emptyToolResult": 18,
+        "textAfterToolResult": 2
+      }
+    },
+    "name": "Claude Opus 4.8 (Fast)",
+    "contextWindow": 1000000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 0.00001,
+      "output": 0.00005,
+      "input_cache_read": 0.000001,
+      "input_cache_write": 0.0000125
+    }
+  },
+  "anthropic/claude-opus-5": {
+    "encoding": "claude_v5",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 6,
+      "perMessage": 0,
+      "toolsExist": 354,
+      "perTool": 68,
+      "perDesc": 5,
+      "perFirstProp": 18,
+      "perAdditionalProp": 14,
+      "perPropDesc": 5,
+      "perEnum": 5,
+      "perNestedObject": 17,
+      "perArrayOfObjects": 17,
+      "anthropic": {
+        "userTurn": 4,
+        "system": 1,
+        "toolUseParam": 19,
+        "perArray": 12,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 24,
+        "toolResultError": 6,
+        "emptyToolResult": 18,
+        "textAfterToolResult": 2
+      }
+    },
+    "name": "Claude Opus 5",
+    "contextWindow": 1000000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 0.000005,
+      "output": 0.000025,
+      "input_cache_read": 5e-7,
+      "input_cache_write": 0.00000625
+    }
+  },
+  "anthropic/claude-opus-5-batch": {
+    "encoding": "claude_v5",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 6,
+      "perMessage": 0,
+      "toolsExist": 354,
+      "perTool": 68,
+      "perDesc": 5,
+      "perFirstProp": 18,
+      "perAdditionalProp": 14,
+      "perPropDesc": 5,
+      "perEnum": 5,
+      "perNestedObject": 17,
+      "perArrayOfObjects": 17,
+      "anthropic": {
+        "userTurn": 4,
+        "system": 1,
+        "toolUseParam": 19,
+        "perArray": 12,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 24,
+        "toolResultError": 6,
+        "emptyToolResult": 18,
+        "textAfterToolResult": 2
+      }
+    },
+    "name": "Claude Opus 5 (Batch)",
+    "contextWindow": 1000000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 0.0000025,
+      "output": 0.0000125,
+      "input_cache_read": 2.5e-7,
+      "input_cache_write": 0.000003125
+    }
+  },
+  "anthropic/claude-opus-5-fast": {
+    "encoding": "claude_v5",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 6,
+      "perMessage": 0,
+      "toolsExist": 354,
+      "perTool": 68,
+      "perDesc": 5,
+      "perFirstProp": 18,
+      "perAdditionalProp": 14,
+      "perPropDesc": 5,
+      "perEnum": 5,
+      "perNestedObject": 17,
+      "perArrayOfObjects": 17,
+      "anthropic": {
+        "userTurn": 4,
+        "system": 1,
+        "toolUseParam": 19,
+        "perArray": 12,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 24,
+        "toolResultError": 6,
+        "emptyToolResult": 18,
+        "textAfterToolResult": 2
+      }
+    },
+    "name": "Claude Opus 5 (Fast)",
+    "contextWindow": 1000000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 0.00001,
+      "output": 0.00005,
+      "input_cache_read": 0.000001,
+      "input_cache_write": 0.0000125
+    }
+  },
+  "anthropic/claude-opus-5.5": {
+    "encoding": "claude_v5",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 8,
+      "perMessage": 0,
+      "toolsExist": 354,
+      "perTool": 68,
+      "perDesc": 5,
+      "perFirstProp": 18,
+      "perAdditionalProp": 14,
+      "perPropDesc": 5,
+      "perEnum": 5,
+      "perNestedObject": 17,
+      "perArrayOfObjects": 17,
+      "anthropic": {
+        "userTurn": 4,
+        "system": 1,
+        "toolUseParam": 19,
+        "perArray": 12,
+        "userTurnAfterToolResult": 2,
+        "toolResult": 24,
+        "toolResultError": 6,
+        "emptyToolResult": 18,
+        "textAfterToolResult": 4
+      }
+    },
+    "name": "Claude Opus 5.5",
+    "contextWindow": 1000000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 0.000004,
+      "output": 0.00002,
+      "input_cache_read": 2e-7,
+      "input_cache_write": 0.000005
+    }
+  },
+  "anthropic/claude-opus-5.5-batch": {
+    "encoding": "claude_v5",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 8,
+      "perMessage": 0,
+      "toolsExist": 354,
+      "perTool": 68,
+      "perDesc": 5,
+      "perFirstProp": 18,
+      "perAdditionalProp": 14,
+      "perPropDesc": 5,
+      "perEnum": 5,
+      "perNestedObject": 17,
+      "perArrayOfObjects": 17,
+      "anthropic": {
+        "userTurn": 4,
+        "system": 1,
+        "toolUseParam": 19,
+        "perArray": 12,
+        "userTurnAfterToolResult": 2,
+        "toolResult": 24,
+        "toolResultError": 6,
+        "emptyToolResult": 18,
+        "textAfterToolResult": 4
+      }
+    },
+    "name": "Claude Opus 5.5 (Batch)",
+    "contextWindow": 1000000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 0.000002,
+      "output": 0.00001,
+      "input_cache_read": 1e-7,
+      "input_cache_write": 0.0000025
+    }
+  },
+  "anthropic/claude-opus-5.5-fast": {
+    "encoding": "claude_v5",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 8,
+      "perMessage": 0,
+      "toolsExist": 354,
+      "perTool": 68,
+      "perDesc": 5,
+      "perFirstProp": 18,
+      "perAdditionalProp": 14,
+      "perPropDesc": 5,
+      "perEnum": 5,
+      "perNestedObject": 17,
+      "perArrayOfObjects": 17,
+      "anthropic": {
+        "userTurn": 4,
+        "system": 1,
+        "toolUseParam": 19,
+        "perArray": 12,
+        "userTurnAfterToolResult": 2,
+        "toolResult": 24,
+        "toolResultError": 6,
+        "emptyToolResult": 18,
+        "textAfterToolResult": 4
+      }
+    },
+    "name": "Claude Opus 5.5 (Fast)",
+    "contextWindow": 1000000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 0.000008,
+      "output": 0.00004,
+      "input_cache_read": 4e-7,
+      "input_cache_write": 0.00001
+    }
+  },
+  "anthropic/claude-sonnet-4.5-batch": {
+    "encoding": "claude_v3",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 7,
+      "perMessage": 0,
+      "toolsExist": 549,
+      "perTool": 53,
+      "perDesc": 5,
+      "perFirstProp": 13,
+      "perAdditionalProp": 12,
+      "perPropDesc": 5,
+      "perEnum": 3,
+      "perNestedObject": 12,
+      "perArrayOfObjects": 12,
+      "anthropic": {
+        "userTurn": 6,
+        "system": 0,
+        "toolUseParam": 15,
+        "perArray": 10,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 39,
+        "toolResultError": 8,
+        "emptyToolResult": 14,
+        "textAfterToolResult": 5
+      }
+    },
+    "name": "Claude Sonnet 4.5 (Batch)",
+    "contextWindow": 1000000,
+    "maxTokens": 64000,
+    "pricing": {
+      "input": 0.0000015,
+      "output": 0.0000075,
+      "input_cache_read": 1.5e-7,
+      "input_cache_write": 0.000001875
+    }
+  },
+  "anthropic/claude-sonnet-4.6": {
+    "encoding": "claude_v3",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 7,
+      "perMessage": 0,
+      "toolsExist": 550,
+      "perTool": 53,
+      "perDesc": 5,
+      "perFirstProp": 13,
+      "perAdditionalProp": 12,
+      "perPropDesc": 5,
+      "perEnum": 3,
+      "perNestedObject": 12,
+      "perArrayOfObjects": 12,
+      "anthropic": {
+        "userTurn": 6,
+        "system": 1,
+        "toolUseParam": 15,
+        "perArray": 10,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 39,
+        "toolResultError": 8,
+        "emptyToolResult": 14,
+        "textAfterToolResult": 5
+      }
+    },
+    "name": "Claude Sonnet 4.6",
+    "contextWindow": 1000000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 0.000003,
+      "output": 0.000015,
+      "input_cache_read": 3e-7,
+      "input_cache_write": 0.00000375
+    }
+  },
+  "anthropic/claude-sonnet-4.6-batch": {
+    "encoding": "claude_v3",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 7,
+      "perMessage": 0,
+      "toolsExist": 550,
+      "perTool": 53,
+      "perDesc": 5,
+      "perFirstProp": 13,
+      "perAdditionalProp": 12,
+      "perPropDesc": 5,
+      "perEnum": 3,
+      "perNestedObject": 12,
+      "perArrayOfObjects": 12,
+      "anthropic": {
+        "userTurn": 6,
+        "system": 1,
+        "toolUseParam": 15,
+        "perArray": 10,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 39,
+        "toolResultError": 8,
+        "emptyToolResult": 14,
+        "textAfterToolResult": 5
+      }
+    },
+    "name": "Claude Sonnet 4.6 (Batch)",
+    "contextWindow": 1000000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 0.0000015,
+      "output": 0.0000075,
+      "input_cache_read": 1.5e-7,
+      "input_cache_write": 0.000001875
+    }
+  },
+  "anthropic/claude-sonnet-5": {
+    "encoding": "claude_v4_8",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 6,
+      "perMessage": 0,
+      "toolsExist": 422,
+      "perTool": 68,
+      "perDesc": 5,
+      "perFirstProp": 18,
+      "perAdditionalProp": 14,
+      "perPropDesc": 5,
+      "perEnum": 5,
+      "perNestedObject": 17,
+      "perArrayOfObjects": 17,
+      "anthropic": {
+        "userTurn": 4,
+        "system": 1,
+        "toolUseParam": 19,
+        "perArray": 12,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 24,
+        "toolResultError": 6,
+        "emptyToolResult": 18,
+        "textAfterToolResult": 2
+      }
+    },
+    "name": "Claude Sonnet 5",
+    "contextWindow": 1000000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 0.000002,
+      "output": 0.00001,
+      "input_cache_read": 2e-7,
+      "input_cache_write": 0.0000025
+    }
+  },
+  "anthropic/claude-sonnet-5-batch": {
+    "encoding": "claude_v4_8",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 6,
+      "perMessage": 0,
+      "toolsExist": 422,
+      "perTool": 68,
+      "perDesc": 5,
+      "perFirstProp": 18,
+      "perAdditionalProp": 14,
+      "perPropDesc": 5,
+      "perEnum": 5,
+      "perNestedObject": 17,
+      "perArrayOfObjects": 17,
+      "anthropic": {
+        "userTurn": 4,
+        "system": 1,
+        "toolUseParam": 19,
+        "perArray": 12,
+        "userTurnAfterToolResult": 0,
+        "toolResult": 24,
+        "toolResultError": 6,
+        "emptyToolResult": 18,
+        "textAfterToolResult": 2
+      }
+    },
+    "name": "Claude Sonnet 5 (Batch)",
+    "contextWindow": 1000000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 0.000001,
+      "output": 0.000005,
+      "input_cache_read": 1e-7,
+      "input_cache_write": 0.00000125
+    }
+  },
+  "anthropic/claude-sonnet-5.5": {
+    "encoding": "claude_v5",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 8,
+      "perMessage": 0,
+      "toolsExist": 354,
+      "perTool": 68,
+      "perDesc": 5,
+      "perFirstProp": 18,
+      "perAdditionalProp": 14,
+      "perPropDesc": 5,
+      "perEnum": 5,
+      "perNestedObject": 17,
+      "perArrayOfObjects": 17,
+      "anthropic": {
+        "userTurn": 4,
+        "system": 1,
+        "toolUseParam": 19,
+        "perArray": 12,
+        "userTurnAfterToolResult": 2,
+        "toolResult": 24,
+        "toolResultError": 6,
+        "emptyToolResult": 18,
+        "textAfterToolResult": 4
+      }
+    },
+    "name": "Claude Sonnet 5.5",
+    "contextWindow": 1000000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 0.000002,
+      "output": 0.00001,
+      "input_cache_read": 1e-7,
+      "input_cache_write": 0.0000025
+    }
+  },
+  "anthropic/claude-sonnet-5.5-batch": {
+    "encoding": "claude_v5",
+    "tokens": {
+      "contentMultiplier": 1,
+      "baseOverhead": 8,
+      "perMessage": 0,
+      "toolsExist": 354,
+      "perTool": 68,
+      "perDesc": 5,
+      "perFirstProp": 18,
+      "perAdditionalProp": 14,
+      "perPropDesc": 5,
+      "perEnum": 5,
+      "perNestedObject": 17,
+      "perArrayOfObjects": 17,
+      "anthropic": {
+        "userTurn": 4,
+        "system": 1,
+        "toolUseParam": 19,
+        "perArray": 12,
+        "userTurnAfterToolResult": 2,
+        "toolResult": 24,
+        "toolResultError": 6,
+        "emptyToolResult": 18,
+        "textAfterToolResult": 4
+      }
+    },
+    "name": "Claude Sonnet 5.5 (Batch)",
+    "contextWindow": 1000000,
+    "maxTokens": 128000,
+    "pricing": {
+      "input": 0.000001,
+      "output": 0.000005,
+      "input_cache_read": 5e-8,
+      "input_cache_write": 0.00000125
     }
   },
   "google/gemini-3-pro-preview": {

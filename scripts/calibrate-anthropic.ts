@@ -85,6 +85,14 @@ export function claudeApiId(gatewayId: string): string {
     .replace(/\./g, "-");
 }
 
+/** False for a Claude model that count_tokens no longer takes, and for -batch and -fast ids, which share their base model's measurements. */
+export function isMeasurableClaude(gatewayId: string): boolean {
+  return (
+    claudeApiId(gatewayId) in CLAUDE_ENCODINGS &&
+    !/-(batch|fast)$/.test(gatewayId)
+  );
+}
+
 const getTokenizer = (name: keyof typeof encodings) =>
   new Tokenizer(encodings[name]);
 
@@ -114,7 +122,7 @@ const toolResult = (output: {
   ],
 });
 
-interface MessageProbe {
+export interface MessageProbe {
   messages: ModelMessage[];
   tools?: ToolSet;
 }
@@ -205,7 +213,7 @@ const messageProbes = {
  * absorbs, nested and non-string tool inputs, results of every kind, a tool
  * with more than one property, and a final assistant message.
  */
-const checkConversations: Record<string, MessageProbe> = {
+export const checkConversations: Record<string, MessageProbe> = {
   systemAndUser: {
     messages: [
       { role: "system", content: "You are brief.  " },
@@ -264,7 +272,7 @@ const checkConversations: Record<string, MessageProbe> = {
  * What `count()` does not get exactly: numbers and nested values in a tool
  * call, and JSON in a tool result. They are measured and reported, not gated.
  */
-const residualConversations: Record<string, MessageProbe> = {
+export const residualConversations: Record<string, MessageProbe> = {
   nestedInputNumberAndJsonResult: {
     messages: [
       user("Find it"),

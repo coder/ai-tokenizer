@@ -1,0 +1,980 @@
+{
+  "models": {
+    "anthropic/claude-sonnet-4.5": "claude-sonnet-4-5",
+    "anthropic/claude-haiku-4.5": "claude-haiku-4-5",
+    "anthropic/claude-opus-4.5": "claude-opus-4-5",
+    "anthropic/claude-fable-5": "claude-fable-5",
+    "anthropic/claude-fable-5.1": "claude-fable-5-1",
+    "anthropic/claude-haiku-5.5": "claude-haiku-5-5",
+    "anthropic/claude-opus-4.6": "claude-opus-4-6",
+    "anthropic/claude-opus-4.7": "claude-opus-4-7",
+    "anthropic/claude-opus-4.8": "claude-opus-4-8",
+    "anthropic/claude-opus-5": "claude-opus-5",
+    "anthropic/claude-opus-5.5": "claude-opus-5-5",
+    "anthropic/claude-sonnet-4.6": "claude-sonnet-4-6",
+    "anthropic/claude-sonnet-5": "claude-sonnet-5",
+    "anthropic/claude-sonnet-5.5": "claude-sonnet-5-5"
+  },
+  "conversations": [
+    {
+      "name": "systemAndUser",
+      "kind": "exact",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are brief.  "
+        },
+        {
+          "role": "user",
+          "content": "Hello there.  "
+        }
+      ],
+      "api": {
+        "anthropic/claude-sonnet-4.5": 16,
+        "anthropic/claude-opus-4.5": 16,
+        "anthropic/claude-haiku-4.5": 16,
+        "anthropic/claude-fable-5": 19,
+        "anthropic/claude-opus-4.7": 24,
+        "anthropic/claude-fable-5.1": 19,
+        "anthropic/claude-opus-4.6": 17,
+        "anthropic/claude-haiku-5.5": 19,
+        "anthropic/claude-opus-4.8": 19,
+        "anthropic/claude-opus-5": 17,
+        "anthropic/claude-opus-5.5": 19,
+        "anthropic/claude-sonnet-4.6": 17,
+        "anthropic/claude-sonnet-5": 19,
+        "anthropic/claude-sonnet-5.5": 19
+      }
+    },
+    {
+      "name": "joinedUserBlocks",
+      "kind": "exact",
+      "messages": [
+        {
+          "role": "user",
+          "content": "a"
+        },
+        {
+          "role": "assistant",
+          "content": "b  c  "
+        },
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "Mixed café 日本語 "
+            },
+            {
+              "type": "text",
+              "text": "second block  "
+            }
+          ]
+        }
+      ],
+      "api": {
+        "anthropic/claude-sonnet-4.5": 28,
+        "anthropic/claude-opus-4.5": 28,
+        "anthropic/claude-haiku-4.5": 28,
+        "anthropic/claude-fable-5": 28,
+        "anthropic/claude-haiku-5.5": 29,
+        "anthropic/claude-fable-5.1": 29,
+        "anthropic/claude-opus-4.7": 39,
+        "anthropic/claude-opus-4.6": 28,
+        "anthropic/claude-opus-5": 27,
+        "anthropic/claude-opus-4.8": 28,
+        "anthropic/claude-opus-5.5": 29,
+        "anthropic/claude-sonnet-4.6": 28,
+        "anthropic/claude-sonnet-5": 28,
+        "anthropic/claude-sonnet-5.5": 29
+      }
+    },
+    {
+      "name": "whitespaceOnlyLastBlock",
+      "kind": "exact",
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "a  "
+            },
+            {
+              "type": "text",
+              "text": "   "
+            }
+          ]
+        }
+      ],
+      "api": {
+        "anthropic/claude-sonnet-4.5": 9,
+        "anthropic/claude-haiku-4.5": 9,
+        "anthropic/claude-opus-4.5": 9,
+        "anthropic/claude-fable-5": 8,
+        "anthropic/claude-fable-5.1": 10,
+        "anthropic/claude-haiku-5.5": 10,
+        "anthropic/claude-opus-4.6": 9,
+        "anthropic/claude-opus-4.7": 13,
+        "anthropic/claude-opus-4.8": 8,
+        "anthropic/claude-opus-5": 8,
+        "anthropic/claude-sonnet-4.6": 9,
+        "anthropic/claude-opus-5.5": 10,
+        "anthropic/claude-sonnet-5": 8,
+        "anthropic/claude-sonnet-5.5": 10
+      }
+    },
+    {
+      "name": "toolCycles",
+      "kind": "calls",
+      "messages": [
+        {
+          "role": "system",
+          "content": "Use the tools."
+        },
+        {
+          "role": "user",
+          "content": "Find it"
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "tool-call",
+              "toolCallId": "call_1",
+              "toolName": "f",
+              "input": {
+                "query": "needle",
+                "scope": "all"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "call_1",
+              "toolName": "f",
+              "output": {
+                "type": "text",
+                "value": "Found it in 3 files."
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": "Found it."
+        },
+        {
+          "role": "user",
+          "content": "Again"
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "tool-call",
+              "toolCallId": "call_1",
+              "toolName": "f",
+              "input": {
+                "query": "again"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "call_1",
+              "toolName": "f",
+              "output": {
+                "type": "error-text",
+                "value": "boom"
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "tool-call",
+              "toolCallId": "call_1",
+              "toolName": "f",
+              "input": {
+                "query": "retry"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "call_1",
+              "toolName": "f",
+              "output": {
+                "type": "text",
+                "value": ""
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "tool-call",
+              "toolCallId": "call_1",
+              "toolName": "f",
+              "input": {
+                "query": "last"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "call_1",
+              "toolName": "f",
+              "output": {
+                "type": "text",
+                "value": "ok"
+              }
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "content": "thanks  "
+        },
+        {
+          "role": "assistant",
+          "content": "You are welcome"
+        }
+      ],
+      "tools": {
+        "f": {
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {},
+            "additionalProperties": false
+          }
+        }
+      },
+      "api": {
+        "anthropic/claude-sonnet-4.5": 886,
+        "anthropic/claude-haiku-4.5": 886,
+        "anthropic/claude-fable-5": 657,
+        "anthropic/claude-opus-4.5": 886,
+        "anthropic/claude-opus-4.6": 887,
+        "anthropic/claude-opus-4.7": 1156,
+        "anthropic/claude-haiku-5.5": 658,
+        "anthropic/claude-fable-5.1": 658,
+        "anthropic/claude-opus-5": 652,
+        "anthropic/claude-opus-4.8": 657,
+        "anthropic/claude-opus-5.5": 658,
+        "anthropic/claude-sonnet-4.6": 887,
+        "anthropic/claude-sonnet-5": 721,
+        "anthropic/claude-sonnet-5.5": 658
+      }
+    },
+    {
+      "name": "finalAssistant",
+      "kind": "exact",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Say hi"
+        },
+        {
+          "role": "assistant",
+          "content": "Hi there  "
+        }
+      ],
+      "api": {
+        "anthropic/claude-haiku-4.5": 11,
+        "anthropic/claude-sonnet-4.5": 11,
+        "anthropic/claude-opus-4.5": 11,
+        "anthropic/claude-fable-5": 14,
+        "anthropic/claude-fable-5.1": 16,
+        "anthropic/claude-haiku-5.5": 16,
+        "anthropic/claude-opus-4.7": 19,
+        "anthropic/claude-opus-4.6": 11,
+        "anthropic/claude-opus-4.8": 14,
+        "anthropic/claude-opus-5": 14,
+        "anthropic/claude-sonnet-4.6": 11,
+        "anthropic/claude-opus-5.5": 16,
+        "anthropic/claude-sonnet-5": 14,
+        "anthropic/claude-sonnet-5.5": 16
+      }
+    },
+    {
+      "name": "nestedInputNumberAndJsonResult",
+      "kind": "calls",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Find it"
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "tool-call",
+              "toolCallId": "call_1",
+              "toolName": "f",
+              "input": {
+                "limit": 3,
+                "nested": {
+                  "a": [
+                    1,
+                    2
+                  ],
+                  "b": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "call_1",
+              "toolName": "f",
+              "output": {
+                "type": "json",
+                "value": {
+                  "found": true,
+                  "items": [
+                    "a",
+                    "b"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": "Done."
+        }
+      ],
+      "tools": {
+        "f": {
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {},
+            "additionalProperties": false
+          }
+        }
+      },
+      "api": {
+        "anthropic/claude-sonnet-4.5": 666,
+        "anthropic/claude-opus-4.5": 666,
+        "anthropic/claude-fable-5": 474,
+        "anthropic/claude-haiku-4.5": 666,
+        "anthropic/claude-opus-4.6": 667,
+        "anthropic/claude-opus-4.7": 888,
+        "anthropic/claude-haiku-5.5": 472,
+        "anthropic/claude-fable-5.1": 472,
+        "anthropic/claude-opus-5": 470,
+        "anthropic/claude-sonnet-4.6": 667,
+        "anthropic/claude-opus-4.8": 474,
+        "anthropic/claude-opus-5.5": 472,
+        "anthropic/claude-sonnet-5": 538,
+        "anthropic/claude-sonnet-5.5": 472
+      }
+    },
+    {
+      "name": "accuracy workload, about 500 tokens",
+      "kind": "schema",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are an expert AI assistant specializing in Kubernetes and NATS. Help users with detailed analysis and technical guidance."
+        },
+        {
+          "role": "user",
+          "content": "Hello! I need help analyzing customer data from Q2 2025. Can you provide insights on revenue trends, retention rates, and growth patterns?"
+        }
+      ],
+      "tools": {
+        "analyzeData": {
+          "description": "Analyze dataset with comprehensive statistical insights and trend detection",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "query": {
+                "type": "string",
+                "description": "Analysis query"
+              },
+              "filters": {
+                "type": "object",
+                "properties": {
+                  "category": {
+                    "type": "string",
+                    "description": "Category filter"
+                  },
+                  "dateRange": {
+                    "type": "object",
+                    "properties": {
+                      "start": {
+                        "type": "string",
+                        "description": "Start date ISO format"
+                      },
+                      "end": {
+                        "type": "string",
+                        "description": "End date ISO format"
+                      }
+                    },
+                    "required": [
+                      "start",
+                      "end"
+                    ],
+                    "description": "Date range for filtering",
+                    "additionalProperties": false
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Tag filters"
+                  }
+                },
+                "required": [
+                  "category",
+                  "dateRange",
+                  "tags"
+                ],
+                "description": "Data filters",
+                "additionalProperties": false
+              },
+              "aggregation": {
+                "type": "string",
+                "enum": [
+                  "sum",
+                  "avg",
+                  "min",
+                  "max",
+                  "count"
+                ],
+                "description": "Aggregation method"
+              }
+            },
+            "required": [
+              "query",
+              "filters",
+              "aggregation"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "api": {
+        "anthropic/claude-sonnet-4.5": 857,
+        "anthropic/claude-opus-4.5": 857,
+        "anthropic/claude-haiku-4.5": 857,
+        "anthropic/claude-fable-5": 789,
+        "anthropic/claude-fable-5.1": 787,
+        "anthropic/claude-opus-4.6": 858,
+        "anthropic/claude-haiku-5.5": 787,
+        "anthropic/claude-opus-4.7": 1179,
+        "anthropic/claude-opus-4.8": 789,
+        "anthropic/claude-opus-5": 785,
+        "anthropic/claude-sonnet-4.6": 858,
+        "anthropic/claude-sonnet-5": 853,
+        "anthropic/claude-sonnet-5.5": 787,
+        "anthropic/claude-opus-5.5": 787
+      }
+    },
+    {
+      "name": "accuracy workload, about 5000 tokens",
+      "kind": "schema",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are an expert AI assistant specializing in Kubernetes and RabbitMQ. Help users with detailed analysis and technical guidance."
+        },
+        {
+          "role": "user",
+          "content": "Hello! I need help analyzing customer data from Q4 2023. Can you provide insights on revenue trends, retention rates, and growth patterns?"
+        },
+        {
+          "role": "assistant",
+          "content": "Write a Python function to calculate factorial with error handling and validation. Include proper type annotations and documentation."
+        },
+        {
+          "role": "user",
+          "content": "你好！データ分析についての情報を教えてください。한국어로도説명できますか？ Пожалуйста, объясните на русском языке. شكراً لك على المساعدة."
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Explain quantum tunneling: ψ(x) = Ae^(ikx), where ℏω = E_{n}. The Schrödinger equation shows how photons behave at quantum scales."
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "call00003",
+              "toolName": "analyzeData",
+              "input": {
+                "query": "Q1 analysis",
+                "filters": {
+                  "category": "Redis",
+                  "dateRange": {
+                    "start": "2024-01-01",
+                    "end": "2024-12-31"
+                  },
+                  "tags": [
+                    "test"
+                  ]
+                },
+                "aggregation": "sum"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "call00003",
+              "toolName": "analyzeData",
+              "output": {
+                "type": "json",
+                "value": {
+                  "status": "success",
+                  "message": "Analysis complete for Kubernetes. Found 1234567890 records.",
+                  "count": 16
+                }
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": "const processData = async () => {{ const response = await fetch('https://api.example.com/v1/data'); const data = await response.json(); return data.metrics; }}; // Modern Python with async/await"
+        },
+        {
+          "role": "user",
+          "content": "Technical: Redis, RabbitMQ, Ansible, microservices, Docker, PostgreSQL, GraphQL, REST API, OAuth2, JWT, WebSocket, gRPC, serverless, edge computing."
+        },
+        {
+          "role": "assistant",
+          "content": "Numbers: 9876543210, 0xDEADBEEF, 192.168.1.1, UUID: 550e8400-e29b-41d4-a716-446655440000, API_KEY_2024_v2, user_id_9001, $price = 49.99, discount = 25%, timestamp: 2024-01-15T10:30:45Z"
+        },
+        {
+          "role": "user",
+          "content": "Mixed content: The café serves pâté 🍮, naïve résumé, Zürich coöperation. Quotes: \"Hola mundo\". Math: ∀x ∈ ℝ, ∃y. Currency: $500 €85 £75"
+        },
+        {
+          "role": "assistant",
+          "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure tempor incididunt ut labore et dolore magna aliqua. Nisi ut ad minim veniam."
+        },
+        {
+          "role": "user",
+          "content": "Hello! I need help analyzing customer data from Q3 2024. Can you provide insights on revenue trends, retention rates, and growth patterns?"
+        },
+        {
+          "role": "assistant",
+          "content": "Write a Rust function to calculate fibonacci with error handling and validation. Include proper type annotations and documentation."
+        },
+        {
+          "role": "user",
+          "content": "你好！データ分析についての情報を教えてください。한국어로도説명できますか？ Пожалуйста, объясните на русском языке. شكراً لك على المساعدة."
+        },
+        {
+          "role": "assistant",
+          "content": "Explain quantum entanglement: ψ(x) = Ae^(ikx), where ℏω = E_{n}. The Schrödinger equation shows how photons behave at quantum scales."
+        },
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "Emojis test 🚀 💯 🎪 🌈 ⭐ ✨ • ○ ● ▪ ■ ← → ↔ ≈ ≠ ≤ ≥ ± ∞ ∑ √ special characters tokenize differently!"
+            },
+            {
+              "type": "text",
+              "text": "Additionally, can you help with Elasticsearch?"
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": "const analyzeMetrics = async () => {{ const response = await fetch('https://api.example.com/v1/data'); const data = await response.json(); return data.metrics; }}; // Modern Python with async/await"
+        },
+        {
+          "role": "user",
+          "content": "Technical: Elasticsearch, NATS, Jenkins, microservices, Docker, PostgreSQL, GraphQL, REST API, OAuth2, JWT, WebSocket, gRPC, serverless, edge computing."
+        },
+        {
+          "role": "assistant",
+          "content": "Numbers: 9876543210, 0xDEADBEEF, 10.0.0.1, UUID: 550e8400-e29b-41d4-a716-446655440000, API_KEY_2025_v3, user_id_9001, $price = 19.99, discount = 25%, timestamp: 2024-01-15T10:30:45Z"
+        },
+        {
+          "role": "user",
+          "content": "Mixed content: The café serves pâté 🍮, naïve résumé, Zürich coöperation. Quotes: \"Hola mundo\". Math: ∀x ∈ ℝ, ∃y. Currency: $500 €200 £75"
+        },
+        {
+          "role": "assistant",
+          "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Nisi ut ad minim veniam."
+        },
+        {
+          "role": "user",
+          "content": "Hello! I need help analyzing customer data from Q1 2023. Can you provide insights on revenue trends, retention rates, and growth patterns?"
+        },
+        {
+          "role": "assistant",
+          "content": "Write a Python function to calculate fibonacci with error handling and validation. Include proper type annotations and documentation."
+        },
+        {
+          "role": "user",
+          "content": "你好！データ分析についての情報を教えてください。한국어로도説명できますか？ Пожалуйста, объясните на русском языке. شكراً لك على المساعدة."
+        },
+        {
+          "role": "assistant",
+          "content": "Explain quantum tunneling: ψ(x) = Ae^(ikx), where ℏω = E_{n}. The Schrödinger equation shows how quarks behave at quantum scales."
+        },
+        {
+          "role": "user",
+          "content": "Emojis test 🚀 🎉 🎨 🎯 ⭐ ✨ • ○ ● ▪ ■ ← → ↔ ≈ ≠ ≤ ≥ ± ∞ ∑ √ special characters tokenize differently!"
+        },
+        {
+          "role": "assistant",
+          "content": "const processData = async () => {{ const response = await fetch('https://service.io/api/metrics'); const data = await response.json(); return data.analytics; }}; // Modern TypeScript with async/await"
+        },
+        {
+          "role": "user",
+          "content": "Technical: Redis, NATS, Ansible, microservices, Docker, PostgreSQL, GraphQL, REST API, OAuth2, JWT, WebSocket, gRPC, serverless, edge computing."
+        },
+        {
+          "role": "assistant",
+          "content": "Numbers: 9876543210, 0xDEADBEEF, 10.0.0.1, UUID: 550e8400-e29b-41d4-a716-446655440000, API_KEY_2025_v4, user_id_42, $price = 19.99, discount = 25%, timestamp: 2025-03-20T14:22:10Z"
+        },
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "Mixed content: The café serves pâté 🍮, naïve résumé, Zürich coöperation. Quotes: \"Hello world\". Math: ∀x ∈ ℝ, ∃y. Currency: $100 €85 £375"
+            },
+            {
+              "type": "text",
+              "text": "Additionally, can you help with Redis?"
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis nostrud ad minim veniam."
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "call00029",
+              "toolName": "analyzeData",
+              "input": {
+                "query": "Q2 analysis",
+                "filters": {
+                  "category": "Elasticsearch",
+                  "dateRange": {
+                    "start": "2024-01-01",
+                    "end": "2024-12-31"
+                  },
+                  "tags": [
+                    "test"
+                  ]
+                },
+                "aggregation": "sum"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "call00029",
+              "toolName": "analyzeData",
+              "output": {
+                "type": "json",
+                "value": {
+                  "status": "success",
+                  "message": "Analysis complete for Redis. Found 9876543210 records.",
+                  "count": 6958
+                }
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": "Write a Rust function to calculate prime numbers with error handling and validation. Include proper type annotations and documentation."
+        },
+        {
+          "role": "user",
+          "content": "你好！機械学習についての情報を教えてください。한국어로도説명できますか？ Пожалуйста, объясните на русском языке. شكراً لك على المساعدة."
+        },
+        {
+          "role": "assistant",
+          "content": "Explain quantum entanglement: ψ(x) = Ae^(ikx), where ℏω = E_{n}. The Schrödinger equation shows how quarks behave at quantum scales."
+        },
+        {
+          "role": "user",
+          "content": "Emojis test 🚀 💯 🎪 ⚡ ⭐ ✨ • ○ ● ▪ ■ ← → ↔ ≈ ≠ ≤ ≥ ± ∞ ∑ √ special characters tokenize differently!"
+        },
+        {
+          "role": "assistant",
+          "content": "const fetchData = async () => {{ const response = await fetch('https://service.io/api/metrics'); const data = await response.json(); return data.insights; }}; // Modern JavaScript with async/await"
+        },
+        {
+          "role": "user",
+          "content": "Technical: Elasticsearch, Kafka, Terraform, microservices, Docker, PostgreSQL, GraphQL, REST API, OAuth2, JWT, WebSocket, gRPC, serverless, edge computing."
+        },
+        {
+          "role": "assistant",
+          "content": "Numbers: 1234567890, 0x1A2B3C4D, 192.168.1.1, UUID: 550e8400-e29b-41d4-a716-446655440000, API_KEY_2024_v4, user_id_42, $price = 29.99, discount = 15%, timestamp: 2025-03-20T14:22:10Z"
+        },
+        {
+          "role": "user",
+          "content": "Mixed content: The café serves café au lait 🍮, naïve résumé, Zürich coöperation. Quotes: \"Hola mundo\". Math: ∀x ∈ ℝ, ∃y. Currency: $100 €200 £375"
+        },
+        {
+          "role": "assistant",
+          "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Excepteur sint tempor incididunt ut labore et dolore magna aliqua. Quis nostrud ad minim veniam."
+        },
+        {
+          "role": "user",
+          "content": "Hello! I need help analyzing customer data from Q3 2023. Can you provide insights on revenue trends, retention rates, and growth patterns?"
+        },
+        {
+          "role": "assistant",
+          "content": "Write a Go function to calculate sorting with error handling and validation. Include proper type annotations and documentation."
+        },
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "你好！機械学習についての情報を教えてください。한국어로도説명できますか？ Пожалуйста, объясните на русском языке. شكراً لك على المساعدة."
+            },
+            {
+              "type": "text",
+              "text": "Additionally, can you help with Redis?"
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": "Explain quantum tunneling: ψ(x) = Ae^(ikx), where ℏω = E_{n}. The Schrödinger equation shows how quarks behave at quantum scales."
+        },
+        {
+          "role": "user",
+          "content": "Emojis test 🚀 🎉 🎨 ⚡ ⭐ ✨ • ○ ● ▪ ■ ← → ↔ ≈ ≠ ≤ ≥ ± ∞ ∑ √ special characters tokenize differently!"
+        },
+        {
+          "role": "assistant",
+          "content": "const analyzeMetrics = async () => {{ const response = await fetch('https://api.example.com/v1/data'); const data = await response.json(); return data.results; }}; // Modern Go with async/await"
+        },
+        {
+          "role": "user",
+          "content": "Technical: Elasticsearch, RabbitMQ, Ansible, microservices, Docker, PostgreSQL, GraphQL, REST API, OAuth2, JWT, WebSocket, gRPC, serverless, edge computing."
+        },
+        {
+          "role": "assistant",
+          "content": "Numbers: 1234567890, 0xDEADBEEF, 10.0.0.1, UUID: 550e8400-e29b-41d4-a716-446655440000, API_KEY_2025_v3, user_id_42, $price = 29.99, discount = 25%, timestamp: 2024-01-15T10:30:45Z"
+        },
+        {
+          "role": "user",
+          "content": "Mixed content: The café serves café au lait 🍮, naïve résumé, Zürich coöperation. Quotes: \"Hello world\". Math: ∀x ∈ ℝ, ∃y. Currency: $100 €85 £375"
+        },
+        {
+          "role": "assistant",
+          "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Nisi ut ad minim veniam."
+        },
+        {
+          "role": "user",
+          "content": "Hello! I need help analyzing customer data from Q4 2024. Can you provide insights on revenue trends, retention rates, and growth patterns?"
+        },
+        {
+          "role": "assistant",
+          "content": "Write a TypeScript function to calculate fibonacci with error handling and validation. Include proper type annotations and documentation."
+        },
+        {
+          "role": "user",
+          "content": "你好！機械学習についての情報を教えてください。한국어로도説명できますか？ Пожалуйста, объясните на русском языке. شكراً لك على المساعدة."
+        },
+        {
+          "role": "assistant",
+          "content": "Explain quantum superposition: ψ(x) = Ae^(ikx), where ℏω = E_{n}. The Schrödinger equation shows how quarks behave at quantum scales."
+        },
+        {
+          "role": "user",
+          "content": "Emojis test 🚀 🔥 🎪 ⚡ ⭐ ✨ • ○ ● ▪ ■ ← → ↔ ≈ ≠ ≤ ≥ ± ∞ ∑ √ special characters tokenize differently!"
+        },
+        {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "const fetchData = async () => {{ const response = await fetch('https://service.io/api/metrics'); const data = await response.json(); return data.metrics; }}; // Modern TypeScript with async/await"
+            },
+            {
+              "type": "tool-call",
+              "toolCallId": "call00055",
+              "toolName": "analyzeData",
+              "input": {
+                "query": "Q1 analysis",
+                "filters": {
+                  "category": "Kubernetes",
+                  "dateRange": {
+                    "start": "2024-01-01",
+                    "end": "2024-12-31"
+                  },
+                  "tags": [
+                    "test"
+                  ]
+                },
+                "aggregation": "sum"
+              }
+            }
+          ]
+        },
+        {
+          "role": "tool",
+          "content": [
+            {
+              "type": "tool-result",
+              "toolCallId": "call00055",
+              "toolName": "analyzeData",
+              "output": {
+                "type": "json",
+                "value": {
+                  "status": "success",
+                  "message": "Analysis complete for Kubernetes. Found 1234567890 records.",
+                  "count": 4392
+                }
+              }
+            }
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": "Numbers: 9876543210, 0xDEADBEEF, 10.0.0.1, UUID: 550e8400-e29b-41d4-a716-446655440000, API_KEY_2023_v4, user_id_42, $price = 49.99, discount = 20%, timestamp: 2024-01-15T10:30:45Z"
+        }
+      ],
+      "tools": {
+        "analyzeData": {
+          "description": "Analyze dataset with comprehensive statistical insights and trend detection",
+          "inputSchema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+              "query": {
+                "type": "string",
+                "description": "Analysis query"
+              },
+              "filters": {
+                "type": "object",
+                "properties": {
+                  "category": {
+                    "type": "string",
+                    "description": "Category filter"
+                  },
+                  "dateRange": {
+                    "type": "object",
+                    "properties": {
+                      "start": {
+                        "type": "string",
+                        "description": "Start date ISO format"
+                      },
+                      "end": {
+                        "type": "string",
+                        "description": "End date ISO format"
+                      }
+                    },
+                    "required": [
+                      "start",
+                      "end"
+                    ],
+                    "description": "Date range for filtering",
+                    "additionalProperties": false
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Tag filters"
+                  }
+                },
+                "required": [
+                  "category",
+                  "dateRange",
+                  "tags"
+                ],
+                "description": "Data filters",
+                "additionalProperties": false
+              },
+              "aggregation": {
+                "type": "string",
+                "enum": [
+                  "sum",
+                  "avg",
+                  "min",
+                  "max",
+                  "count"
+                ],
+                "description": "Aggregation method"
+              }
+            },
+            "required": [
+              "query",
+              "filters",
+              "aggregation"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "api": {
+        "anthropic/claude-sonnet-4.5": 4524,
+        "anthropic/claude-haiku-4.5": 4524,
+        "anthropic/claude-opus-4.5": 4524,
+        "anthropic/claude-fable-5": 5310,
+        "anthropic/claude-haiku-5.5": 5312,
+        "anthropic/claude-opus-4.6": 4525,
+        "anthropic/claude-opus-4.7": 5925,
+        "anthropic/claude-fable-5.1": 5312,
+        "anthropic/claude-opus-4.8": 5310,
+        "anthropic/claude-opus-5": 5306,
+        "anthropic/claude-opus-5.5": 5312,
+        "anthropic/claude-sonnet-4.6": 4525,
+        "anthropic/claude-sonnet-5": 5374,
+        "anthropic/claude-sonnet-5.5": 5312
+      }
+    }
+  ]
+}
