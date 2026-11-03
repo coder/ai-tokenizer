@@ -1,6 +1,6 @@
 import Tokenizer from "./tokenizer";
 import { asSchema, type ModelMessage, type ToolSet } from "ai";
-import type { Model, ModelTokens } from ".";
+import type { AnthropicTokens, Model, ModelTokens } from ".";
 
 export interface CountOptions<TOOLS extends ToolSet = ToolSet> {
   /**
@@ -95,15 +95,13 @@ export function count<TOOLS extends ToolSet = ToolSet>(
   let total = config.baseOverhead;
 
   // Count messages with detailed breakdown
-  const messages: CountResultMessage[] = [];
-  for (const message of options.messages) {
-    const messageResult = countMessageTokensDetailed(
-      options.tokenizer,
-      message,
-      config
-    );
-    messages.push(messageResult);
-    total += messageResult.total;
+  const messages: CountResultMessage[] = config.anthropic
+    ? countClaudeMessages(options.tokenizer, options.messages, config.anthropic)
+    : options.messages.map((message) =>
+        countMessageTokensDetailed(options.tokenizer, message, config)
+      );
+  for (const message of messages) {
+    total += message.total;
   }
 
   // Count tools with detailed breakdown
@@ -150,6 +148,9 @@ function countToolsTokensDetailed<TOOLS extends ToolSet = ToolSet>(
   >;
   const unresolved: UnresolvedToolPart[] = [];
   let total = 0;
+  const countText = config.anthropic
+    ? (text: string) => tokenizer.countUntrimmed(text)
+    : (text: string) => tokenizer.count(text);
 
   if (tools && Object.keys(tools).length > 0) {
     total += config.toolsExist;
@@ -164,7 +165,7 @@ function countToolsTokensDetailed<TOOLS extends ToolSet = ToolSet>(
       };
 
       // Count name tokens
-      const nameTokens = tokenizer.count(toolName);
+      const nameTokens = countText(toolName);
 
       // Count description tokens
       let descriptionTokens = 0;
@@ -177,7 +178,7 @@ function countToolsTokensDetailed<TOOLS extends ToolSet = ToolSet>(
           error: description.error,
         });
       } else if (description.text) {
-        descriptionTokens = config.perDesc + tokenizer.count(description.text);
+        descriptionTokens = config.perDesc + countText(description.text);
       }
 
       // Count inputSchema tokens
@@ -187,7 +188,7 @@ function countToolsTokensDetailed<TOOLS extends ToolSet = ToolSet>(
         if (schema.status === "ok") {
           inputSchemaTokens = countToolSchema(
             schema.jsonSchema,
-            tokenizer,
+            countText,
             config
           );
         } else {
@@ -449,7 +450,7 @@ function withoutNull(schema: Record<string, unknown>): Record<string, unknown> {
 }
 
 interface SchemaWalk {
-  tokenizer: Tokenizer;
+  countText: (text: string) => number;
   config: ModelTokens;
   /** The whole tool schema, which local `$ref`s point into. */
   root: unknown;
@@ -473,14 +474,14 @@ function unwrap(value: Record<string, unknown>, walk: SchemaWalk) {
 
 function countToolSchema(
   jsonSchema: unknown,
-  tokenizer: Tokenizer,
+  countText: (text: string) => number,
   config: ModelTokens
 ): number {
   if (!isRecord(jsonSchema)) {
     return 0;
   }
   const walk: SchemaWalk = {
-    tokenizer,
+    countText,
     config,
     root: jsonSchema,
     ancestors: new Set(),
@@ -577,9 +578,9 @@ function countProperty(
   isFirstProp: boolean,
   walk: SchemaWalk
 ): number {
-  const { tokenizer, config } = walk;
+  const { countText, config } = walk;
   // Count property name tokens
-  let tokens = tokenizer.count(key);
+  let tokens = countText(key);
 
   // Add property overhead (first vs additional)
   tokens += isFirstProp ? config.perFirstProp : config.perAdditionalProp;
@@ -592,14 +593,19 @@ function countProperty(
   // Count property description if present
   if (typeof propSchema.description === "string" && propSchema.description) {
     tokens += config.perPropDesc;
-    tokens += tokenizer.count(propSchema.description);
+    tokens += countText(propSchema.description);
   }
 
   // Handle enums - count each enum value + overhead
   if (Array.isArray(propSchema.enum)) {
     tokens += config.perEnum;
-    for (const enumValue of propSchema.enum) {
-      tokens += tokenizer.count(String(enumValue));
+    if (config.anthropic) {
+      // The API reads the values as one JSON array.
+      tokens += countText(spacedJson(propSchema.enum) ?? "");
+    } else {
+      for (const enumValue of propSchema.enum) {
+        tokens += countText(String(enumValue));
+      }
     }
   }
 
@@ -608,6 +614,7 @@ function countProperty(
     tokens += config.perNestedObject || 0;
     tokens += countSchemaProperties(propSchema, walk);
   } else if (isRecord(propSchema.items)) {
+    tokens += config.anthropic?.perArray ?? 0;
     // Handle arrays with object items
     const items = unwrap(propSchema.items, walk);
     if (propertiesOf(items)) {
@@ -868,4 +875,345 @@ function tallyToolOutput(tally: Tally, output: unknown): void {
     return;
   }
   tally.addText(JSON.stringify(output));
+}
+
+/** One text, tool call, tool result or media part of a Claude request. */
+type ClaudeBlock =
+  | { kind: "text"; text: string; part: TextContent }
+  | { kind: "tool-call"; name: string; input: unknown; part: ToolCallContent }
+  | {
+      kind: "tool-result";
+      text: string;
+      media: number;
+      isError: boolean;
+      part: ToolResultContent;
+    }
+  | { kind: "media" };
+
+type TextContent = Extract<CountResultMessageContent, { type: "text" }>;
+type ToolCallContent = Extract<
+  CountResultMessageContent,
+  { type: "tool-call" }
+>;
+type ToolResultContent = Extract<
+  CountResultMessageContent,
+  { type: "tool-result" }
+>;
+type TextBlock = Extract<ClaudeBlock, { kind: "text" }>;
+
+/**
+ * The blocks of one request message. The API merges consecutive user and tool
+ * messages into one user turn and consecutive assistant messages into one
+ * assistant turn, as the AI SDK's Anthropic provider does before it sends them.
+ */
+interface ClaudeTurn {
+  role: "system" | "user" | "assistant";
+  /** The message that carries the overhead of this turn. */
+  first: number;
+  blocks: ClaudeBlock[];
+}
+
+/**
+ * Counts messages the way Anthropic's `count_tokens` does for the model whose
+ * encoding `tokenizer` has: one frame in `baseOverhead`, the tokens of the
+ * text, and the overhead of each turn and block. Role names and tool call ids
+ * are not tokens. `results[i]` is the breakdown of `messages[i]`.
+ */
+function countClaudeMessages(
+  tokenizer: Tokenizer,
+  messages: ModelMessage[],
+  tokens: AnthropicTokens
+): CountResultMessage[] {
+  const results = messages.map(
+    (): CountResultMessage => ({ total: 0, content: [] })
+  );
+  const system: ClaudeTurn = { role: "system", first: -1, blocks: [] };
+  const turns: ClaudeTurn[] = [];
+  messages.forEach((message, index) => {
+    let turn: ClaudeTurn;
+    if (message.role === "system") {
+      system.first = system.first < 0 ? index : system.first;
+      turn = system;
+    } else {
+      const role = message.role === "assistant" ? "assistant" : "user";
+      turn =
+        turns.at(-1)?.role === role
+          ? turns.at(-1)!
+          : { role, first: index, blocks: [] };
+      if (turn !== turns.at(-1)) {
+        turns.push(turn);
+      }
+    }
+    addClaudeBlocks(turn, message.content, results[index]!);
+  });
+
+  // A final assistant message is what the model continues, and the provider
+  // trims its text: the API refuses to end it with whitespace.
+  const last = turns.at(-1);
+  const lastBlock = last?.blocks.at(-1);
+  if (last?.role === "assistant" && lastBlock?.kind === "text") {
+    lastBlock.text = lastBlock.text.trim();
+  }
+
+  let previous: ClaudeTurn | undefined;
+  let previousUser: ClaudeTurn | undefined;
+  for (const turn of [system, ...turns]) {
+    if (turn.first < 0) {
+      continue;
+    }
+    if (turn.role === "system") {
+      results[turn.first]!.total += tokens.system;
+    } else if (turn.role === "user" && previous?.role === "assistant") {
+      const answersToolResult =
+        previousUser?.blocks.at(-1)?.kind === "tool-result" &&
+        turn.blocks[0]?.kind !== "tool-result";
+      results[turn.first]!.total +=
+        tokens.userTurn +
+        (answersToolResult ? tokens.userTurnAfterToolResult : 0);
+    }
+    if (turn.role !== "system") {
+      previous = turn;
+    }
+    if (turn.role === "user") {
+      previousUser = turn;
+    }
+    countClaudeTurn(tokenizer, tokens, turn);
+  }
+  for (const result of results) {
+    result.total += result.content.reduce((sum, part) => sum + part.total, 0);
+  }
+  return results;
+}
+
+function addClaudeBlocks(
+  turn: ClaudeTurn,
+  content: ModelMessage["content"],
+  result: CountResultMessage
+): void {
+  const addText = (text: string) => {
+    const part: TextContent = { type: "text", total: 0 };
+    result.content.push(part);
+    turn.blocks.push({ kind: "text", text, part });
+  };
+  if (typeof content === "string") {
+    addText(content);
+    return;
+  }
+  if (!Array.isArray(content)) {
+    return;
+  }
+  for (const part of content as unknown[]) {
+    if (!isRecord(part)) {
+      continue;
+    }
+    if (part.type === "text") {
+      addText(typeof part.text === "string" ? part.text : "");
+    } else if (part.type === "tool-call") {
+      const counted: ToolCallContent = {
+        type: "tool-call",
+        total: 0,
+        input: 0,
+      };
+      result.content.push(counted);
+      turn.blocks.push({
+        kind: "tool-call",
+        name: typeof part.toolName === "string" ? part.toolName : "",
+        input: part.input,
+        part: counted,
+      });
+    } else if (part.type === "tool-result") {
+      const counted: ToolResultContent = {
+        type: "tool-result",
+        total: 0,
+        output: 0,
+      };
+      result.content.push(counted);
+      turn.blocks.push({
+        kind: "tool-result",
+        ...readToolResult(part.output),
+        part: counted,
+      });
+    } else if (typeof part.type === "string" && MEDIA_KINDS.has(part.type)) {
+      const text = inlineText(part);
+      if (text !== undefined) {
+        addText(text);
+      } else {
+        result.content.push({
+          type: "text",
+          total: countMediaTokens(toMedia(part)),
+        });
+        turn.blocks.push({ kind: "media" });
+      }
+    }
+  }
+}
+
+/** The text and media of a tool result, as the provider puts them in `tool_result.content`. */
+function readToolResult(output: unknown): {
+  text: string;
+  media: number;
+  isError: boolean;
+} {
+  if (typeof output === "string") {
+    return { text: output, media: 0, isError: false };
+  }
+  if (!isRecord(output)) {
+    return { text: "", media: 0, isError: false };
+  }
+  const isError = output.type === "error-text" || output.type === "error-json";
+  if (output.type === "text" || output.type === "error-text") {
+    return { text: String(output.value ?? ""), media: 0, isError };
+  }
+  if (output.type === "execution-denied") {
+    const reason =
+      typeof output.reason === "string" ? output.reason : undefined;
+    return { text: reason ?? "Tool call execution denied.", media: 0, isError };
+  }
+  if (output.type === "content" && Array.isArray(output.value)) {
+    let text = "";
+    let media = 0;
+    for (const item of output.value as unknown[]) {
+      if (!isRecord(item)) {
+        continue;
+      }
+      const inline = inlineText(item);
+      if (item.type === "text" && typeof item.text === "string") {
+        text += item.text;
+      } else if (inline !== undefined) {
+        text += inline;
+      } else if (isBinaryMediaPart(item)) {
+        media += countMediaTokens(toMedia(item));
+      }
+    }
+    return { text, media, isError };
+  }
+  return { text: JSON.stringify(output.value) ?? "", media: 0, isError };
+}
+
+function countClaudeTurn(
+  tokenizer: Tokenizer,
+  tokens: AnthropicTokens,
+  turn: ClaudeTurn
+): void {
+  const { blocks } = turn;
+  for (let i = 0; i < blocks.length; i++) {
+    const block = blocks[i]!;
+    if (block.kind === "tool-call") {
+      const input = countToolInput(tokenizer, tokens, block.input);
+      block.part.input = input;
+      block.part.total = tokenizer.countUntrimmed(block.name) + input;
+    } else if (block.kind === "tool-result") {
+      const output =
+        block.text === "" && block.media === 0
+          ? tokens.emptyToolResult
+          : tokenizer.countUntrimmed(block.text) + block.media;
+      block.part.output = output;
+      block.part.total =
+        tokens.toolResult +
+        (block.isError ? tokens.toolResultError : 0) +
+        output;
+    } else if (block.kind === "text") {
+      let end = i;
+      while (blocks[end + 1]?.kind === "text") {
+        end++;
+      }
+      const run = blocks.slice(i, end + 1) as TextBlock[];
+      // The API trims the end of a user message and of the system prompt,
+      // which only the last run of the turn can reach.
+      const trimmed =
+        turn.role === "system" ||
+        (turn.role === "user" && end === blocks.length - 1);
+      const shares = countTextRun(tokenizer, run, trimmed);
+      if (blocks[i - 1]?.kind === "tool-result") {
+        shares[0]! += tokens.textAfterToolResult;
+      }
+      run.forEach((textBlock, k) => {
+        textBlock.part.total = shares[k]!;
+      });
+      i = end;
+    }
+  }
+}
+
+const WHITESPACE_ONLY = /^[\t-\r ]*$/;
+
+/**
+ * The tokens of text blocks that the API joins with no separator, shared out
+ * over the blocks. A part's share is its own tokens, moved by what joining
+ * changed: it can be less than the tokens of the part alone, and never less
+ * than 0. The shares sum to the count of the joined text.
+ */
+function countTextRun(
+  tokenizer: Tokenizer,
+  run: TextBlock[],
+  trimmed: boolean
+): number[] {
+  const joined = run.map((block) => block.text).join("");
+  // A last block of only whitespace is not trimmed, and neither is the rest.
+  const isTrimmed = trimmed && !WHITESPACE_ONLY.test(run.at(-1)!.text);
+  const total = isTrimmed
+    ? tokenizer.count(joined)
+    : tokenizer.countUntrimmed(joined);
+  if (run.length === 1) {
+    return [total];
+  }
+  const shares = run.map((block) => tokenizer.countUntrimmed(block.text));
+  let rest = total - shares.reduce((sum, share) => sum + share, 0);
+  for (let k = shares.length - 1; k >= 0 && rest !== 0; k--) {
+    const move = rest > 0 ? rest : Math.max(rest, -shares[k]!);
+    shares[k]! += move;
+    rest -= move;
+  }
+  return shares;
+}
+
+/**
+ * JSON the way the API counts a tool call's parameter: a space after each comma
+ * and colon, which compact JSON leaves out and which count as tokens.
+ */
+function spacedJson(value: unknown): string | undefined {
+  const json = JSON.stringify(value);
+  return json === undefined ? undefined : spaced(JSON.parse(json));
+}
+
+function spaced(value: unknown): string {
+  if (Array.isArray(value)) {
+    return `[${value.map(spaced).join(", ")}]`;
+  }
+  if (isRecord(value)) {
+    const entries = Object.entries(value).map(
+      ([key, item]) => `${JSON.stringify(key)}: ${spaced(item)}`
+    );
+    return `{${entries.join(", ")}}`;
+  }
+  return JSON.stringify(value);
+}
+
+/**
+ * A tool call's input as the request body holds it: each top-level parameter
+ * costs `toolUseParam` plus its key and its value, a string as it is and any
+ * other value as spaced JSON.
+ */
+function countToolInput(
+  tokenizer: Tokenizer,
+  tokens: AnthropicTokens,
+  input: unknown
+): number {
+  if (!isRecord(input) || Array.isArray(input)) {
+    return input === undefined || input === null
+      ? 0
+      : tokenizer.countUntrimmed(JSON.stringify(input) ?? "");
+  }
+  let total = 0;
+  for (const [key, value] of Object.entries(input)) {
+    // JSON.stringify leaves out what it cannot write, and so does the body.
+    const text = typeof value === "string" ? value : spacedJson(value);
+    if (text !== undefined) {
+      total +=
+        tokens.toolUseParam +
+        tokenizer.countUntrimmed(key) +
+        tokenizer.countUntrimmed(text);
+    }
+  }
+  return total;
 }
