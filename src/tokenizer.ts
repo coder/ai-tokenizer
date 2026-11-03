@@ -17,6 +17,10 @@ import { resolve } from "./lazy";
 
 /**
  * Encoding data format (optimized)
+ *
+ * The encoding modules build `stringEncoder`, `binaryEncoder` and `decoder` on
+ * first read, so importing a module is cheap. A Tokenizer reads them in its
+ * constructor.
  */
 export interface Encoding {
   name: string;

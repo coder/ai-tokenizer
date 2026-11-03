@@ -15,8 +15,8 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import {
   bpeModuleSource,
+  encodeStrings,
   formatSource,
-  jsonTemplateLiteral,
 } from "./encoding-source";
 import { downloadTokenizerJson, SOURCES, type Source } from "./hf-sources";
 
@@ -277,7 +277,7 @@ ${describeSource(source)}
  * - Merges: ${count.toLocaleString("en-US")}
  * - Special tokens: ${Object.keys(special).length.toLocaleString("en-US")}
  */
-import { lazy } from "../lazy";
+import { decodeStrings, lazy } from "../lazy";
 import { createSentencePieceCodec } from "../sentencepiece";
 
 export const kind = "sentencepiece";
@@ -286,9 +286,9 @@ export const name = "gemma4";
 
 export const special_tokens: Record<string, number> = ${JSON.stringify(special, null, 2)};
 
-// Token text by id. Parsed on first use, not on import.
+// Token text by id. Decoded on first use, not on import.
 export const vocab: string[] = lazy<string[]>([], () =>
-  JSON.parse(${jsonTemplateLiteral(byId)})
+  decodeStrings(${JSON.stringify(encodeStrings(byId))})
 );
 
 // Merge list in merge order as nine byte planes, base64 encoded. See

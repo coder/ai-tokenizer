@@ -130,8 +130,10 @@ new Tokenizer(llama4).count("some text"); // Llama 4 Scout and Maverick
 new Tokenizer(gemma4).count("some text"); // Gemini
 ```
 
-> [!WARNING]
-> Import encodings selectively based on what you need. Each encoding is 2-10MB uncompressed.
+> [!NOTE]
+> Importing an encoding builds nothing, so `import * as encoding from "ai-tokenizer/encoding"` is cheap to run. The first `new Tokenizer(encoding)` builds that encoding's tables (about 80 ms for `o200k_base`), and later Tokenizers of the same encoding share them. `stringEncoder`, `binaryEncoder` and `decoder` stay readable on every BPE encoding and are built on first read.
+>
+> Bundlers still ship every encoding you import. Import encodings selectively based on what you need. Each encoding is 0.5-11MB uncompressed.
 
 ## Claude encodings
 

@@ -41,6 +41,20 @@ export function resolve<T>(value: T): T {
   return ((value as any)?.[REAL] as T | undefined) ?? value;
 }
 
+const utf8 = new TextDecoder("utf-8", { ignoreBOM: true });
+
+/**
+ * Strings stored as base64 of their UTF-8 text joined by U+0000. `atob` and a
+ * split read them faster than JSON.parse reads a list of strings with escapes,
+ * and the source holds each non-ASCII character in 3 bytes, not 6.
+ */
+export function decodeStrings(base64: string): string[] {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < bytes.length; i++) bytes[i] = binary.charCodeAt(i);
+  return utf8.decode(bytes).split("\0");
+}
+
 /** What a generated BPE module embeds, as JSON. */
 export interface BpeData {
   /**

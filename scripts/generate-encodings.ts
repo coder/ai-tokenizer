@@ -10,7 +10,11 @@
 
 import * as fs from "fs";
 import * as path from "path";
-import { bpeModuleSource, formatSource } from "./encoding-source";
+import {
+  bpeModuleSource,
+  formatSource,
+  tiktokenBytesByRank,
+} from "./encoding-source";
 
 const ENCODING_DIR = path.join(import.meta.dirname, "../src/encoding");
 
@@ -29,24 +33,8 @@ for (const inputFile of jsonFiles) {
   const name = path.basename(inputFile, ".json");
   const source = JSON.parse(fs.readFileSync(inputFile, "utf-8"));
 
-  // bpe_ranks is "<count> <offset> <base64 token>..." lines: the tokens of
-  // one line have consecutive ranks from the offset.
-  const bytesByRank: Array<Uint8Array | undefined> = [];
-  for (const line of (source.bpe_ranks as string).split("\n")) {
-    if (!line) continue;
-    const [, offsetStr, ...tokens] = line.split(" ") as [
-      string,
-      string,
-      ...string[],
-    ];
-    const offset = Number.parseInt(offsetStr, 10);
-    tokens.forEach((token, i) => {
-      if (bytesByRank[offset + i] !== undefined) {
-        throw new Error(`${name}: rank ${offset + i} appears twice`);
-      }
-      bytesByRank[offset + i] = new Uint8Array(Buffer.from(token, "base64"));
-    });
-  }
+  const bytesByRank = tiktokenBytesByRank(source.bpe_ranks);
+
   const outputFile = inputFile.replace(".json", ".ts");
   const code = await formatSource(
     outputFile,

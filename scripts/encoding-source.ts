@@ -26,6 +26,16 @@ export function jsonTemplateLiteral(value: unknown): string {
   return `\`${json.replace(/[\\`$]/g, "\\$&")}\``;
 }
 
+/** The base64 that `decodeStrings` (src/lazy.ts) reads. */
+export function encodeStrings(strings: readonly string[]): string {
+  for (const text of strings) {
+    if (text.includes("\0")) throw new Error("A string holds U+0000");
+    if (/[\ud800-\udfff]/u.test(text))
+      throw new Error("A string holds a lone surrogate");
+  }
+  return Buffer.from(strings.join("\0"), "utf-8").toString("base64");
+}
+
 /** Format generated source the way `bun run format` would. */
 export async function formatSource(
   filepath: string,
@@ -59,6 +69,33 @@ function compareBytes(a: Uint8Array, b: Uint8Array): number {
 
 function hex(bytes: Uint8Array): string {
   return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+/**
+ * Token bytes by rank from the `bpe_ranks` text of a tiktoken JSON export:
+ * "<count> <offset> <base64 token>..." lines, the tokens of a line having
+ * consecutive ranks from the offset.
+ */
+export function tiktokenBytesByRank(
+  bpeRanks: string
+): Array<Uint8Array | undefined> {
+  const bytesByRank: Array<Uint8Array | undefined> = [];
+  for (const line of bpeRanks.split("\n")) {
+    if (!line) continue;
+    const [, offsetStr, ...tokens] = line.split(" ") as [
+      string,
+      string,
+      ...string[],
+    ];
+    const offset = Number.parseInt(offsetStr, 10);
+    tokens.forEach((token, i) => {
+      if (bytesByRank[offset + i] !== undefined) {
+        throw new Error(`Rank ${offset + i} appears twice`);
+      }
+      bytesByRank[offset + i] = new Uint8Array(Buffer.from(token, "base64"));
+    });
+  }
+  return bytesByRank;
 }
 
 export interface BpeModuleSpec {
