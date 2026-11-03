@@ -93,7 +93,7 @@ const total = tokenizer.count("some text input");
 
 ## Claude encodings
 
-Anthropic changed its tokenizer at Claude Opus 4.7. Two encodings count Claude tokens offline, and they match the `count_tokens` API exactly on every case in `src/fixtures/claude-count-tokens.json`.
+Anthropic changed its tokenizer at Claude Opus 4.7. Two encodings count Claude tokens offline. They match the `count_tokens` API exactly on all 93 texts in `src/fixtures/claude-count-tokens.json`, on both Claude Opus 4.6 and Claude Opus 4.8. The older `claude` encoding stays available unchanged.
 
 | Encoding | Models |
 | --- | --- |
@@ -109,7 +109,7 @@ tokenizer.count("hello, world"); // 4
 ```
 
 - `count()` counts the content of one user message. `count_tokens` also charges a fixed message frame (7 tokens on Claude Opus 4.6, 6 on Claude Opus 4.8). The frame comes from the model config, not from the encoding.
-- The content count includes what the frame does to the content. On `claude_v3` the frame absorbs one leading space, and newlines at the end of the content cost what the frame makes of them.
+- The content count includes what the frame does to the content. On `claude_v3` the frame absorbs one leading space. On both encodings, newlines at the end of the content join the frame's own newline token, so a short run of them is free.
 - `claude_v4_7` follows Claude Opus 4.8 and later. Claude Opus 4.7 has the same vocabulary but a different frame, so its count can differ at the start of a message and on newlines at the end of the content.
 - `count("")` is 0. The API rejects empty content.
 - Token ids are synthetic, because Anthropic does not publish its ids. They are stable for one version of this package only.
