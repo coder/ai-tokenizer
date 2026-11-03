@@ -10,6 +10,7 @@
     "@types/bun": "latest",
     "ai": "^5.0.105",
     "base64-js": "^1.5.1",
+    "fast-check": "^4.10.2",
     "gpt-tokenizer": "^3.0.1",
     "mitata": "^1.0.34",
     "prettier": "^3.6.2",
