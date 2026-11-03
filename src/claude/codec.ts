@@ -70,12 +70,14 @@ export function createClaudeCodec(family: ClaudeFamily): Codec {
     }
     return model;
   };
+  // The API rejects empty content, so it has no count. Empty adds nothing.
+  const encodeKept = (text: string) =>
+    text === "" ? [] : encode(get(), family, text);
   return {
-    encode: (text) => {
-      if (family.trimTrailingWhitespace) text = trimTrailingWhitespace(text);
-      // The API rejects empty content, so it has no count. Empty adds nothing.
-      return text === "" ? [] : encode(get(), family, text);
-    },
+    encode: family.trimTrailingWhitespace
+      ? (text) => encodeKept(trimTrailingWhitespace(text))
+      : encodeKept,
+    ...(family.trimTrailingWhitespace && { encodeUntrimmed: encodeKept }),
     decode: (tokens) => decode(get(), family, tokens),
   };
 }

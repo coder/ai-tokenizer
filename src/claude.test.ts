@@ -119,3 +119,40 @@ test("every encoding in the namespace builds a Tokenizer", () => {
     expect(tokenizer.count("hello world")).toBeGreaterThan(0);
   }
 });
+
+describe("countUntrimmed", () => {
+  const texts = ["a  ", "a\n\n", "a \t\r\n\v\f", "  ", "a b  c ", "x \u302e "];
+
+  test("claude_v5 counts the text claude_v4_8 counts, which keeps the whitespace", () => {
+    for (const text of texts) {
+      expect(tokenizers.claude_v5.countUntrimmed(text)).toBe(
+        tokenizers.claude_v4_8.count(text)
+      );
+    }
+    expect(tokenizers.claude_v5.count("a  ")).toBe(
+      tokenizers.claude_v5.count("a")
+    );
+    expect(tokenizers.claude_v5.countUntrimmed("a  ")).toBeGreaterThan(
+      tokenizers.claude_v5.count("a")
+    );
+  });
+
+  test("an encoding that does not trim has one count", () => {
+    for (const name of ["claude_v3", "claude_v4_7", "claude_v4_8"] as const) {
+      for (const text of texts) {
+        expect(tokenizers[name].countUntrimmed(text)).toBe(
+          tokenizers[name].count(text)
+        );
+      }
+    }
+  });
+
+  test("a BPE encoding has one count", () => {
+    const bpe = new Tokenizer(encoding.o200k_base);
+    expect(bpe.countUntrimmed("a  ")).toBe(bpe.count("a  "));
+  });
+
+  test("empty text has no tokens", () => {
+    expect(tokenizers.claude_v5.countUntrimmed("")).toBe(0);
+  });
+});

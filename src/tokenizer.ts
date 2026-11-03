@@ -29,6 +29,8 @@ export interface Encoding {
 export interface Codec {
   encode(text: string): number[];
   decode(tokens: number[]): string;
+  /** Present when `encode` drops trailing whitespace: the same, with it kept. */
+  encodeUntrimmed?(text: string): number[];
 }
 
 /** An encoding module with a `kind` brings its own codec. A BPE `Encoding` has none. */
@@ -396,6 +398,18 @@ export default class Tokenizer {
    */
   count(input: string): number {
     return this.encode(input, [], []).length;
+  }
+
+  /**
+   * `count()` for text the Claude API does not trim: assistant text, tool
+   * results and every text that is not the end of a user message or system
+   * prompt. It differs from `count()` only on an encoding that drops trailing
+   * whitespace (`claude_v5`).
+   */
+  countUntrimmed(input: string): number {
+    return this.codec?.encodeUntrimmed
+      ? this.codec.encodeUntrimmed(input).length
+      : this.count(input);
   }
 }
 
