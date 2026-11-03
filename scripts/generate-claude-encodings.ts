@@ -9,6 +9,7 @@
  */
 import { writeFileSync } from "node:fs";
 import * as prettier from "prettier";
+import { jsonTemplateLiteral } from "./encoding-source";
 import { CTOK_COMMIT, CTOK_REGEX, CTOK_REPO } from "./ctok";
 
 const ENCODINGS = [
@@ -133,11 +134,26 @@ const config = await prettier.resolveConfig(
   new URL("../src/index.ts", import.meta.url).pathname
 );
 
-async function write(path: string, source: string): Promise<void> {
-  const formatted = await prettier.format(source, {
+/**
+ * Prettier hangs on the 900 kB pieces literal in this process, though it
+ * formats the same text in a fresh one in 0.2 s. So it never sees the literal:
+ * the source carries a placeholder and `literals` fills it in afterwards.
+ */
+async function write(
+  path: string,
+  source: string,
+  literals: Record<string, string> = {}
+): Promise<void> {
+  let formatted = await prettier.format(source, {
     ...config,
     parser: "typescript",
   });
+  for (const [placeholder, literal] of Object.entries(literals)) {
+    if (!formatted.includes(placeholder)) {
+      throw new Error(`${path}: no ${placeholder} to fill`);
+    }
+    formatted = formatted.replace(placeholder, () => literal);
+  }
   writeFileSync(new URL(`../${path}`, import.meta.url), formatted);
   console.log(`${path}: ${formatted.length.toLocaleString("en-US")} chars`);
 }
@@ -175,6 +191,7 @@ export const CCC: readonly number[] = ${JSON.stringify(u.ccc)};
 `
 );
 
+const PIECES_CALL = "JSON.parse(`__PIECES__`)";
 const count = (n: number) => n.toLocaleString("en-US");
 const vocabularies = new Map<string, Family>();
 for (const enc of ENCODINGS) {
@@ -199,17 +216,25 @@ for (const [vocabulary, f] of vocabularies) {
 ${credit(f.family)} *
  * Pieces: ${count(f.pieces.length)}. Byte prefixes: ${count(f.bytePrefixes.length)}. Longest piece: ${f.maxPieceLength} codepoints.
  */
+import { lazy } from "../lazy";
 
 /** Hex UTF-8 prefixes that cost one token on the byte floor. */
 export const bytePrefixes: readonly string[] = [
 ${f.bytePrefixes.map(literal).join(",\n")}
 ];
 
-/** The cost-1 pieces, sorted by codepoints. A piece's index is its token id. */
-export const pieces: readonly string[] = [
-${f.pieces.map(literal).join(",\n")}
-];
-`
+/**
+ * The cost-1 pieces, sorted by codepoints. A piece's index is its token id.
+ * Parsed on first use, not on import.
+ */
+export const pieces: readonly string[] = lazy<string[]>([], () =>
+  ${PIECES_CALL}
+);
+`,
+    {
+      // Prettier puts a literal this long on a line of its own.
+      [PIECES_CALL]: `JSON.parse(\n    ${jsonTemplateLiteral(f.pieces)}\n  )`,
+    }
   );
 }
 
