@@ -344,20 +344,9 @@ function propertiesOf(schema: unknown): Properties | undefined {
 }
 
 /** The same pair always gives the same object, so a walk can tell it is already inside it. */
-const mergedProperties = new WeakMap<
-  object,
-  WeakMap<object, MergedProperties>
->();
+const mergedProperties = new WeakMap<object, WeakMap<object, Properties>>();
 
 function mergeProperties(target: Properties, siblings: Properties): Properties {
-  if (
-    target instanceof MergedProperties ||
-    siblings instanceof MergedProperties
-  ) {
-    // Two layers of `$ref` and `null` wrappers each carrying properties is
-    // rare: spell the result out instead of nesting merges.
-    return { ...flatten(target), ...flatten(siblings) };
-  }
   let bySiblings = mergedProperties.get(target);
   if (!bySiblings) {
     bySiblings = new WeakMap();
@@ -365,7 +354,13 @@ function mergeProperties(target: Properties, siblings: Properties): Properties {
   }
   let merged = bySiblings.get(siblings);
   if (!merged) {
-    merged = new MergedProperties(target, siblings);
+    // Two layers of `$ref` and `null` wrappers each carrying properties is
+    // rare: spell the result out instead of nesting merges. It is kept like
+    // the others, or a recursive schema would make a new object on every lap.
+    merged =
+      target instanceof MergedProperties || siblings instanceof MergedProperties
+        ? { ...flatten(target), ...flatten(siblings) }
+        : new MergedProperties(target, siblings);
     bySiblings.set(siblings, merged);
   }
   return merged;

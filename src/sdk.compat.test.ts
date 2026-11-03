@@ -875,6 +875,75 @@ describe("tool schemas", () => {
       expect(counted).toBe(expected);
     });
 
+    test("two layers of $ref with sibling properties in a cycle end", () => {
+      const nested = {
+        type: "object",
+        properties: {
+          v: { $ref: "#/$defs/A", properties: { s: { type: "string" } } },
+        },
+        $defs: {
+          A: { $ref: "#/$defs/B", properties: { a: { type: "string" } } },
+          B: {
+            type: "object",
+            properties: {
+              b: { $ref: "#/$defs/A", properties: { t: { type: "string" } } },
+            },
+          },
+        },
+      };
+      const counted = inline(jsonSchema(nested as never));
+      expect(counted).toBeGreaterThan(0);
+      expect(inline(jsonSchema(nested as never))).toBe(counted);
+    });
+
+    test("random cyclic schemas with $ref, nullable and sibling properties all end", () => {
+      let state = 7;
+      const random = (n: number) => {
+        state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
+        return state % n;
+      };
+      const names = ["A", "B", "C", "D"];
+      const property = (depth: number): unknown => {
+        const kind = random(depth > 1 ? 2 : 5);
+        const ref = { $ref: `#/$defs/${names[random(names.length)]}` };
+        if (kind === 0) return { type: "string" };
+        if (kind === 1) return ref;
+        if (kind === 2) return { ...ref, properties: properties(depth + 1) };
+        if (kind === 3) return { anyOf: [ref, { type: "null" }] };
+        return {
+          anyOf: [
+            { ...ref, properties: properties(depth + 1) },
+            { type: "null" },
+          ],
+          description: "d",
+        };
+      };
+      const properties = (depth: number) =>
+        Object.fromEntries(
+          Array.from({ length: 1 + random(3) }, (_, i) => [
+            `p${depth}${i}`,
+            property(depth),
+          ])
+        );
+      for (let i = 0; i < 300; i++) {
+        const $defs = Object.fromEntries(
+          names.map((name) => [
+            name,
+            random(3) === 0
+              ? {
+                  $ref: `#/$defs/${names[random(names.length)]}`,
+                  properties: properties(1),
+                }
+              : { type: "object", properties: properties(1) },
+          ])
+        );
+        const schema = { type: "object", properties: properties(0), $defs };
+        const counted = inline(jsonSchema(schema as never));
+        expect(Number.isFinite(counted)).toBe(true);
+        expect(counted).toBeGreaterThanOrEqual(0);
+      }
+    });
+
     test("a $ref to somewhere else counts nothing", () => {
       const remote = {
         type: "object",
