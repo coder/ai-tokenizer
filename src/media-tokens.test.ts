@@ -10,10 +10,15 @@ import { pngHeader } from "../scripts/media-samples";
 import { count } from "./sdk";
 import { models, Tokenizer, type Model } from "./index";
 import * as o200k from "./encoding/o200k_base";
+import * as claude_v3 from "./encoding/claude_v3";
+import * as claude_v4_7 from "./encoding/claude_v4_7";
+import * as claude_v4_8 from "./encoding/claude_v4_8";
+import * as claude_v5 from "./encoding/claude_v5";
 import { fitGeminiImage, fitOpenAiImage } from "../scripts/fit-media";
 import anthropic from "./fixtures/media-anthropic.json";
 import gemini from "./fixtures/media-gemini.json";
 import openai from "./fixtures/media-openai.json";
+import pdfs from "./fixtures/media-anthropic-pdf.json";
 
 const tokenizer = new Tokenizer(o200k);
 
@@ -198,6 +203,93 @@ describe("Gemini images against the AI Gateway (Vertex), at the default resoluti
       }).messages.map((m) => m.content[0]!.total);
     expect(costs([message([part])])).toEqual([1806]);
     expect(costs([message([part]), message([part])])).toEqual([258, 258]);
+  });
+});
+
+describe("Claude PDFs against count_tokens", () => {
+  const encodings = { claude_v3, claude_v4_7, claude_v4_8, claude_v5 };
+  // The reader does not decrypt a file with a user password, and a line just
+  // below the edge of a CropBox is clipped differently on Claude 4.7 and later.
+  const inexact: Record<string, number> = {
+    "qpdf-encrypted.pdf": 0.05,
+    "pymupdf-cropbox.pdf": 0.002,
+  };
+  let exactPdfs = 0;
+  let checkedPdfs = 0;
+
+  afterAll(() => {
+    console.log(`pdf fixtures: ${exactPdfs}/${checkedPdfs} exact`);
+  });
+
+  test.each(Object.entries(pdfs.models))("%s", (apiId, measured) => {
+    const catalog = catalogModels("anthropic", apiId);
+    expect(catalog.length).toBeGreaterThan(0);
+    for (const model of catalog) {
+      const pdfTokenizer = new Tokenizer(
+        encodings[model.encoding as keyof typeof encodings]
+      );
+      for (const [file, cost] of Object.entries(measured)) {
+        const bytes = new Uint8Array(
+          readFileSync(new URL(`./fixtures/pdf/${file}`, import.meta.url))
+        );
+        const { messages } = count({
+          tokenizer: pdfTokenizer,
+          model,
+          messages: [
+            {
+              role: "user",
+              content: [
+                { type: "file", mediaType: "application/pdf", data: bytes },
+              ],
+            },
+          ] as ModelMessage[],
+        });
+        const got = messages[0]!.content[0]!.total;
+        const measuredCost = cost as number;
+        checkedPdfs++;
+        exactPdfs += got === measuredCost ? 1 : 0;
+        if (file in inexact) {
+          expect(Math.abs(got - measuredCost) / measuredCost).toBeLessThan(
+            inexact[file]!
+          );
+        } else {
+          expect(got).toBe(measuredCost);
+        }
+      }
+    }
+  });
+
+  test("a PDF that cannot be read costs a typical page", () => {
+    const model = models["anthropic/claude-opus-4.6"] as Model;
+    const typical = model.tokens.media!.pdf!.unreadable;
+    const part = (data: unknown) => ({
+      type: "file",
+      mediaType: "application/pdf",
+      data,
+    });
+    for (const data of [
+      new URL("https://example.com/a.pdf"),
+      "Zm9vYmFy",
+      new Uint8Array([1, 2, 3]),
+      { type: "reference", reference: { anthropic: "file_1" } },
+    ]) {
+      expect(imageTokens(model, part(data))).toBe(typical);
+    }
+  });
+
+  test("a model without a PDF recipe counts a PDF as a 100 token file", () => {
+    const grok = models["xai/grok-4"] as Model;
+    expect(
+      imageTokens(grok, {
+        type: "file",
+        mediaType: "application/pdf",
+        data: new Uint8Array(
+          readFileSync(
+            new URL("./fixtures/pdf/reportlab-table.pdf", import.meta.url)
+          )
+        ),
+      })
+    ).toBe(100);
   });
 });
 
