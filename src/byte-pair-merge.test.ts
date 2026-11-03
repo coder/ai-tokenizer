@@ -182,13 +182,6 @@ function rankLookup(encoding: Encoding): (slice: Uint8Array) => number {
   };
 }
 
-// U+FEFF. Before the tokenizer decoded with ignoreBOM, a slice starting with
-// these bytes was looked up without them, which the lookup above does not do.
-const hasBom = (bytes: Uint8Array): boolean =>
-  bytes.some(
-    (byte, i) => byte === 0xef && bytes[i + 1] === 0xbb && bytes[i + 2] === 0xbf
-  );
-
 /** Small seeded generator (mulberry32): the corpus is the same on every run. */
 function seededRandom(seed: number): () => number {
   let state = seed >>> 0;
@@ -314,11 +307,10 @@ function corpusPieces(encoding: Encoding): Uint8Array[] {
 describe("differential: bytePairMerge matches the original algorithm", () => {
   let total = 0;
   let identical = 0;
-  let skipped = 0;
 
   afterAll(() => {
     console.log(
-      `differential: encodings=${Object.keys(encodings).length} pieces=${total} identical=${identical} skipped_bom=${skipped}`
+      `differential: encodings=${Object.keys(encodings).length} pieces=${total} identical=${identical}`
     );
   });
 
@@ -331,10 +323,6 @@ describe("differential: bytePairMerge matches the original algorithm", () => {
     const check = (kind: string, pieces: Uint8Array[]) => {
       const mismatches: string[] = [];
       for (const piece of pieces) {
-        if (hasBom(piece)) {
-          skipped++;
-          continue;
-        }
         total++;
         const expected = legacyBytePairMerge(piece, lookup);
         const actual = bytePairMerge(piece, stringRanks, binaryIndex);
