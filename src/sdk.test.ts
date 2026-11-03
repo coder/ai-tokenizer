@@ -10,6 +10,7 @@ import { models, Tokenizer, type Model } from "./index";
 import * as o200k from "./encoding/o200k_base";
 import * as claude from "./encoding/claude";
 import { z } from "zod";
+import { get_encoding } from "tiktoken";
 
 // Test data: small, medium, and large scenarios
 const messages = {
@@ -355,5 +356,30 @@ describe("ai-sdk", () => {
 
     // Verify the large tool result is reflected in the overall total
     expect(result.total).toBeGreaterThan(40000);
+  });
+});
+
+describe("special-token text", () => {
+  const text = "What does <|endoftext|> mean?";
+  const tiktoken = get_encoding("o200k_base");
+  const ordinary = tiktoken.encode_ordinary(text).length;
+  tiktoken.free();
+
+  test("Tokenizer.count counts it as ordinary text", () => {
+    const tokenizer = new Tokenizer(o200k);
+    expect(tokenizer.count(text)).toBe(ordinary);
+  });
+
+  test("count() counts a message that contains it", () => {
+    const model = models["openai/gpt-5"] as Model;
+    const tokenizer = new Tokenizer(o200k);
+    const result = count({
+      tokenizer,
+      model,
+      messages: [{ role: "user", content: text }],
+    });
+    expect(result.messages[0]!.content).toEqual([
+      { type: "text", total: ordinary },
+    ]);
   });
 });

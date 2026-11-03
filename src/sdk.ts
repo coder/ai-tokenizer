@@ -140,13 +140,12 @@ function countToolsTokensDetailed<TOOLS extends ToolSet = ToolSet>(
       const [toolName, tool] = toolEntries[i]!;
 
       // Count name tokens
-      const nameTokens = tokenizer.encode(toolName).length;
+      const nameTokens = tokenizer.count(toolName);
 
       // Count description tokens
       let descriptionTokens = 0;
       if (tool.description) {
-        descriptionTokens =
-          config.perDesc + tokenizer.encode(tool.description).length;
+        descriptionTokens = config.perDesc + tokenizer.count(tool.description);
       }
 
       // Count inputSchema tokens
@@ -190,7 +189,7 @@ function countMessageTokensDetailed(
   const content: CountResultMessageContent[] = [];
 
   // Count role
-  total += tokenizer.encode(message.role).length;
+  total += tokenizer.count(message.role);
 
   // Count content with detailed breakdown
   if (message.content) {
@@ -218,7 +217,7 @@ function countMessageContentTokensDetailed(
   const results: CountResultMessageContent[] = [];
 
   if (typeof content === "string") {
-    const tokens = tokenizer.encode(content).length;
+    const tokens = tokenizer.count(content);
     const total = Math.round(tokens * multiplier);
     results.push({ type: "text", total });
     return results;
@@ -227,7 +226,7 @@ function countMessageContentTokensDetailed(
   if (Array.isArray(content)) {
     for (const part of content) {
       if (part.type === "text") {
-        const tokens = tokenizer.encode(part.text).length;
+        const tokens = tokenizer.count(part.text);
         const total = Math.round(tokens * multiplier);
         results.push({ type: "text", total });
       } else if (part.type === "tool-call") {
@@ -235,10 +234,10 @@ function countMessageContentTokensDetailed(
         let inputTokens = 0;
 
         if (part.toolName) {
-          toolCallTokens += tokenizer.encode(part.toolName).length;
+          toolCallTokens += tokenizer.count(part.toolName);
         }
         if (part.input) {
-          inputTokens = tokenizer.encode(JSON.stringify(part.input)).length;
+          inputTokens = tokenizer.count(JSON.stringify(part.input));
           toolCallTokens += inputTokens;
         }
 
@@ -253,13 +252,13 @@ function countMessageContentTokensDetailed(
         let outputTokens = 0;
 
         if (part.toolCallId) {
-          toolResultTokens += tokenizer.encode(part.toolCallId).length;
+          toolResultTokens += tokenizer.count(part.toolCallId);
         }
         if (part.output) {
           if (typeof part.output === "string") {
-            outputTokens = tokenizer.encode(part.output).length;
+            outputTokens = tokenizer.count(part.output);
           } else {
-            outputTokens = tokenizer.encode(JSON.stringify(part.output)).length;
+            outputTokens = tokenizer.count(JSON.stringify(part.output));
           }
           toolResultTokens += outputTokens;
         }
@@ -315,7 +314,7 @@ function countZodSchemaProperties(
       const propSchema = value as any;
 
       // Count property name tokens
-      tokens += tokenizer.encode(key).length;
+      tokens += tokenizer.count(key);
 
       // Add property overhead (first vs additional)
       tokens += isFirstProp ? config.perFirstProp : config.perAdditionalProp;
@@ -323,7 +322,7 @@ function countZodSchemaProperties(
       // Count property description if present
       if (propSchema.description) {
         tokens += config.perPropDesc;
-        tokens += tokenizer.encode(propSchema.description).length;
+        tokens += tokenizer.count(propSchema.description);
       }
 
       // Handle enums - count each enum value + overhead
@@ -333,7 +332,7 @@ function countZodSchemaProperties(
           enumDef.values || Object.values(enumDef.entries || {});
         tokens += config.perEnum; // Enum overhead
         for (const enumValue of enumValues) {
-          tokens += tokenizer.encode(String(enumValue)).length;
+          tokens += tokenizer.count(String(enumValue));
         }
       }
 
