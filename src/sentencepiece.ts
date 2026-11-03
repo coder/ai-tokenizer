@@ -14,12 +14,12 @@
  * doubly linked symbol list. It runs in O(n log n), never O(n^2).
  */
 
+import type { Codec } from "./tokenizer";
+
 /**
  * Encoding data format for {@link SentencePieceTokenizer}.
  */
 export interface SentencePieceEncoding {
-  /** Tells `Tokenizer` to run this encoding with SentencePieceTokenizer. */
-  kind: "sentencepiece";
   name: string;
   special_tokens: Record<string, number>;
   /** Token text by id. A space is "▁" and a raw byte is "<0xNN>". */
@@ -184,8 +184,8 @@ class MergeHeap {
 }
 
 /**
- * Engine for {@link SentencePieceEncoding} data. `new Tokenizer(encoding)`
- * returns it, and it has the same public methods as `Tokenizer`.
+ * Engine for {@link SentencePieceEncoding} data. The encoding modules wrap it
+ * as a `Codec`, which `Tokenizer` calls.
  */
 export default class SentencePieceTokenizer {
   private readonly name: string;
@@ -195,6 +195,7 @@ export default class SentencePieceTokenizer {
   private readonly byteIds: Int32Array;
   private readonly byteValues: Int16Array;
   private readonly specialTokens: Record<string, number>;
+  private readonly inverseSpecialTokens: Map<number, string>;
   private readonly specialTokenKeys: readonly string[];
   private readonly specialTokensRegex: RegExp | null;
 
@@ -234,6 +235,10 @@ export default class SentencePieceTokenizer {
     }
 
     this.specialTokens = { ...data.special_tokens, ...extendedSpecialTokens };
+    this.inverseSpecialTokens = new Map();
+    for (const [text, id] of Object.entries(this.specialTokens)) {
+      this.inverseSpecialTokens.set(id, text);
+    }
     // Longest first, so an alternation prefers the longest token.
     this.specialTokenKeys = Object.keys(this.specialTokens).sort(
       (a, b) => b.length - a.length
@@ -311,12 +316,17 @@ export default class SentencePieceTokenizer {
         continue;
       }
       const piece = this.vocab[token];
-      if (piece === undefined) continue;
+      // An extended special token has no vocabulary entry. Its text is its own.
+      const text =
+        piece === undefined
+          ? this.inverseSpecialTokens.get(token)
+          : piece.replace(/▁/g, " ");
+      if (text === undefined) continue;
       if (bytes.length > 0) {
         result += textDecoder.decode(new Uint8Array(bytes));
         bytes = [];
       }
-      result += piece.replace(/▁/g, " ");
+      result += text;
     }
     if (bytes.length > 0) {
       result += textDecoder.decode(new Uint8Array(bytes));
@@ -428,4 +438,21 @@ export default class SentencePieceTokenizer {
     }
     return Int32Array.from(symbols);
   }
+}
+
+/**
+ * The engine as a `Codec`. It is built on first use and shared by every
+ * Tokenizer of the encoding, so importing an encoding module stays cheap.
+ */
+export function createSentencePieceCodec(data: SentencePieceEncoding): Codec {
+  let engine: SentencePieceTokenizer | null = null;
+  const get = () => {
+    if (engine === null) engine = new SentencePieceTokenizer(data);
+    return engine;
+  };
+  return {
+    encode: (text, allowedSpecial, disallowedSpecial) =>
+      get().encode(text, allowedSpecial, disallowedSpecial),
+    decode: (tokens) => get().decode(tokens),
+  };
 }

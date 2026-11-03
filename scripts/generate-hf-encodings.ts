@@ -24,9 +24,10 @@ const ENCODING_DIR = path.join(import.meta.dirname, "../src/encoding");
 const LLAMA4_SOURCE_PATTERN =
   "[^\\r\\n\\p{L}\\p{N}]?[\\p{Lu}\\p{Lt}\\p{Lm}\\p{Lo}\\p{M}]*[\\p{Ll}\\p{Lm}\\p{Lo}\\p{M}]+(?i:'s|'t|'re|'ve|'m|'ll|'d)?|[^\\r\\n\\p{L}\\p{N}]?[\\p{Lu}\\p{Lt}\\p{Lm}\\p{Lo}\\p{M}]+[\\p{Ll}\\p{Lm}\\p{Lo}\\p{M}]*(?i:'s|'t|'re|'ve|'m|'ll|'d)?|\\p{N}{1,3}| ?[^\\s\\p{L}\\p{N}]+[\\r\\n/]*|\\s*[\\r\\n]+|\\s+(?!\\S)|\\s+";
 // `\s` is Unicode White_Space in Rust and Oniguruma. In JavaScript it also
-// matches U+FEFF and misses U+0085.
+// matches U+FEFF and misses U+0085. `(?i:'s)` also folds U+017F (long s) to s,
+// and no other letter of the contraction group has a non-ASCII fold.
 const LLAMA4_PATTERN =
-  "[^\\r\\n\\p{L}\\p{N}]?[\\p{Lu}\\p{Lt}\\p{Lm}\\p{Lo}\\p{M}]*[\\p{Ll}\\p{Lm}\\p{Lo}\\p{M}]+(?:'[sS]|'[tT]|'[rR][eE]|'[vV][eE]|'[mM]|'[lL][lL]|'[dD])?|[^\\r\\n\\p{L}\\p{N}]?[\\p{Lu}\\p{Lt}\\p{Lm}\\p{Lo}\\p{M}]+[\\p{Ll}\\p{Lm}\\p{Lo}\\p{M}]*(?:'[sS]|'[tT]|'[rR][eE]|'[vV][eE]|'[mM]|'[lL][lL]|'[dD])?|\\p{N}{1,3}| ?[^\\p{White_Space}\\p{L}\\p{N}]+[\\r\\n/]*|\\p{White_Space}*[\\r\\n]+|\\p{White_Space}+(?!\\P{White_Space})|\\p{White_Space}+";
+  "[^\\r\\n\\p{L}\\p{N}]?[\\p{Lu}\\p{Lt}\\p{Lm}\\p{Lo}\\p{M}]*[\\p{Ll}\\p{Lm}\\p{Lo}\\p{M}]+(?:'[sS\\u017f]|'[tT]|'[rR][eE]|'[vV][eE]|'[mM]|'[lL][lL]|'[dD])?|[^\\r\\n\\p{L}\\p{N}]?[\\p{Lu}\\p{Lt}\\p{Lm}\\p{Lo}\\p{M}]+[\\p{Ll}\\p{Lm}\\p{Lo}\\p{M}]*(?:'[sS\\u017f]|'[tT]|'[rR][eE]|'[vV][eE]|'[mM]|'[lL][lL]|'[dD])?|\\p{N}{1,3}| ?[^\\p{White_Space}\\p{L}\\p{N}]+[\\r\\n/]*|\\p{White_Space}*[\\r\\n]+|\\p{White_Space}+(?!\\P{White_Space})|\\p{White_Space}+";
 
 const textEncoder = new TextEncoder();
 
@@ -224,7 +225,7 @@ export const name = "llama4";
 
 export const pat_str = ${JSON.stringify(LLAMA4_PATTERN)};
 
-export const special_tokens = ${JSON.stringify(special, null, 2)};
+export const special_tokens: Record<string, number> = ${JSON.stringify(special, null, 2)};
 
 // String-based encoder (UTF-8 tokens) - fast object lookup. It has no
 // prototype, so names such as "toString" are not found by accident.
@@ -323,18 +324,18 @@ function generateGemma4(tokenizer: any, source: Source): string {
  *
 ${describeSource(source)}
  *
- * SentencePiece-style BPE. \`new Tokenizer(gemma4)\` runs it with
- * SentencePieceTokenizer:
+ * SentencePiece-style BPE, run by the codec below:
  * - Tokens: ${byId.length.toLocaleString("en-US")}
  * - Merges: ${count.toLocaleString("en-US")}
  * - Special tokens: ${Object.keys(special).length.toLocaleString("en-US")}
  */
+import { createSentencePieceCodec } from "../sentencepiece";
 
 export const kind = "sentencepiece";
 
 export const name = "gemma4";
 
-export const special_tokens = ${JSON.stringify(special, null, 2)};
+export const special_tokens: Record<string, number> = ${JSON.stringify(special, null, 2)};
 
 // Token text by id.
 export const vocab: string[] = [
@@ -343,7 +344,14 @@ ${byId.map((piece) => `  ${JSON.stringify(piece)}`).join(",\n")}
 
 // Merge list in merge order as nine byte planes, base64 encoded. See
 // SentencePieceEncoding.
-export const merges = ${JSON.stringify(Buffer.from(planes).toString("base64"))};
+export const merges: string = ${JSON.stringify(Buffer.from(planes).toString("base64"))};
+
+export const codec = createSentencePieceCodec({
+  name,
+  special_tokens,
+  vocab,
+  merges,
+});
 `;
 }
 

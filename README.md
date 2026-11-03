@@ -88,7 +88,13 @@ const tokenizer = new Tokenizer(o200k_base);
 const total = tokenizer.count("some text input");
 ```
 
-Gemini models use the Gemma 4 tokenizer, and Llama 4 has its own vocabulary. In our checks, both encodings give the same token count as the provider's API for message content:
+Gemini models use the Gemma 4 tokenizer, and Llama 4 has its own vocabulary. Both encodings give the same token ids as the open tokenizers (checked against Hugging Face `tokenizers`). The provider APIs clean up message text before they tokenize it, and the encodings do not model that. Measured through the Vercel AI Gateway on 2026-11-03:
+
+- Gemini 2.5 (`flash`, `pro`, `flash-lite`): no difference on 14 probes.
+- Gemini 3 and newer (`3-flash`, `3.1-*`, `3.5-*`, `3.6-flash` to `3.8-flash`): the API drops every `\r` and every leading newline, and it counts a literal U+2581 as 3 byte tokens. `count` reads 1 token too many for each `\r` and 1 too many for a leading newline run. For a text with one U+2581 it reads 3 too few.
+- Llama 4 Scout: the API trims leading and trailing whitespace of the message content. `count` reads 1 token too many for a whitespace run at the start, and 1 for one at the end.
+
+Text without those characters matched the API on all 11 samples per model. Apply the cleanup yourself first if you need an exact count for such text.
 
 ```ts
 import { Tokenizer } from "ai-tokenizer";

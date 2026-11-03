@@ -101,6 +101,7 @@ INLINE = {
     "chat-markup": "<|turn>user\nWhat does <bos> mean?<turn|>\n<|turn>model\n<start_of_turn>x<end_of_turn><eos>",
     "llama-markup": "<|begin_of_text|><|header_start|>user<|header_end|>\n\nHi<|eot|><|header_start|>assistant<|header_end|>",
     "contractions": "I'm, you're, he's, she'll, we've, they'd, don't, I'M, WE'LL, x'ſ, x'K, ’s, 's, ‘s",
+    "contraction-folds": " I'\u017f I'\u017f you'\u017f don'\u017f we'\u017f It'\u017f they'\u017f x'\u017f",
     "numbers": "0 1 12 123 1234 12345 123456789 3.14159 1,000,000 -42 +7 1e10 ٠١٢٣ １２３ ½ ² Ⅷ",
     "math": "∀x∈ℝ, ∃y: x² + y² = 1 ∧ ∑ᵢ₌₁ⁿ aᵢ ≤ ∫₀¹ f(x)dx ≈ π ≠ ∞",
     "mixed-scripts": "Hello 世界! こんにちは, 안녕하세요, Привет мир, مرحبا, שלום, สวัสดี, नमस्ते 🌍🚀",
@@ -345,7 +346,7 @@ def main() -> None:
             samples.append({"name": f"repeat/{name}-{times}", "unit": unit, "times": times})
     for name, (unit, times) in LONG_REPEATS.items():
         samples.append({"name": f"long/{name}", "unit": unit, "times": times})
-    for edge in ["", " ", "a", "\n", "\u00e9", "\U0001f600", "\u0085", "\ufeff", "x\ufeff", "\ufeffx"]:
+    for edge in ["", " ", "a", "\n", "\u00e9", "\U0001f600", "\u0085", "\ufeff", "x\ufeff", "\ufeffx", " I'\u017f", "I'\u017f"]:
         samples.append({"name": f"edge/{edge.encode('unicode_escape').decode() or 'empty'}", "text": edge})
     for i, text in enumerate(build_fuzz(400)):
         samples.append({"name": f"fuzz/{i}", "text": text})

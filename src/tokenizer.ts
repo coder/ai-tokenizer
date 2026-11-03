@@ -13,10 +13,6 @@
  * - ASCII fast path
  */
 
-import SentencePieceTokenizer, {
-  type SentencePieceEncoding,
-} from "./sentencepiece";
-
 /**
  * Encoding data format (optimized)
  */
@@ -29,51 +25,75 @@ export interface Encoding {
   decoder: Record<number, string | Uint8Array>;
 }
 
+/** An encoding that is not regex plus BPE brings its own algorithm. */
+export interface Codec {
+  encode(
+    text: string,
+    allowedSpecial?: Array<string> | "all",
+    disallowedSpecial?: Array<string> | "all"
+  ): number[];
+  decode(tokens: number[]): string;
+}
+
+/** An encoding module with a `kind` brings its own codec. A BPE `Encoding` has none. */
+export interface CodecEncoding {
+  kind: string;
+  name: string;
+  codec: Codec;
+}
+
 /**
  * Ultra-optimized tokenizer for BPE encodings
  */
 export default class Tokenizer {
-  private readonly name!: string;
-  private readonly patternRegex!: RegExp;
-  private readonly specialTokensRegex!: RegExp | null;
-  private readonly specialTokens!: Record<string, number>;
-  private readonly inverseSpecialTokens!: Record<number, Uint8Array>;
+  private readonly codec: Codec | null;
+  private readonly name: string;
+  private readonly patternRegex: RegExp;
+  private readonly specialTokensRegex: RegExp | null;
+  private readonly specialTokens: Record<string, number>;
+  private readonly inverseSpecialTokens: Record<number, Uint8Array>;
 
   // Optimized dual storage (pre-built at generation time)
-  private readonly stringRankEncoder!: Record<string, number>;
-  private readonly binaryRankEncoder!: Array<[Uint8Array, number]>;
-  private readonly decoder!: Record<number, string | Uint8Array>;
-  private readonly binaryFirstByteIndex!: Array<Array<
+  private readonly stringRankEncoder: Record<string, number>;
+  private readonly binaryRankEncoder: Array<[Uint8Array, number]>;
+  private readonly decoder: Record<number, string | Uint8Array>;
+  private readonly binaryFirstByteIndex: Array<Array<
     [Uint8Array, number]
   > | null>;
 
-  private readonly specialTokenKeys!: readonly string[];
-  private readonly hasSpecialTokens!: boolean;
+  private readonly specialTokenKeys: readonly string[];
+  private readonly hasSpecialTokens: boolean;
 
   // Simple piece-level cache
-  private readonly mergeCache!: Map<string, number[]>;
-  private readonly mergeCacheSize!: number;
+  private readonly mergeCache: Map<string, number[]>;
+  private readonly mergeCacheSize: number;
   // Insertion-ordered ring of cached keys for O(1) FIFO eviction.
   // Map#keys().next() is O(holes) in V8 once entries have been deleted.
-  private readonly mergeCacheKeys!: string[];
+  private readonly mergeCacheKeys: string[];
   private mergeCacheHead = 0;
 
   constructor(
-    data: Encoding | SentencePieceEncoding,
+    data: Encoding | CodecEncoding,
     extendedSpecialTokens?: Record<string, number>,
     mergeCacheSize: number = 100000
   ) {
-    // An encoding with a `kind` is not regex BPE. Its engine has the same
-    // public methods, so the caller never sees the difference. This return
-    // skips the field assignments below, so the fields carry `!`.
-    if ("kind" in data) {
-      return new SentencePieceTokenizer(
-        data,
-        extendedSpecialTokens
-      ) as unknown as Tokenizer;
-    }
     if (!(mergeCacheSize >= 0)) {
       throw new RangeError(`Invalid mergeCacheSize: ${mergeCacheSize}`);
+    }
+    this.codec = "kind" in data ? data.codec : null;
+    if ("kind" in data) {
+      if (Object.keys(extendedSpecialTokens ?? {}).length > 0) {
+        throw new Error(`${data.name} does not support special tokens`);
+      }
+      // An inert BPE table, so the rest of the constructor stays as it is.
+      data = {
+        name: data.name,
+        pat_str: "(?!)",
+        special_tokens: {},
+        stringEncoder: {},
+        binaryEncoder: [],
+        decoder: {},
+      };
     }
     this.name = data.name;
     this.mergeCacheSize = mergeCacheSize;
@@ -187,6 +207,9 @@ export default class Tokenizer {
     allowedSpecial: Array<string> | "all" = [],
     disallowedSpecial: Array<string> | "all" = "all"
   ): number[] {
+    if (this.codec !== null) {
+      return this.codec.encode(text, allowedSpecial, disallowedSpecial);
+    }
     // Fast path: no special tokens to handle
     if (!this.hasSpecialTokens) {
       return this.encodeOrdinary(text);
@@ -326,6 +349,7 @@ export default class Tokenizer {
    * Decode tokens to text (optimized - handles strings directly)
    */
   decode(tokens: number[]): string {
+    if (this.codec !== null) return this.codec.decode(tokens);
     let result = "";
     let byteBuffer: Uint8Array | null = null;
     let bufferSize = 0;
