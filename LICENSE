@@ -23,8 +23,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 Third-party notice
 
-src/claude/, src/encoding/claude_v3.ts and src/encoding/claude_v4_7.ts are
-ported from ctok (https://github.com/sanderland/ctok) under this license:
+src/claude/ and src/encoding/claude_v*.ts are ported from ctok
+(https://github.com/sanderland/ctok) under this license:
 
 MIT License
 

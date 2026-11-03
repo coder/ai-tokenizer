@@ -93,28 +93,33 @@ const total = tokenizer.count("some text input");
 
 ## Claude encodings
 
-Anthropic changed its tokenizer at Claude Opus 4.7. Two encodings count Claude tokens offline. They match the `count_tokens` API exactly on all 93 texts in `src/fixtures/claude-count-tokens.json`, on both Claude Opus 4.6 and Claude Opus 4.8. The older `claude` encoding stays available unchanged.
+Anthropic changed its tokenizer at Claude Opus 4.7. Four encodings count Claude tokens offline. Each one is named after the first model that counts that way. They match the `count_tokens` API exactly on all 93 texts in `src/fixtures/claude-count-tokens.json`, measured on Claude Opus 4.6, Opus 4.7, Opus 4.8 and Opus 5.5. The older `claude` encoding stays available unchanged.
 
-| Encoding | Models |
-| --- | --- |
-| `claude_v3` | Claude 3 through Claude Opus 4.6 |
-| `claude_v4_7` | Claude Opus 4.7 and later |
+| Encoding | Models | Frame |
+| --- | --- | --- |
+| `claude_v3` | Claude 3 through Claude Opus 4.6, Sonnet 4.6 and Haiku 4.5 | 7 |
+| `claude_v4_7` | Claude Opus 4.7 | 11 |
+| `claude_v4_8` | Claude Opus 4.8, Sonnet 5 and Fable 5 | 6 |
+| `claude_v5` | Claude Opus 5, Opus 5.5, Sonnet 5.5, Haiku 5.5 and Fable 5.1 | 6 on Opus 5, 8 on the 5.5 and 5.1 models |
+
+`claude_v4_7`, `claude_v4_8` and `claude_v5` share one vocabulary. They differ in how the message frame treats the content.
 
 ```ts
 import { Tokenizer } from "ai-tokenizer";
-import * as claude_v4_7 from "ai-tokenizer/encoding/claude_v4_7";
+import * as claude_v5 from "ai-tokenizer/encoding/claude_v5";
 
-const tokenizer = new Tokenizer(claude_v4_7);
+const tokenizer = new Tokenizer(claude_v5);
 tokenizer.count("hello, world"); // 4
 ```
 
-- `count()` counts the content of one user message. `count_tokens` also charges a fixed message frame (7 tokens on Claude Opus 4.6, 6 on Claude Opus 4.8). The frame comes from the model config, not from the encoding.
-- The content count includes what the frame does to the content. On `claude_v3` the frame absorbs one leading space. On both encodings, newlines at the end of the content join the frame's own newline token, so a short run of them is free.
-- `claude_v4_7` follows Claude Opus 4.8 and later. Claude Opus 4.7 has the same vocabulary but a different frame, so its count can differ at the start of a message and on newlines at the end of the content.
+- `count()` counts the content of one user message. `count_tokens` also charges a fixed message frame, shown in the table above. The frame comes from the model config, not from the encoding.
+- The content count includes what the frame does to the content. On `claude_v3` and `claude_v4_7` the frame absorbs one leading space. On every encoding, newlines at the end of the content join the frame's own newline token, so a short run of them is free.
+- `claude_v5` drops trailing ASCII whitespace (space, tab, CR, LF, VT, FF), as these models do for each user text block. The API does not drop it from assistant messages.
 - `count("")` is 0. The API rejects empty content.
 - Token ids are synthetic, because Anthropic does not publish its ids. They are stable for one version of this package only.
-- `decode()` returns the normalized text, so it is lossy. Plain ASCII prose comes back unchanged. Unicode normalization, folded quotes and spaces, removed control characters, the absorbed leading space, some case changes and trailing newlines do not.
+- `decode()` returns the normalized text, so it is lossy. Plain ASCII prose comes back unchanged. Unicode normalization, folded quotes and spaces, removed control characters, the absorbed leading space, some case changes and trailing whitespace do not.
 - Counts use Unicode 15.1 data, like the reference. A JavaScript engine with Unicode data older than 15.1 can count text with newer characters differently.
+- Some Latin letters added in Unicode 16 (for example U+A7CC, U+A7CD and U+A7DA) count a few tokens off. ctok has the same gap.
 
 The encodings are a TypeScript port of [ctok](https://github.com/sanderland/ctok) by Sander Land (MIT License), at commit [`8c43ffd`](https://github.com/sanderland/ctok/tree/8c43ffd3c7be467622a540f025516e49ef78d8b1). `scripts/generate-claude-encodings.ts` regenerates the data from that commit, and `scripts/compare-claude-ctok.ts` compares the port with ctok.
 
