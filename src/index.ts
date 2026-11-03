@@ -52,7 +52,6 @@ export interface AnthropicTokens {
  * the short edge follows at the same aspect ratio, rounded.
  */
 export interface PatchImageTokens {
-  kind: "patches";
   /** Side of a patch, in pixels. */
   patch: number;
   maxEdge: number;

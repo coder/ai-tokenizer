@@ -1074,11 +1074,11 @@ const fixtures: Fixture[] = [
     media: FILE,
   },
   {
-    name: "file part with an image media type counts as a file, as before",
+    name: "file part with an image media type is an image",
     since: 5,
     role: "user",
     content: { type: "file", data: B64, mediaType: "image/png" },
-    media: FILE,
+    media: IMAGE,
   },
   {
     name: "assistant reasoning is not counted",
@@ -1087,11 +1087,11 @@ const fixtures: Fixture[] = [
     content: { type: "reasoning", text: "Let me think." },
   },
   {
-    name: "assistant generated image counts as a file, as before",
+    name: "assistant generated image is an image",
     since: 5,
     role: "assistant",
     content: { type: "file", data: B64, mediaType: "image/webp" },
-    media: FILE,
+    media: IMAGE,
   },
   {
     name: "output text counts its wrapper",
@@ -1236,7 +1236,7 @@ const fixtures: Fixture[] = [
   },
 
   {
-    name: "file with media type 'image' counts as a file, as before",
+    name: "file with media type 'image' is an image",
     since: 7,
     role: "user",
     content: {
@@ -1244,10 +1244,10 @@ const fixtures: Fixture[] = [
       mediaType: "image",
       data: { type: "url", url: new URL("https://example.com/a.png") },
     },
-    media: FILE,
+    media: IMAGE,
   },
   {
-    name: "file with image/* media type and tagged data counts as a file",
+    name: "file with image/* media type and tagged data is an image",
     since: 7,
     role: "user",
     content: {
@@ -1255,10 +1255,10 @@ const fixtures: Fixture[] = [
       mediaType: "image/png",
       data: { type: "data", data: B64 },
     },
-    media: FILE,
+    media: IMAGE,
   },
   {
-    name: "file with image media type and a provider reference counts as a file",
+    name: "file with image media type and a provider reference is an image",
     since: 7,
     role: "user",
     content: {
@@ -1266,7 +1266,7 @@ const fixtures: Fixture[] = [
       mediaType: "image",
       data: { type: "reference", reference: { openai: "file_1" } },
     },
-    media: FILE,
+    media: IMAGE,
   },
   {
     name: "file pdf with tagged data",
@@ -1355,7 +1355,7 @@ const fixtures: Fixture[] = [
     text: [
       '{"type":"content","value":[{"type":"file","mediaType":"text/plain","data":{"type":"text","text":"inline"}}]}',
     ],
-    media: 3 * FILE,
+    media: IMAGE + 2 * FILE,
   },
 ];
 
@@ -1389,23 +1389,26 @@ describe("message parts", () => {
     }
   );
 
-  test("a file part with an image media type counts 100 and an image part 85, as on main", () => {
-    const gpt5 = models["openai/gpt-5"] as Model;
+  test("a model without an image recipe counts every image 85 and every file 100", () => {
+    const grok = models["xai/grok-4"] as Model;
     const overhead =
-      gpt5.tokens.baseOverhead + gpt5.tokens.perMessage + enc("user");
+      grok.tokens.baseOverhead + grok.tokens.perMessage + enc("user");
     const total = (content: unknown) =>
       count({
         tokenizer,
-        model: gpt5,
+        model: grok,
         messages: [{ role: "user", content: [content] }] as ModelMessage[],
       }).total;
 
     expect(
       total({ type: "file", data: "iVBORw0KGgo=", mediaType: "image/png" })
-    ).toBe(overhead + FILE);
+    ).toBe(overhead + IMAGE);
     expect(
       total({ type: "image", image: "iVBORw0KGgo=", mediaType: "image/png" })
     ).toBe(overhead + IMAGE);
+    expect(
+      total({ type: "file", data: "JVBERi0=", mediaType: "application/pdf" })
+    ).toBe(overhead + FILE);
   });
 
   test("a tool result total adds the call id to the output", () => {

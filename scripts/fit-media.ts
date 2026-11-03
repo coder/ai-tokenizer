@@ -65,7 +65,6 @@ export function fitAnthropicImage(model: string): { image: PatchImageTokens } {
   const misses: string[] = [];
   for (const limits of ANTHROPIC_LIMITS) {
     const image: PatchImageTokens = {
-      kind: "patches",
       patch: 28,
       ...limits,
       // A 1x1 image is one patch.

@@ -23,7 +23,18 @@
         "toolResult": 39,
         "toolResultError": 8,
         "emptyToolResult": 14,
-        "textAfterToolResult": 5
+        "textAfterToolResult": 5,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 1568,
+          "maxPatches": 1568,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude 3 Haiku",
@@ -60,7 +71,18 @@
         "toolResult": 39,
         "toolResultError": 8,
         "emptyToolResult": 14,
-        "textAfterToolResult": 5
+        "textAfterToolResult": 5,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 1568,
+          "maxPatches": 1568,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude 3 Opus",
@@ -97,7 +119,18 @@
         "toolResult": 39,
         "toolResultError": 8,
         "emptyToolResult": 14,
-        "textAfterToolResult": 5
+        "textAfterToolResult": 5,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 1568,
+          "maxPatches": 1568,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude 3.5 Haiku",
@@ -134,7 +167,18 @@
         "toolResult": 39,
         "toolResultError": 8,
         "emptyToolResult": 14,
-        "textAfterToolResult": 5
+        "textAfterToolResult": 5,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 1568,
+          "maxPatches": 1568,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude 3.5 Sonnet",
@@ -171,7 +215,18 @@
         "toolResult": 39,
         "toolResultError": 8,
         "emptyToolResult": 14,
-        "textAfterToolResult": 5
+        "textAfterToolResult": 5,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 1568,
+          "maxPatches": 1568,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude 3.5 Sonnet (2024-06-20)",
@@ -206,7 +261,18 @@
         "toolResult": 39,
         "toolResultError": 8,
         "emptyToolResult": 14,
-        "textAfterToolResult": 5
+        "textAfterToolResult": 5,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 1568,
+          "maxPatches": 1568,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude 3.7 Sonnet",
@@ -243,7 +309,18 @@
         "toolResult": 39,
         "toolResultError": 8,
         "emptyToolResult": 14,
-        "textAfterToolResult": 5
+        "textAfterToolResult": 5,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 1568,
+          "maxPatches": 1568,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Opus 4",
@@ -280,7 +357,18 @@
         "toolResult": 39,
         "toolResultError": 8,
         "emptyToolResult": 14,
-        "textAfterToolResult": 5
+        "textAfterToolResult": 5,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 1568,
+          "maxPatches": 1568,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Opus 4.1",
@@ -317,7 +405,18 @@
         "toolResult": 39,
         "toolResultError": 8,
         "emptyToolResult": 14,
-        "textAfterToolResult": 5
+        "textAfterToolResult": 5,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 1568,
+          "maxPatches": 1568,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Sonnet 4",
@@ -354,7 +453,18 @@
         "toolResult": 39,
         "toolResultError": 8,
         "emptyToolResult": 14,
-        "textAfterToolResult": 5
+        "textAfterToolResult": 5,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 1568,
+          "maxPatches": 1568,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Sonnet 4.5",
@@ -2204,7 +2314,18 @@
         "toolResult": 39,
         "toolResultError": 8,
         "emptyToolResult": 14,
-        "textAfterToolResult": 5
+        "textAfterToolResult": 5,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 1568,
+          "maxPatches": 1568,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Haiku 4.5",
@@ -2388,7 +2509,18 @@
         "toolResult": 39,
         "toolResultError": 8,
         "emptyToolResult": 14,
-        "textAfterToolResult": 5
+        "textAfterToolResult": 5,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 1568,
+          "maxPatches": 1568,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Opus 4.5",
@@ -2425,7 +2557,18 @@
         "toolResult": 24,
         "toolResultError": 6,
         "emptyToolResult": 18,
-        "textAfterToolResult": 2
+        "textAfterToolResult": 2,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 2576,
+          "maxPatches": 4784,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Fable 5",
@@ -2462,7 +2605,18 @@
         "toolResult": 24,
         "toolResultError": 6,
         "emptyToolResult": 18,
-        "textAfterToolResult": 2
+        "textAfterToolResult": 2,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 2576,
+          "maxPatches": 4784,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Fable 5 (Batch)",
@@ -2499,7 +2653,18 @@
         "toolResult": 24,
         "toolResultError": 6,
         "emptyToolResult": 18,
-        "textAfterToolResult": 4
+        "textAfterToolResult": 4,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 2576,
+          "maxPatches": 4784,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Fable 5.1",
@@ -2536,7 +2701,18 @@
         "toolResult": 24,
         "toolResultError": 6,
         "emptyToolResult": 18,
-        "textAfterToolResult": 4
+        "textAfterToolResult": 4,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 2576,
+          "maxPatches": 4784,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Fable 5.1 (Batch)",
@@ -2573,7 +2749,18 @@
         "toolResult": 39,
         "toolResultError": 8,
         "emptyToolResult": 14,
-        "textAfterToolResult": 5
+        "textAfterToolResult": 5,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 1568,
+          "maxPatches": 1568,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Haiku 4.5 (Batch)",
@@ -2610,7 +2797,18 @@
         "toolResult": 24,
         "toolResultError": 6,
         "emptyToolResult": 18,
-        "textAfterToolResult": 4
+        "textAfterToolResult": 4,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 2576,
+          "maxPatches": 4784,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Haiku 5.5",
@@ -2647,7 +2845,18 @@
         "toolResult": 24,
         "toolResultError": 6,
         "emptyToolResult": 18,
-        "textAfterToolResult": 4
+        "textAfterToolResult": 4,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 2576,
+          "maxPatches": 4784,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Haiku 5.5 (Batch)",
@@ -2684,7 +2893,18 @@
         "toolResult": 39,
         "toolResultError": 8,
         "emptyToolResult": 14,
-        "textAfterToolResult": 5
+        "textAfterToolResult": 5,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 1568,
+          "maxPatches": 1568,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Opus 4.5 (Batch)",
@@ -2721,7 +2941,18 @@
         "toolResult": 39,
         "toolResultError": 8,
         "emptyToolResult": 14,
-        "textAfterToolResult": 5
+        "textAfterToolResult": 5,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 1568,
+          "maxPatches": 1568,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Opus 4.6",
@@ -2758,7 +2989,18 @@
         "toolResult": 39,
         "toolResultError": 8,
         "emptyToolResult": 14,
-        "textAfterToolResult": 5
+        "textAfterToolResult": 5,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 1568,
+          "maxPatches": 1568,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Opus 4.6 (Batch)",
@@ -2795,7 +3037,18 @@
         "toolResult": 41,
         "toolResultError": 8,
         "emptyToolResult": 18,
-        "textAfterToolResult": 9
+        "textAfterToolResult": 9,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 2576,
+          "maxPatches": 4784,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Opus 4.7",
@@ -2832,7 +3085,18 @@
         "toolResult": 41,
         "toolResultError": 8,
         "emptyToolResult": 18,
-        "textAfterToolResult": 9
+        "textAfterToolResult": 9,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 2576,
+          "maxPatches": 4784,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Opus 4.7 (Batch)",
@@ -2869,7 +3133,18 @@
         "toolResult": 24,
         "toolResultError": 6,
         "emptyToolResult": 18,
-        "textAfterToolResult": 2
+        "textAfterToolResult": 2,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 2576,
+          "maxPatches": 4784,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Opus 4.8",
@@ -2906,7 +3181,18 @@
         "toolResult": 24,
         "toolResultError": 6,
         "emptyToolResult": 18,
-        "textAfterToolResult": 2
+        "textAfterToolResult": 2,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 2576,
+          "maxPatches": 4784,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Opus 4.8 (Batch)",
@@ -2943,7 +3229,18 @@
         "toolResult": 24,
         "toolResultError": 6,
         "emptyToolResult": 18,
-        "textAfterToolResult": 2
+        "textAfterToolResult": 2,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 2576,
+          "maxPatches": 4784,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Opus 4.8 (Fast)",
@@ -2980,7 +3277,18 @@
         "toolResult": 24,
         "toolResultError": 6,
         "emptyToolResult": 18,
-        "textAfterToolResult": 2
+        "textAfterToolResult": 2,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 2576,
+          "maxPatches": 4784,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Opus 5",
@@ -3017,7 +3325,18 @@
         "toolResult": 24,
         "toolResultError": 6,
         "emptyToolResult": 18,
-        "textAfterToolResult": 2
+        "textAfterToolResult": 2,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 2576,
+          "maxPatches": 4784,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Opus 5 (Batch)",
@@ -3054,7 +3373,18 @@
         "toolResult": 24,
         "toolResultError": 6,
         "emptyToolResult": 18,
-        "textAfterToolResult": 2
+        "textAfterToolResult": 2,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 2576,
+          "maxPatches": 4784,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Opus 5 (Fast)",
@@ -3091,7 +3421,18 @@
         "toolResult": 24,
         "toolResultError": 6,
         "emptyToolResult": 18,
-        "textAfterToolResult": 4
+        "textAfterToolResult": 4,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 2576,
+          "maxPatches": 4784,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Opus 5.5",
@@ -3128,7 +3469,18 @@
         "toolResult": 24,
         "toolResultError": 6,
         "emptyToolResult": 18,
-        "textAfterToolResult": 4
+        "textAfterToolResult": 4,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 2576,
+          "maxPatches": 4784,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Opus 5.5 (Batch)",
@@ -3165,7 +3517,18 @@
         "toolResult": 24,
         "toolResultError": 6,
         "emptyToolResult": 18,
-        "textAfterToolResult": 4
+        "textAfterToolResult": 4,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 2576,
+          "maxPatches": 4784,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Opus 5.5 (Fast)",
@@ -3202,7 +3565,18 @@
         "toolResult": 39,
         "toolResultError": 8,
         "emptyToolResult": 14,
-        "textAfterToolResult": 5
+        "textAfterToolResult": 5,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 1568,
+          "maxPatches": 1568,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Sonnet 4.5 (Batch)",
@@ -3239,7 +3613,18 @@
         "toolResult": 39,
         "toolResultError": 8,
         "emptyToolResult": 14,
-        "textAfterToolResult": 5
+        "textAfterToolResult": 5,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 1568,
+          "maxPatches": 1568,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Sonnet 4.6",
@@ -3276,7 +3661,18 @@
         "toolResult": 39,
         "toolResultError": 8,
         "emptyToolResult": 14,
-        "textAfterToolResult": 5
+        "textAfterToolResult": 5,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 1568,
+          "maxPatches": 1568,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Sonnet 4.6 (Batch)",
@@ -3313,7 +3709,18 @@
         "toolResult": 24,
         "toolResultError": 6,
         "emptyToolResult": 18,
-        "textAfterToolResult": 2
+        "textAfterToolResult": 2,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 2576,
+          "maxPatches": 4784,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Sonnet 5",
@@ -3350,7 +3757,18 @@
         "toolResult": 24,
         "toolResultError": 6,
         "emptyToolResult": 18,
-        "textAfterToolResult": 2
+        "textAfterToolResult": 2,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 2576,
+          "maxPatches": 4784,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Sonnet 5 (Batch)",
@@ -3387,7 +3805,18 @@
         "toolResult": 24,
         "toolResultError": 6,
         "emptyToolResult": 18,
-        "textAfterToolResult": 4
+        "textAfterToolResult": 4,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 2576,
+          "maxPatches": 4784,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Sonnet 5.5",
@@ -3424,7 +3853,18 @@
         "toolResult": 24,
         "toolResultError": 6,
         "emptyToolResult": 18,
-        "textAfterToolResult": 4
+        "textAfterToolResult": 4,
+        "imageInToolResult": 10,
+        "toolResultWithImage": 1,
+        "textInImageToolResult": 7
+      },
+      "media": {
+        "image": {
+          "patch": 28,
+          "maxEdge": 2576,
+          "maxPatches": 4784,
+          "overhead": 3
+        }
       }
     },
     "name": "Claude Sonnet 5.5 (Batch)",

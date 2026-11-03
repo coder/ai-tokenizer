@@ -15,10 +15,7 @@ export function imageTokens(
   size: ImageSize | undefined
 ): number {
   const { width, height } = size ?? UNKNOWN_IMAGE_SIZE;
-  switch (recipe.kind) {
-    case "patches":
-      return patchImageTokens(recipe, width, height);
-  }
+  return patchImageTokens(recipe, width, height);
 }
 
 /** A photo or a screenshot, as the usual size of an image that cannot be read. */

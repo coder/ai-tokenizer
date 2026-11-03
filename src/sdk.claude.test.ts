@@ -22,6 +22,9 @@ const anthropic: AnthropicTokens = {
   toolResultError: 8,
   emptyToolResult: 14,
   textAfterToolResult: 5,
+  imageInToolResult: 10,
+  toolResultWithImage: 1,
+  textInImageToolResult: 7,
 };
 const model = {
   tokens: {
