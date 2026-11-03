@@ -59,6 +59,9 @@ export default class Tokenizer {
     extendedSpecialTokens?: Record<string, number>,
     mergeCacheSize: number = 100000
   ) {
+    if (!(mergeCacheSize >= 0)) {
+      throw new RangeError(`Invalid mergeCacheSize: ${mergeCacheSize}`);
+    }
     this.name = data.name;
     this.mergeCacheSize = mergeCacheSize;
     this.mergeCache = new Map();
@@ -86,8 +89,14 @@ export default class Tokenizer {
     }
     this.binaryFirstByteIndex = idx;
 
-    // Pre-compile pattern regex
-    this.patternRegex = new RegExp(data.pat_str, "ug");
+    // tiktoken compiles pat_str with Rust's regex crate, where \s is Unicode
+    // White_Space. JavaScript's \s also matches U+FEFF and misses U+0085.
+    this.patternRegex = new RegExp(
+      data.pat_str
+        .replaceAll("\\s", "\\p{White_Space}")
+        .replaceAll("\\S", "\\P{White_Space}"),
+      "ug"
+    );
 
     // Handle special tokens
     this.specialTokens = { ...data.special_tokens, ...extendedSpecialTokens };
@@ -112,6 +121,7 @@ export default class Tokenizer {
    * the oldest live key.
    */
   private addToMergeCache(key: string, value: number[]): void {
+    if (this.mergeCacheSize === 0) return;
     const keys = this.mergeCacheKeys;
     if (this.mergeCache.size >= this.mergeCacheSize && keys.length > 0) {
       // Full: the slot at head holds the oldest live key.
@@ -165,13 +175,13 @@ export default class Tokenizer {
     disallowedSpecial: Array<string> | "all" = "all"
   ): number[] {
     // Fast path: no special tokens to handle
-    if (!this.hasSpecialTokens || allowedSpecial === "all") {
+    if (!this.hasSpecialTokens) {
       return this.encodeOrdinary(text);
     }
 
     const result: number[] = [];
     const allowedSet = new Set(
-      (allowedSpecial as any) === "all" ? this.specialTokenKeys : allowedSpecial
+      allowedSpecial === "all" ? this.specialTokenKeys : allowedSpecial
     );
 
     const disallowedSet = new Set(
@@ -229,7 +239,7 @@ export default class Tokenizer {
     // Quick single-token check for very short text
     if (text.length < 10) {
       const direct = this.stringRankEncoder[text];
-      if (direct !== undefined) return [direct];
+      if (typeof direct === "number") return [direct];
     }
 
     const result: number[] = [];
@@ -242,7 +252,7 @@ export default class Tokenizer {
 
       // Direct rank check (most common case)
       const directRank = this.stringRankEncoder[piece];
-      if (directRank !== undefined) {
+      if (typeof directRank === "number") {
         result.push(directRank);
         continue;
       }
@@ -287,7 +297,7 @@ export default class Tokenizer {
 
       // Direct rank check
       const directRank = this.stringRankEncoder[piece];
-      if (directRank !== undefined) {
+      if (typeof directRank === "number") {
         result.push(directRank);
         continue;
       }
@@ -350,10 +360,11 @@ export default class Tokenizer {
   }
 
   /**
-   * Count tokens in text
+   * Count tokens in text. Special-token text such as "<|endoftext|>" counts
+   * as ordinary text, the way chat APIs count it in message content.
    */
   count(input: string): number {
-    return this.encode(input).length;
+    return this.encode(input, [], []).length;
   }
 }
 
@@ -362,7 +373,7 @@ const NO_RANK = 0xffffffff;
 
 // Shared instances (zero allocation after init)
 const textEncoder = new TextEncoder();
-const textDecoder = new TextDecoder("utf-8");
+const textDecoder = new TextDecoder("utf-8", { ignoreBOM: true });
 
 /**
  * Fast UTF-8 validation without try/catch overhead
@@ -497,7 +508,7 @@ export function bytePairMerge(
     const asString = tryBytesToString(slice);
     if (asString !== undefined) {
       const rank = stringRanks[asString];
-      if (rank !== undefined) return rank;
+      if (typeof rank === "number") return rank;
     }
 
     // Binary search with first-byte index
