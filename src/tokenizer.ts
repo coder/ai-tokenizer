@@ -31,7 +31,9 @@ export interface Codec {
   decode(tokens: number[]): string;
 }
 
+/** An encoding module with a `kind` brings its own codec. A BPE `Encoding` has none. */
 export interface CodecEncoding {
+  kind: string;
   name: string;
   codec: Codec;
 }
@@ -71,8 +73,8 @@ export default class Tokenizer {
     extendedSpecialTokens?: Record<string, number>,
     mergeCacheSize: number = 100000
   ) {
-    this.codec = "codec" in data ? data.codec : null;
-    if ("codec" in data) {
+    this.codec = "kind" in data ? data.codec : null;
+    if ("kind" in data) {
       if (Object.keys(extendedSpecialTokens ?? {}).length > 0) {
         throw new Error(`${data.name} does not support special tokens`);
       }

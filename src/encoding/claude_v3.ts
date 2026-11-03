@@ -10,6 +10,8 @@
  */
 import { createClaudeCodec } from "../claude/codec";
 
+export const kind = "ctok";
+
 export const name = "claude_v3";
 
 export const codec = createClaudeCodec({

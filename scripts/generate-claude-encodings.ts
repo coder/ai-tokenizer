@@ -169,6 +169,8 @@ ${credit(f.family)} *
  */
 import { createClaudeCodec } from "../claude/codec";
 
+export const kind = "ctok";
+
 export const name = "${enc.name}";
 
 export const codec = createClaudeCodec({
