@@ -39,7 +39,9 @@
       "encoding/claude_v3": ["./dist/encoding/claude_v3.d.ts"],
       "encoding/claude_v4_7": ["./dist/encoding/claude_v4_7.d.ts"],
       "encoding/claude_v4_8": ["./dist/encoding/claude_v4_8.d.ts"],
-      "encoding/claude_v5": ["./dist/encoding/claude_v5.d.ts"]
+      "encoding/claude_v5": ["./dist/encoding/claude_v5.d.ts"],
+      "encoding/gemma4": ["./dist/encoding/gemma4.d.ts"],
+      "encoding/llama4": ["./dist/encoding/llama4.d.ts"]
     }
   },
   "exports": {
@@ -151,6 +153,26 @@
       "require": {
         "types": "./dist/encoding/claude_v5.d.cts",
         "default": "./dist/encoding/claude_v5.cjs"
+      }
+    },
+    "./encoding/gemma4": {
+      "import": {
+        "types": "./dist/encoding/gemma4.d.ts",
+        "default": "./dist/encoding/gemma4.js"
+      },
+      "require": {
+        "types": "./dist/encoding/gemma4.d.cts",
+        "default": "./dist/encoding/gemma4.cjs"
+      }
+    },
+    "./encoding/llama4": {
+      "import": {
+        "types": "./dist/encoding/llama4.d.ts",
+        "default": "./dist/encoding/llama4.js"
+      },
+      "require": {
+        "types": "./dist/encoding/llama4.d.cts",
+        "default": "./dist/encoding/llama4.cjs"
       }
     }
   },
