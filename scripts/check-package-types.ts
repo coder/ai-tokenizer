@@ -119,7 +119,8 @@ try {
       })
     );
 
-    let output: string;
+    let output = "";
+    let threw = false;
     try {
       output = run(consumerDir, "node", [
         join("node_modules", "typescript", "bin", "tsc"),
@@ -127,14 +128,22 @@ try {
         tsconfig,
       ]);
     } catch (error) {
-      output = String((error as { stdout?: string }).stdout ?? error);
+      threw = true;
+      const { stdout, stderr } = error as { stdout?: string; stderr?: string };
+      output = `${stdout ?? ""}${stderr ?? ""}` || String(error);
     }
-    // Declarations of other packages are not ours to check.
-    const errors = output
-      .split("\n")
-      .filter((line) =>
-        /^(index\.c?ts|node_modules\/ai-tokenizer\/)/.test(line)
-      );
+    // Every diagnostic counts, including option errors in the tsconfig, which
+    // make tsc skip the check of the example. Only declarations of other
+    // packages are not ours to check. A failed run with no diagnostic at all
+    // is an error too.
+    const lines = output.split("\n").filter((line) => line.trim() !== "");
+    const diagnostics = lines.filter((line) => /error TS\d+/.test(line));
+    const errors =
+      threw && diagnostics.length === 0
+        ? lines
+        : diagnostics.filter(
+            (line) => !/^node_modules\/(?!ai-tokenizer\/)/.test(line)
+          );
 
     if (errors.length === 0) {
       console.log(`PASS ${resolution.name}`);
