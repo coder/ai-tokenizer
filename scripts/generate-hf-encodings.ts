@@ -287,7 +287,7 @@ export const name = "gemma4";
 export const special_tokens: Record<string, number> = ${JSON.stringify(special, null, 2)};
 
 // Token text by id. Decoded on first use, not on import.
-export const vocab: string[] = lazy<string[]>([], () =>
+export const vocab: string[] = /* @__PURE__ */ lazy<string[]>([], () =>
   decodeStrings(${JSON.stringify(encodeStrings(byId))})
 );
 
@@ -295,7 +295,7 @@ export const vocab: string[] = lazy<string[]>([], () =>
 // SentencePieceEncoding.
 export const merges: string = ${JSON.stringify(Buffer.from(planes).toString("base64"))};
 
-export const codec = createSentencePieceCodec({
+export const codec = /* @__PURE__ */ createSentencePieceCodec({
   name,
   special_tokens,
   vocab,

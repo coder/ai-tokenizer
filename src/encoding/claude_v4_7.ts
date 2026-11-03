@@ -13,7 +13,7 @@ export const kind = "ctok";
 
 export const name = "claude_v4_7";
 
-export const codec = createClaudeCodec({
+export const codec = /* @__PURE__ */ createClaudeCodec({
   name,
   foldQuotes: false,
   allcapsMin: null,

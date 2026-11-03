@@ -192,7 +192,7 @@ export const CCC: readonly number[] = ${JSON.stringify(u.ccc)};
 `
 );
 
-const PIECES_CALL = "JSON.parse(`__PIECES__`)";
+const PIECES_JSON = "`__PIECES__`";
 const count = (n: number) => n.toLocaleString("en-US");
 const vocabularies = new Map<string, Family>();
 for (const enc of ENCODINGS) {
@@ -224,18 +224,17 @@ export const bytePrefixes: readonly string[] = [
 ${f.bytePrefixes.map(literal).join(",\n")}
 ];
 
+const json = ${PIECES_JSON};
+
 /**
  * The cost-1 pieces, sorted by codepoints. A piece's index is its token id.
  * Parsed on first use, not on import.
  */
-export const pieces: readonly string[] = lazy<string[]>([], () =>
-  ${PIECES_CALL}
+export const pieces: readonly string[] = /* @__PURE__ */ lazy<string[]>([], () =>
+  JSON.parse(json)
 );
 `,
-    {
-      // Prettier puts a literal this long on a line of its own.
-      [PIECES_CALL]: `JSON.parse(\n    ${jsonTemplateLiteral(f.pieces)}\n  )`,
-    }
+    { [PIECES_JSON]: jsonTemplateLiteral(f.pieces) }
   );
 }
 
@@ -255,7 +254,7 @@ export const kind = "ctok";
 
 export const name = "${enc.name}";
 
-export const codec = createClaudeCodec({
+export const codec = /* @__PURE__ */ createClaudeCodec({
   name,
   foldQuotes: ${f.foldQuotes},
   allcapsMin: ${f.allcapsMin},

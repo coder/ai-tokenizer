@@ -80,7 +80,7 @@ function fromHex(hex: string): Uint8Array {
   return bytes;
 }
 
-function buildBpeTables({ tokens, binary }: BpeData): BpeTables {
+export function buildBpeTables({ tokens, binary }: BpeData): BpeTables {
   // No prototype, so a token such as "constructor" or "__proto__" is a plain
   // key and a missing token reads as undefined.
   const stringEncoder: Record<string, number> = Object.create(null);
@@ -103,23 +103,27 @@ function buildBpeTables({ tokens, binary }: BpeData): BpeTables {
   };
 }
 
+// One build per JSON string, shared by the three tables of a module.
+const built = new Map<string, BpeTables>();
+
 /**
- * The tables of a BPE encoding from its JSON. Nothing is parsed until a table
- * is read, and the first read builds all three.
+ * One table of a BPE encoding, from the JSON its module embeds. Nothing is
+ * parsed until a table is read, and the first read builds all three.
+ *
+ * Each table is a call of its own, so a bundler that sees the call is pure can
+ * drop a table, and the JSON with it, when nothing uses the encoding.
  */
-export function lazyBpeTables(json: string): BpeTables {
-  let built: BpeTables | undefined;
-  const build = (): BpeTables =>
-    (built ??= buildBpeTables(JSON.parse(json) as BpeData));
-  return {
-    stringEncoder: lazy<BpeTables["stringEncoder"]>(
-      {},
-      () => build().stringEncoder
-    ),
-    binaryEncoder: lazy<BpeTables["binaryEncoder"]>(
-      [],
-      () => build().binaryEncoder
-    ),
-    decoder: lazy<BpeTables["decoder"]>([], () => build().decoder),
-  };
+export function bpeTable<K extends keyof BpeTables>(
+  json: string,
+  key: K
+): BpeTables[K] {
+  const placeholder = (key === "stringEncoder" ? {} : []) as BpeTables[K];
+  return lazy(placeholder, () => {
+    let tables = built.get(json);
+    if (tables === undefined) {
+      tables = buildBpeTables(JSON.parse(json) as BpeData);
+      built.set(json, tables);
+    }
+    return tables[key];
+  });
 }

@@ -170,7 +170,7 @@ ${(spec.provenance ?? []).map((line) => ` * ${line}\n`).join("")}${spec.provenan
  * - Pattern: ${spec.patStr}
  * - Special tokens: ${Object.keys(spec.specialTokens).length.toLocaleString("en-US")}
  */
-import { lazyBpeTables } from "../lazy";
+import { bpeTable } from "../lazy";
 
 export const name = ${JSON.stringify(spec.name)};
 
@@ -178,15 +178,15 @@ export const pat_str = ${JSON.stringify(spec.patStr)};
 
 export const special_tokens${specialType} = ${JSON.stringify(spec.specialTokens, null, 2)};
 
-const tables = lazyBpeTables(${jsonTemplateLiteral(data)});
+const json = ${jsonTemplateLiteral(data)};
 
 // String-based encoder (UTF-8 tokens): token text to rank.
-export const stringEncoder: Record<string, number> = tables.stringEncoder;
+export const stringEncoder: Record<string, number> = /* @__PURE__ */ bpeTable(json, "stringEncoder");
 
 // Binary encoder (non-UTF-8 tokens), pre-sorted for binary search.
-export const binaryEncoder: Array<[Uint8Array, number]> = tables.binaryEncoder;
+export const binaryEncoder: Array<[Uint8Array, number]> = /* @__PURE__ */ bpeTable(json, "binaryEncoder");
 
 // Decoder: rank to token text, or to bytes for a non-UTF-8 token.
-export const decoder: Record<number, string | Uint8Array> = tables.decoder;
+export const decoder: Record<number, string | Uint8Array> = /* @__PURE__ */ bpeTable(json, "decoder");
 `;
 }

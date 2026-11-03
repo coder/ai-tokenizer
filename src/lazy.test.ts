@@ -1,8 +1,9 @@
 import { describe, test, expect, spyOn } from "bun:test";
 import {
   decodeStrings,
+  bpeTable,
+  buildBpeTables,
   lazy,
-  lazyBpeTables,
   resolve,
   type BpeData,
 } from "./lazy";
@@ -86,34 +87,41 @@ const data: BpeData = {
   binary: [["ff", 4]],
 };
 
-describe("lazyBpeTables", () => {
+describe("bpeTable", () => {
+  const json = JSON.stringify(data);
+  const tables = () => ({
+    stringEncoder: bpeTable(json, "stringEncoder"),
+    binaryEncoder: bpeTable(json, "binaryEncoder"),
+    decoder: bpeTable(json, "decoder"),
+  });
+
   test("parses its JSON once, on the first read of any table", () => {
+    const text = JSON.stringify({ tokens: ["x", "y"], binary: [] });
     const parse = spyOn(JSON, "parse");
     try {
-      const json = JSON.stringify(data);
-      const tables = lazyBpeTables(json);
-      expect(parse).not.toHaveBeenCalledWith(json);
-      void tables.decoder[1];
-      void tables.stringEncoder["a"];
-      void tables.binaryEncoder.length;
-      expect(parse.mock.calls.filter(([arg]) => arg === json)).toHaveLength(1);
+      const encoder = bpeTable(text, "stringEncoder");
+      const decoder = bpeTable(text, "decoder");
+      expect(parse).not.toHaveBeenCalledWith(text);
+      void encoder["x"];
+      void decoder[0];
+      expect(parse.mock.calls.filter(([arg]) => arg === text)).toHaveLength(1);
     } finally {
       parse.mockRestore();
     }
   });
 
   test("builds the three tables from the token list", () => {
-    const tables = lazyBpeTables(JSON.stringify(data));
-    expect(tables.stringEncoder["ab"]).toBe(3);
-    expect(tables.decoder[3]).toBe("ab");
-    expect(tables.decoder[4]).toEqual(new Uint8Array([0xff]));
-    expect(tables.binaryEncoder).toEqual([[new Uint8Array([0xff]), 4]]);
-    expect(tables.decoder[0]).toBeUndefined();
-    expect(tables.decoder[99]).toBeUndefined();
+    const { stringEncoder, binaryEncoder, decoder } = tables();
+    expect(stringEncoder["ab"]).toBe(3);
+    expect(decoder[3]).toBe("ab");
+    expect(decoder[4]).toEqual(new Uint8Array([0xff]));
+    expect(binaryEncoder).toEqual([[new Uint8Array([0xff]), 4]]);
+    expect(decoder[0]).toBeUndefined();
+    expect(decoder[99]).toBeUndefined();
   });
 
   test("a token named like an Object.prototype member is a plain key", () => {
-    const { stringEncoder } = lazyBpeTables(JSON.stringify(data));
+    const { stringEncoder } = tables();
     expect(stringEncoder["constructor"]).toBe(5);
     expect(stringEncoder["__proto__"]).toBe(6);
     expect(stringEncoder["toString"]).toBeUndefined();
@@ -130,17 +138,18 @@ describe("lazyBpeTables", () => {
       binaryEncoder: [],
       decoder: { ...tokens },
     };
+    const text = JSON.stringify({ tokens, binary: [] } satisfies BpeData);
     const standIn: Encoding = {
       ...literal,
-      ...lazyBpeTables(
-        JSON.stringify({ tokens, binary: [] } satisfies BpeData)
-      ),
+      stringEncoder: bpeTable(text, "stringEncoder"),
+      binaryEncoder: bpeTable(text, "binaryEncoder"),
+      decoder: bpeTable(text, "decoder"),
     };
-    const text = "abc ab bc cab";
-    const expected = new Tokenizer(literal).encode(text);
+    const input = "abc ab bc cab";
+    const expected = new Tokenizer(literal).encode(input);
     const tokenizer = new Tokenizer(standIn);
-    expect(tokenizer.encode(text)).toEqual(expected);
-    expect(tokenizer.decode(expected)).toBe(text);
+    expect(tokenizer.encode(input)).toEqual(expected);
+    expect(tokenizer.decode(expected)).toBe(input);
     // The hot loop must read the real table, not go through the Proxy.
     expect((tokenizer as any).stringRankEncoder).toBe(
       resolve(standIn.stringEncoder)
