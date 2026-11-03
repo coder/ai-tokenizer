@@ -101,12 +101,21 @@ def jpeg_big() -> bytes:
 
 def gif_animated() -> bytes:
     frames = [pattern(5, 300).quantize(4), flat(5, 300).convert("P")]
-    return encode(frames[0], "GIF", save_all=True, append_images=frames[1:], duration=100, loop=0)
+    return encode(
+        frames[0], "GIF", save_all=True, append_images=frames[1:], duration=100, loop=0
+    )
 
 
 def webp_animated() -> bytes:
     frames = [pattern(5, 300), pattern(5, 300).transpose(Image.FLIP_TOP_BOTTOM)]
-    return encode(frames[0], "WEBP", save_all=True, append_images=frames[1:], duration=100, lossless=True)
+    return encode(
+        frames[0],
+        "WEBP",
+        save_all=True,
+        append_images=frames[1:],
+        duration=100,
+        lossless=True,
+    )
 
 
 def fixtures() -> dict[str, bytes]:
@@ -114,7 +123,9 @@ def fixtures() -> dict[str, bytes]:
     alpha.putalpha(Image.linear_gradient("L").resize((37, 23)))
     return {
         "png-rgb-37x23.png": encode(pattern(37, 23), "PNG", optimize=True),
-        "png-palette-5x300.png": encode(pattern(5, 300).quantize(8), "PNG", optimize=True),
+        "png-palette-5x300.png": encode(
+            pattern(5, 300).quantize(8), "PNG", optimize=True
+        ),
         "png-grey-70000x1.png": encode(flat(70_000, 1), "PNG", optimize=True),
         "jpeg-baseline-37x23.jpg": encode(pattern(37, 23), "JPEG"),
         "jpeg-progressive-5x300.jpg": encode(pattern(5, 300), "JPEG", progressive=True),
@@ -129,8 +140,12 @@ def fixtures() -> dict[str, bytes]:
         "webp-lossy-vp8-37x23.webp": encode(pattern(37, 23), "WEBP", quality=50),
         "webp-lossy-vp8-16383x1.webp": encode(flat(16_383, 1), "WEBP", quality=50),
         "webp-lossless-vp8l-5x300.webp": encode(pattern(5, 300), "WEBP", lossless=True),
-        "webp-lossless-vp8l-16383x1.webp": encode(flat(16_383, 1), "WEBP", lossless=True),
-        "webp-alpha-exif-vp8x-37x23.webp": encode(alpha, "WEBP", quality=50, exif=tiff(1)),
+        "webp-lossless-vp8l-16383x1.webp": encode(
+            flat(16_383, 1), "WEBP", lossless=True
+        ),
+        "webp-alpha-exif-vp8x-37x23.webp": encode(
+            alpha, "WEBP", quality=50, exif=tiff(1)
+        ),
         "webp-animated-vp8x-5x300.webp": webp_animated(),
     }
 
