@@ -962,7 +962,9 @@ class PdfFile {
   }
 
   box(value: Value): Box | undefined {
-    const numbers = this.array(value)?.map((v) => this.number(v));
+    const numbers = this.array(value)
+      ?.slice(0, 4)
+      .map((v) => this.number(v));
     if (
       !numbers ||
       numbers.length < 4 ||
@@ -2027,13 +2029,14 @@ class TextExtractor {
           ) {
             const content = file.decode(form);
             if (content) {
-              const matrix = file
-                .array(form.dict.get("Matrix"))
-                ?.map((v) => file.number(v) ?? 0);
+              const matrix = file.array(form.dict.get("Matrix"));
               const outer = { ...state };
               const { tm, tlm } = this;
               if (matrix?.length === 6)
-                state.ctm = multiply(matrix as Matrix, state.ctm);
+                state.ctm = multiply(
+                  matrix.map((v) => file.number(v) ?? 0) as Matrix,
+                  state.ctm
+                );
               this.forms.add(form);
               this.run(
                 content,

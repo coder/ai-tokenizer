@@ -556,6 +556,24 @@ describe("hostile PDFs", () => {
     }
   }, 20_000);
 
+  test("bounds reused coordinate arrays, whose fields have fixed sizes", () => {
+    const zeros = "0 ".repeat(100_000);
+    const pdf = build([
+      "<< /Type /Catalog /Pages 2 0 R >>",
+      `<< /Type /Pages /Kids [${Array.from({ length: 1000 }, (_, i) => `${i + 3} 0 R`).join(" ")}] /MediaBox [0 0 612 792 ${zeros}] /Resources << /XObject << /X 1005 0 R >> >> >>`,
+      ...Array.from(
+        { length: 1000 },
+        () => "<< /Type /Page /Parent 2 0 R /Contents 1003 0 R >>"
+      ),
+      stream("", "/X Do ".repeat(1000)),
+      "null",
+      stream(`/Subtype /Form /Matrix [1 0 0 1 0 0 ${zeros}]`, ""),
+    ]);
+    const started = performance.now();
+    expect(readPdf(pdf)?.pages.length).toBe(1000);
+    expect(performance.now() - started).toBeLessThan(4000);
+  }, 15_000);
+
   test("bounds 100,000 empty pages without trusting the page count", () => {
     const pages = Array.from({ length: 100_000 }, () => "<< /Type /Page >>");
     const pdf = build([
