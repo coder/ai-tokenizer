@@ -540,6 +540,28 @@ describe("tool schemas", () => {
       );
     });
 
+    test("keywords next to a nullable anyOf count with the inner schema's", () => {
+      const withSiblings = {
+        type: "object",
+        properties: {
+          u: {
+            anyOf: [{ type: "string" }, { type: "null" }],
+            enum: ["a", "b"],
+            description: "Unit",
+          },
+        },
+      };
+      const flat = {
+        type: "object",
+        properties: {
+          u: { type: "string", enum: ["a", "b"], description: "Unit" },
+        },
+      };
+      expect(inline(jsonSchema(withSiblings as never))).toBe(
+        inline(jsonSchema(flat as never))
+      );
+    });
+
     test("an anchor is not resolved", () => {
       const anchored = {
         type: "object",
@@ -734,13 +756,100 @@ describe("tool schemas", () => {
           child: { $ref: "#", properties: { note: { type: "string" } } },
         },
       };
-      // `child` resolves to the root plus `note`. Inside that, `child` points
-      // back at the same merged object, so it stops there.
-      const merged =
-        enc("child") + first + (enc("note") + tokens.perAdditionalProp);
+      // `child` is the root plus `note`. The root is being walked, so its
+      // edge back to itself is cut and only the sibling `note` counts.
+      const merged = enc("note") + tokens.perFirstProp;
       expect(inline(jsonSchema(tree as never))).toBe(
         enc("child") + first + merged
       );
+    });
+
+    test("sibling properties that replace the first key or follow an empty target match the flat schema", () => {
+      const withSiblings = {
+        type: "object",
+        properties: {
+          clash: {
+            $ref: "#/$defs/Base",
+            properties: {
+              id: { type: "string", description: "Replaced" },
+              tail: { type: "number" },
+            },
+          },
+          empty: {
+            $ref: "#/$defs/Empty",
+            properties: { only: { type: "string", description: "Only" } },
+          },
+        },
+        $defs: {
+          Base: {
+            type: "object",
+            properties: { id: { type: "string" }, name: { type: "string" } },
+          },
+          Empty: { type: "object", properties: {} },
+        },
+      };
+      const flat = {
+        type: "object",
+        properties: {
+          clash: {
+            type: "object",
+            properties: {
+              id: { type: "string", description: "Replaced" },
+              name: { type: "string" },
+              tail: { type: "number" },
+            },
+          },
+          empty: {
+            type: "object",
+            properties: { only: { type: "string", description: "Only" } },
+          },
+        },
+      };
+      expect(inline(jsonSchema(withSiblings as never))).toBe(
+        inline(jsonSchema(flat as never))
+      );
+    });
+
+    test("many $refs with sibling properties to one large definition are bounded", () => {
+      const size = 4000;
+      const big: Record<string, unknown> = {};
+      const properties: Record<string, unknown> = {};
+      for (let i = 0; i < size; i++) {
+        big[`p${i}`] = { type: "string" };
+        properties[`r${i}`] = {
+          $ref: "#/$defs/Big",
+          properties: { [`extra${i}`]: { type: "string" } },
+        };
+      }
+      const wide = {
+        type: "object",
+        properties,
+        $defs: { Big: { type: "object", properties: big } },
+      };
+
+      const start = performance.now();
+      const counted = inline(jsonSchema(wide as never));
+      expect(performance.now() - start).toBeLessThan(500);
+
+      // One definition counted once, plus per use: the key, the nested object
+      // and the one sibling key that follows the definition's last key.
+      let definition = 0;
+      for (let i = 0; i < size; i++) {
+        definition +=
+          enc(`p${i}`) +
+          (i === 0 ? tokens.perFirstProp : tokens.perAdditionalProp);
+      }
+      let expected = 0;
+      for (let i = 0; i < size; i++) {
+        expected +=
+          enc(`r${i}`) +
+          (i === 0 ? tokens.perFirstProp : tokens.perAdditionalProp) +
+          tokens.perNestedObject +
+          definition +
+          enc(`extra${i}`) +
+          tokens.perAdditionalProp;
+      }
+      expect(counted).toBe(expected);
     });
 
     test("a $ref to somewhere else counts nothing", () => {

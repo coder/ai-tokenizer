@@ -308,29 +308,49 @@ function isThenable(value: unknown): value is PromiseLike<unknown> {
 }
 
 /**
+ * The properties of a `$ref` target with the properties written next to the
+ * `$ref` on top, which win on a clash. It is counted as the target's count
+ * plus the difference the sibling keys make, so a target that many `$ref`s
+ * share is counted once and each `$ref` costs only its own siblings.
+ */
+class MergedProperties {
+  constructor(
+    readonly target: Record<string, unknown>,
+    readonly siblings: Record<string, unknown>
+  ) {}
+}
+
+type Properties = Record<string, unknown> | MergedProperties;
+
+/**
  * Object schemas are recognised by `properties`, not `type: "object"`:
  * AI SDK v5 omits `type` on the empty schema it makes for an undefined input.
  */
-function propertiesOf(schema: unknown): Record<string, unknown> | undefined {
-  return isRecord(schema) && isRecord(schema.properties)
-    ? schema.properties
+function propertiesOf(schema: unknown): Properties | undefined {
+  if (!isRecord(schema)) {
+    return undefined;
+  }
+  const { properties } = schema;
+  return properties instanceof MergedProperties || isRecord(properties)
+    ? properties
     : undefined;
 }
 
-/**
- * The properties of a `$ref` target plus the properties written next to the
- * `$ref`, which win. The same pair always gives the same object, because the
- * walk tells a definition it is already inside by object identity.
- */
+/** The same pair always gives the same object, so a walk can tell it is already inside it. */
 const mergedProperties = new WeakMap<
   object,
-  WeakMap<object, Record<string, unknown>>
+  WeakMap<object, MergedProperties>
 >();
 
-function mergeProperties(
-  target: Record<string, unknown>,
-  siblings: Record<string, unknown>
-): Record<string, unknown> {
+function mergeProperties(target: Properties, siblings: Properties): Properties {
+  if (
+    target instanceof MergedProperties ||
+    siblings instanceof MergedProperties
+  ) {
+    // Two layers of `$ref` and `null` wrappers each carrying properties is
+    // rare: spell the result out instead of nesting merges.
+    return { ...flatten(target), ...flatten(siblings) };
+  }
   let bySiblings = mergedProperties.get(target);
   if (!bySiblings) {
     bySiblings = new WeakMap();
@@ -338,8 +358,35 @@ function mergeProperties(
   }
   let merged = bySiblings.get(siblings);
   if (!merged) {
-    merged = { ...target, ...siblings };
+    merged = new MergedProperties(target, siblings);
     bySiblings.set(siblings, merged);
+  }
+  return merged;
+}
+
+function flatten(properties: Properties): Record<string, unknown> {
+  return properties instanceof MergedProperties
+    ? { ...properties.target, ...properties.siblings }
+    : properties;
+}
+
+/**
+ * The schema with the keywords written next to it on top: `description`,
+ * `enum`, `properties` and the rest of them count with the target's. A
+ * keyword that is `undefined` is ignored.
+ */
+function withSiblings(
+  target: Record<string, unknown>,
+  siblings: Record<string, unknown>
+): Record<string, unknown> {
+  const defined = Object.entries(siblings).filter(
+    ([, value]) => value !== undefined
+  );
+  const merged = { ...target, ...Object.fromEntries(defined) };
+  const targetProperties = propertiesOf(target);
+  const siblingProperties = propertiesOf(siblings);
+  if (targetProperties && siblingProperties) {
+    merged.properties = mergeProperties(targetProperties, siblingProperties);
   }
   return merged;
 }
@@ -347,8 +394,8 @@ function mergeProperties(
 /**
  * Follows a local JSON pointer `$ref` ("#", "#/definitions/X", "#/$defs/X") to
  * its target in the root schema. Anchors ("#name") are not resolved. zod 4 emits one for a schema registered with `.meta({ id })`
- * and pydantic-based MCP servers emit them for nested models. A `description`
- * next to the `$ref` wins over the target's.
+ * and pydantic-based MCP servers emit them for nested models. Keywords next to
+ * the `$ref`, such as a `description`, win over the target's.
  */
 function resolveRef(
   schema: Record<string, unknown>,
@@ -372,24 +419,19 @@ function resolveRef(
   if (!isRecord(target)) {
     return schema;
   }
-  const { $ref: _ref, ...rest } = schema;
-  const siblings = Object.fromEntries(
-    Object.entries(rest).filter(([, value]) => value !== undefined)
-  );
-  const merged = { ...target, ...siblings };
-  if (isRecord(target.properties) && isRecord(siblings.properties)) {
-    merged.properties = mergeProperties(target.properties, siblings.properties);
-  }
-  return merged;
+  const { $ref: _ref, ...siblings } = schema;
+  return withSiblings(target, siblings);
 }
 
 /**
  * `.nullable()` becomes `anyOf: [inner, { type: "null" }]`. Read through it, so
- * a nullable property counts like the same property without `null`. A real
- * union (two or more non-null variants) is left alone.
+ * a nullable property counts like the same property without `null`. Keywords
+ * next to the `anyOf` (`description`, `enum`, ...) win over the inner schema's.
+ * A real union (two or more non-null variants) is left alone.
  */
 function withoutNull(schema: Record<string, unknown>): Record<string, unknown> {
-  const variants = schema.anyOf ?? schema.oneOf;
+  const key = Array.isArray(schema.anyOf) ? "anyOf" : "oneOf";
+  const variants = schema[key];
   if (!Array.isArray(variants)) {
     return schema;
   }
@@ -402,9 +444,8 @@ function withoutNull(schema: Record<string, unknown>): Record<string, unknown> {
   ) {
     return schema;
   }
-  return schema.description === undefined
-    ? inner
-    : { ...inner, description: schema.description };
+  const { [key]: _variants, ...siblings } = schema;
+  return withSiblings(inner, siblings);
 }
 
 interface SchemaWalk {
@@ -412,15 +453,17 @@ interface SchemaWalk {
   config: ModelTokens;
   /** The whole tool schema, which local `$ref`s point into. */
   root: unknown;
-  /** `properties` objects being walked, so a recursive schema ends. */
-  ancestors: Set<unknown>;
+  /** `properties` being walked, so a recursive schema ends. */
+  ancestors: Set<Properties>;
   /**
-   * Tokens of each `properties` object already walked. Every definition is
+   * Tokens of each `properties` already walked. Every definition is
    * walked once per tool, which bounds the walk by the size of the schema.
    * Without it, definitions that share definitions would be walked once per
    * path, and recursive ones once per cycle.
    */
-  counted: Map<unknown, number>;
+  counted: Map<Properties, number>;
+  /** Tokens each key of a walked, plain `properties` contributes. */
+  byKey: Map<Record<string, unknown>, Map<string, number>>;
 }
 
 /** The schema a property stands for once `$ref` and `null` wrappers are read through. */
@@ -442,6 +485,7 @@ function countToolSchema(
     root: jsonSchema,
     ancestors: new Set(),
     counted: new Map(),
+    byKey: new Map(),
   };
   return countSchemaProperties(resolveRef(jsonSchema, jsonSchema), walk);
 }
@@ -451,68 +495,126 @@ function countToolSchema(
  * Unions (`anyOf`, `oneOf`, `allOf`) and non-local `$ref`s are not followed.
  */
 function countSchemaProperties(schema: unknown, walk: SchemaWalk): number {
-  const { tokenizer, config, ancestors } = walk;
   const properties = propertiesOf(schema);
-  if (!properties) {
-    return 0;
-  }
+  return properties ? countProperties(properties, walk) : 0;
+}
+
+function countProperties(properties: Properties, walk: SchemaWalk): number {
   const counted = walk.counted.get(properties);
   if (counted !== undefined) {
     return counted;
   }
-  if (ancestors.has(properties)) {
+  if (walk.ancestors.has(properties)) {
     return 0;
   }
-  ancestors.add(properties);
-
-  let tokens = 0;
-  let isFirstProp = true;
-
-  for (const [key, value] of Object.entries(properties)) {
-    // Count property name tokens
-    tokens += tokenizer.count(key);
-
-    // Add property overhead (first vs additional)
-    tokens += isFirstProp ? config.perFirstProp : config.perAdditionalProp;
-    isFirstProp = false;
-
-    if (!isRecord(value)) {
-      continue;
-    }
-    const propSchema = unwrap(value, walk);
-
-    // Count property description if present
-    if (typeof propSchema.description === "string" && propSchema.description) {
-      tokens += config.perPropDesc;
-      tokens += tokenizer.count(propSchema.description);
-    }
-
-    // Handle enums - count each enum value + overhead
-    if (Array.isArray(propSchema.enum)) {
-      tokens += config.perEnum;
-      for (const enumValue of propSchema.enum) {
-        tokens += tokenizer.count(String(enumValue));
-      }
-    }
-
-    if (propertiesOf(propSchema)) {
-      // Handle nested objects
-      tokens += config.perNestedObject || 0;
-      tokens += countSchemaProperties(propSchema, walk);
-    } else if (isRecord(propSchema.items)) {
-      // Handle arrays with object items
-      const items = unwrap(propSchema.items, walk);
-      if (propertiesOf(items)) {
-        tokens += config.perArrayOfObjects || 0;
-      }
-      tokens += countSchemaProperties(items, walk);
-    }
-  }
-
-  ancestors.delete(properties);
+  walk.ancestors.add(properties);
+  const tokens =
+    properties instanceof MergedProperties
+      ? countMerged(properties, walk)
+      : countEntries(properties, walk);
+  walk.ancestors.delete(properties);
   // A definition inside a cycle is counted with its back edge cut where the
   // walk first reached it, and that count is reused wherever it is referenced.
   walk.counted.set(properties, tokens);
+  return tokens;
+}
+
+function countEntries(
+  properties: Record<string, unknown>,
+  walk: SchemaWalk
+): number {
+  const byKey = new Map<string, number>();
+  let tokens = 0;
+  for (const [key, value] of Object.entries(properties)) {
+    const keyTokens = countProperty(key, value, byKey.size === 0, walk);
+    byKey.set(key, keyTokens);
+    tokens += keyTokens;
+  }
+  walk.byKey.set(properties, byKey);
+  return tokens;
+}
+
+const firstKeys = new WeakMap<object, string | undefined>();
+
+function firstKey(properties: Record<string, unknown>): string | undefined {
+  if (!firstKeys.has(properties)) {
+    for (const key in properties) {
+      firstKeys.set(properties, key);
+      return key;
+    }
+    firstKeys.set(properties, undefined);
+  }
+  return firstKeys.get(properties);
+}
+
+/**
+ * The target's tokens, with each sibling key replacing the target's key of the
+ * same name or following the target's last key. The target is already walked
+ * (or is being walked: then its back edge is cut and only the siblings count).
+ */
+function countMerged(merged: MergedProperties, walk: SchemaWalk): number {
+  const { target, siblings } = merged;
+  if (walk.ancestors.has(target)) {
+    return countEntries(siblings, walk);
+  }
+  let tokens = countProperties(target, walk);
+  const targetKeys = walk.byKey.get(target);
+  const targetFirst = firstKey(target);
+  const siblingFirst = firstKey(siblings);
+  for (const [key, value] of Object.entries(siblings)) {
+    const replaced = targetKeys?.get(key);
+    const isFirst =
+      targetFirst === undefined ? key === siblingFirst : key === targetFirst;
+    tokens += countProperty(key, value, isFirst, walk) - (replaced ?? 0);
+  }
+  return tokens;
+}
+
+/** The tokens one property of an object schema adds. */
+function countProperty(
+  key: string,
+  value: unknown,
+  isFirstProp: boolean,
+  walk: SchemaWalk
+): number {
+  const { tokenizer, config } = walk;
+  // Count property name tokens
+  let tokens = tokenizer.count(key);
+
+  // Add property overhead (first vs additional)
+  tokens += isFirstProp ? config.perFirstProp : config.perAdditionalProp;
+
+  if (!isRecord(value)) {
+    return tokens;
+  }
+  const propSchema = unwrap(value, walk);
+
+  // Count property description if present
+  if (typeof propSchema.description === "string" && propSchema.description) {
+    tokens += config.perPropDesc;
+    tokens += tokenizer.count(propSchema.description);
+  }
+
+  // Handle enums - count each enum value + overhead
+  if (Array.isArray(propSchema.enum)) {
+    tokens += config.perEnum;
+    for (const enumValue of propSchema.enum) {
+      tokens += tokenizer.count(String(enumValue));
+    }
+  }
+
+  if (propertiesOf(propSchema)) {
+    // Handle nested objects
+    tokens += config.perNestedObject || 0;
+    tokens += countSchemaProperties(propSchema, walk);
+  } else if (isRecord(propSchema.items)) {
+    // Handle arrays with object items
+    const items = unwrap(propSchema.items, walk);
+    if (propertiesOf(items)) {
+      tokens += config.perArrayOfObjects || 0;
+    }
+    tokens += countSchemaProperties(items, walk);
+  }
   return tokens;
 }
 
