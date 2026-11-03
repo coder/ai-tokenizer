@@ -14,7 +14,7 @@ A faster than tiktoken tokenizer with first-class support for Vercel's AI SDK.
 | Model | ~500 tokens | ~5k tokens | ~50k tokens |
 |-------|-------------|------------|-------------|
 | openai/gpt-5 | 99.16% | 99.43% | 99.47% |
-| anthropic/claude-opus-4.5 | 98.48% | 98.56% | 99.79% |
+| anthropic/claude-opus-4.5 | 99.65% | 100.00% | 99.94% |
 | google/gemini-3-pro-preview | 98.70% | 98.77% | 98.91% |
 
 <!-- POPULAR_MODELS_TABLE_END -->
@@ -170,18 +170,20 @@ Validated against actual API responses with pseudo-random messages:
 | amazon/nova-lite | 98.10% | 92.67% | 90.17% |
 | amazon/nova-micro | 98.10% | 92.10% | 89.20% |
 | amazon/nova-pro | 98.10% | 92.82% | 90.16% |
-| anthropic/claude-3-haiku | 97.61% | 99.32% | 99.77% |
-| anthropic/claude-3-opus | 98.66% | 98.68% | 99.70% |
-| anthropic/claude-3.5-haiku | 97.61% | 99.80% | 99.86% |
-| anthropic/claude-3.5-sonnet | 97.93% | 99.26% | 99.67% |
-| anthropic/claude-3.5-sonnet-20240620 | 98.01% | 99.98% | 99.86% |
-| anthropic/claude-3.7-sonnet | 98.07% | 99.59% | 99.74% |
-| anthropic/claude-haiku-4.5 | 98.48% | 98.67% | 99.62% |
-| anthropic/claude-opus-4 | 98.07% | 99.39% | 99.74% |
-| anthropic/claude-opus-4.1 | 97.78% | 99.83% | 99.80% |
-| anthropic/claude-opus-4.5 | 98.48% | 98.56% | 99.79% |
-| anthropic/claude-sonnet-4 | 98.22% | 99.89% | 99.83% |
-| anthropic/claude-sonnet-4.5 | 98.48% | 98.91% | 99.70% |
+| anthropic/claude-fable-5 | 98.99% | 99.78% | 99.93% |
+| anthropic/claude-fable-5.1 | 98.98% | 99.78% | 99.93% |
+| anthropic/claude-haiku-4.5 | 99.65% | 100.00% | 99.94% |
+| anthropic/claude-haiku-5.5 | 98.98% | 99.78% | 99.93% |
+| anthropic/claude-opus-4.5 | 99.65% | 100.00% | 99.94% |
+| anthropic/claude-opus-4.6 | 99.77% | 99.98% | 99.94% |
+| anthropic/claude-opus-4.7 | 99.32% | 99.78% | 99.94% |
+| anthropic/claude-opus-4.8 | 98.99% | 99.78% | 99.93% |
+| anthropic/claude-opus-5 | 98.98% | 99.78% | 99.93% |
+| anthropic/claude-opus-5.5 | 98.98% | 99.78% | 99.93% |
+| anthropic/claude-sonnet-4.5 | 99.65% | 100.00% | 99.94% |
+| anthropic/claude-sonnet-4.6 | 99.77% | 99.98% | 99.94% |
+| anthropic/claude-sonnet-5 | 99.06% | 99.78% | 99.93% |
+| anthropic/claude-sonnet-5.5 | 98.98% | 99.78% | 99.93% |
 | deepseek/deepseek-r1 | 96.24% | 98.67% | 98.10% |
 | deepseek/deepseek-r1-distill-llama-70b | 98.20% | 99.08% | N/A |
 | deepseek/deepseek-v3 | 95.30% | 95.37% | 95.19% |

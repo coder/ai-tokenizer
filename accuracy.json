@@ -1,222 +1,24 @@
 {
-  "anthropic/claude-3-haiku": {
-    "model": "anthropic/claude-3-haiku",
-    "configHash": "b9ea46aa",
+  "anthropic/claude-sonnet-4.5": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "configHash": "f02e13d4",
     "small": {
-      "predicted": 612,
-      "actual": 627,
-      "error": 15,
-      "accuracy": "97.61%"
+      "predicted": 854,
+      "actual": 857,
+      "error": 3,
+      "accuracy": "99.65%"
     },
     "medium": {
-      "predicted": 4515,
-      "actual": 4546,
-      "error": 31,
-      "accuracy": "99.32%"
-    },
-    "large": {
-      "predicted": 45001,
-      "actual": 45107,
-      "error": 106,
-      "accuracy": "99.77%"
-    }
-  },
-  "anthropic/claude-3-opus": {
-    "model": "anthropic/claude-3-opus",
-    "configHash": "d1043862",
-    "small": {
-      "predicted": 881,
-      "actual": 893,
-      "error": 12,
-      "accuracy": "98.66%"
-    },
-    "medium": {
-      "predicted": 4565,
-      "actual": 4626,
-      "error": 61,
-      "accuracy": "98.68%"
-    },
-    "large": {
-      "predicted": 45057,
-      "actual": 45191,
-      "error": 134,
-      "accuracy": "99.70%"
-    }
-  },
-  "anthropic/claude-3.5-haiku": {
-    "model": "anthropic/claude-3.5-haiku",
-    "configHash": "b9ea46aa",
-    "small": {
-      "predicted": 612,
-      "actual": 627,
-      "error": 15,
-      "accuracy": "97.61%"
-    },
-    "medium": {
-      "predicted": 4527,
-      "actual": 4536,
-      "error": 9,
-      "accuracy": "99.80%"
+      "predicted": 4524,
+      "actual": 4524,
+      "error": 0,
+      "accuracy": "100.00%"
     },
     "large": {
       "predicted": 45046,
-      "actual": 45107,
-      "error": 61,
-      "accuracy": "99.86%"
-    }
-  },
-  "anthropic/claude-3.5-sonnet": {
-    "model": "anthropic/claude-3.5-sonnet",
-    "configHash": "2da73bf2",
-    "small": {
-      "predicted": 661,
-      "actual": 675,
-      "error": 14,
-      "accuracy": "97.93%"
-    },
-    "medium": {
-      "predicted": 4554,
-      "actual": 4588,
-      "error": 34,
-      "accuracy": "99.26%"
-    },
-    "large": {
-      "predicted": 45025,
-      "actual": 45173,
-      "error": 148,
-      "accuracy": "99.67%"
-    }
-  },
-  "anthropic/claude-3.5-sonnet-20240620": {
-    "model": "anthropic/claude-3.5-sonnet-20240620",
-    "configHash": "6a11b50e",
-    "small": {
-      "predicted": 641,
-      "actual": 654,
-      "error": 13,
-      "accuracy": "98.01%"
-    },
-    "medium": {
-      "predicted": 4563,
-      "actual": 4564,
-      "error": 1,
-      "accuracy": "99.98%"
-    },
-    "large": {
-      "predicted": 45085,
-      "actual": 45147,
-      "error": 62,
-      "accuracy": "99.86%"
-    }
-  },
-  "anthropic/claude-3.7-sonnet": {
-    "model": "anthropic/claude-3.7-sonnet",
-    "configHash": "2da73bf2",
-    "small": {
-      "predicted": 660,
-      "actual": 673,
-      "error": 13,
-      "accuracy": "98.07%"
-    },
-    "medium": {
-      "predicted": 4573,
-      "actual": 4592,
-      "error": 19,
-      "accuracy": "99.59%"
-    },
-    "large": {
-      "predicted": 45066,
-      "actual": 45183,
-      "error": 117,
-      "accuracy": "99.74%"
-    }
-  },
-  "anthropic/claude-opus-4": {
-    "model": "anthropic/claude-opus-4",
-    "configHash": "2da73bf2",
-    "small": {
-      "predicted": 660,
-      "actual": 673,
-      "error": 13,
-      "accuracy": "98.07%"
-    },
-    "medium": {
-      "predicted": 4571,
-      "actual": 4599,
-      "error": 28,
-      "accuracy": "99.39%"
-    },
-    "large": {
-      "predicted": 45043,
-      "actual": 45161,
-      "error": 118,
-      "accuracy": "99.74%"
-    }
-  },
-  "anthropic/claude-opus-4.1": {
-    "model": "anthropic/claude-opus-4.1",
-    "configHash": "2da73bf2",
-    "small": {
-      "predicted": 661,
-      "actual": 676,
-      "error": 15,
-      "accuracy": "97.78%"
-    },
-    "medium": {
-      "predicted": 4582,
-      "actual": 4590,
-      "error": 8,
-      "accuracy": "99.83%"
-    },
-    "large": {
-      "predicted": 45081,
-      "actual": 45173,
-      "error": 92,
-      "accuracy": "99.80%"
-    }
-  },
-  "anthropic/claude-sonnet-4": {
-    "model": "anthropic/claude-sonnet-4",
-    "configHash": "2da73bf2",
-    "small": {
-      "predicted": 661,
-      "actual": 673,
-      "error": 12,
-      "accuracy": "98.22%"
-    },
-    "medium": {
-      "predicted": 4577,
-      "actual": 4582,
-      "error": 5,
-      "accuracy": "99.89%"
-    },
-    "large": {
-      "predicted": 45027,
-      "actual": 45105,
-      "error": 78,
-      "accuracy": "99.83%"
-    }
-  },
-  "anthropic/claude-sonnet-4.5": {
-    "model": "anthropic/claude-sonnet-4.5",
-    "configHash": "8954904b",
-    "small": {
-      "predicted": 843,
-      "actual": 856,
-      "error": 13,
-      "accuracy": "98.48%"
-    },
-    "medium": {
-      "predicted": 4554,
-      "actual": 4604,
-      "error": 50,
-      "accuracy": "98.91%"
-    },
-    "large": {
-      "predicted": 45029,
-      "actual": 45166,
-      "error": 137,
-      "accuracy": "99.70%"
+      "actual": 45021,
+      "error": 25,
+      "accuracy": "99.94%"
     }
   },
   "openai/gpt-4-turbo": {
@@ -1829,24 +1631,24 @@
   },
   "anthropic/claude-haiku-4.5": {
     "model": "anthropic/claude-haiku-4.5",
-    "configHash": "5ea49093",
+    "configHash": "f02e13d4",
     "small": {
-      "predicted": 843,
-      "actual": 856,
-      "error": 13,
-      "accuracy": "98.48%"
+      "predicted": 854,
+      "actual": 857,
+      "error": 3,
+      "accuracy": "99.65%"
     },
     "medium": {
-      "predicted": 4541,
-      "actual": 4602,
-      "error": 61,
-      "accuracy": "98.67%"
+      "predicted": 4524,
+      "actual": 4524,
+      "error": 0,
+      "accuracy": "100.00%"
     },
     "large": {
-      "predicted": 45054,
-      "actual": 45226,
-      "error": 172,
-      "accuracy": "99.62%"
+      "predicted": 45046,
+      "actual": 45021,
+      "error": 25,
+      "accuracy": "99.94%"
     }
   },
   "minimax/minimax-m2": {
@@ -1983,24 +1785,24 @@
   },
   "anthropic/claude-opus-4.5": {
     "model": "anthropic/claude-opus-4.5",
-    "configHash": "5ea49093",
+    "configHash": "f02e13d4",
     "small": {
-      "predicted": 843,
-      "actual": 856,
-      "error": 13,
-      "accuracy": "98.48%"
+      "predicted": 854,
+      "actual": 857,
+      "error": 3,
+      "accuracy": "99.65%"
     },
     "medium": {
-      "predicted": 4531,
-      "actual": 4597,
-      "error": 66,
-      "accuracy": "98.56%"
+      "predicted": 4524,
+      "actual": 4524,
+      "error": 0,
+      "accuracy": "100.00%"
     },
     "large": {
-      "predicted": 45045,
-      "actual": 45140,
-      "error": 95,
-      "accuracy": "99.79%"
+      "predicted": 45046,
+      "actual": 45021,
+      "error": 25,
+      "accuracy": "99.94%"
     }
   },
   "google/gemini-3-pro-preview": {
@@ -2177,6 +1979,248 @@
       "actual": 45169,
       "error": 160,
       "accuracy": "99.65%"
+    }
+  },
+  "anthropic/claude-fable-5": {
+    "model": "anthropic/claude-fable-5",
+    "configHash": "d44fffc0",
+    "small": {
+      "predicted": 781,
+      "actual": 789,
+      "error": 8,
+      "accuracy": "98.99%"
+    },
+    "medium": {
+      "predicted": 4542,
+      "actual": 4552,
+      "error": 10,
+      "accuracy": "99.78%"
+    },
+    "large": {
+      "predicted": 45026,
+      "actual": 45056,
+      "error": 30,
+      "accuracy": "99.93%"
+    }
+  },
+  "anthropic/claude-fable-5.1": {
+    "model": "anthropic/claude-fable-5.1",
+    "configHash": "3f7f2760",
+    "small": {
+      "predicted": 779,
+      "actual": 787,
+      "error": 8,
+      "accuracy": "98.98%"
+    },
+    "medium": {
+      "predicted": 4544,
+      "actual": 4554,
+      "error": 10,
+      "accuracy": "99.78%"
+    },
+    "large": {
+      "predicted": 45068,
+      "actual": 45098,
+      "error": 30,
+      "accuracy": "99.93%"
+    }
+  },
+  "anthropic/claude-haiku-5.5": {
+    "model": "anthropic/claude-haiku-5.5",
+    "configHash": "3f7f2760",
+    "small": {
+      "predicted": 779,
+      "actual": 787,
+      "error": 8,
+      "accuracy": "98.98%"
+    },
+    "medium": {
+      "predicted": 4544,
+      "actual": 4554,
+      "error": 10,
+      "accuracy": "99.78%"
+    },
+    "large": {
+      "predicted": 45068,
+      "actual": 45098,
+      "error": 30,
+      "accuracy": "99.93%"
+    }
+  },
+  "anthropic/claude-opus-4.6": {
+    "model": "anthropic/claude-opus-4.6",
+    "configHash": "edb7dcc6",
+    "small": {
+      "predicted": 856,
+      "actual": 858,
+      "error": 2,
+      "accuracy": "99.77%"
+    },
+    "medium": {
+      "predicted": 4526,
+      "actual": 4525,
+      "error": 1,
+      "accuracy": "99.98%"
+    },
+    "large": {
+      "predicted": 45048,
+      "actual": 45022,
+      "error": 26,
+      "accuracy": "99.94%"
+    }
+  },
+  "anthropic/claude-opus-4.7": {
+    "model": "anthropic/claude-opus-4.7",
+    "configHash": "b811f84b",
+    "small": {
+      "predicted": 1171,
+      "actual": 1179,
+      "error": 8,
+      "accuracy": "99.32%"
+    },
+    "medium": {
+      "predicted": 4514,
+      "actual": 4524,
+      "error": 10,
+      "accuracy": "99.78%"
+    },
+    "large": {
+      "predicted": 45028,
+      "actual": 45057,
+      "error": 29,
+      "accuracy": "99.94%"
+    }
+  },
+  "anthropic/claude-opus-4.8": {
+    "model": "anthropic/claude-opus-4.8",
+    "configHash": "d44fffc0",
+    "small": {
+      "predicted": 781,
+      "actual": 789,
+      "error": 8,
+      "accuracy": "98.99%"
+    },
+    "medium": {
+      "predicted": 4542,
+      "actual": 4552,
+      "error": 10,
+      "accuracy": "99.78%"
+    },
+    "large": {
+      "predicted": 45026,
+      "actual": 45056,
+      "error": 30,
+      "accuracy": "99.93%"
+    }
+  },
+  "anthropic/claude-opus-5": {
+    "model": "anthropic/claude-opus-5",
+    "configHash": "888b13b3",
+    "small": {
+      "predicted": 777,
+      "actual": 785,
+      "error": 8,
+      "accuracy": "98.98%"
+    },
+    "medium": {
+      "predicted": 4538,
+      "actual": 4548,
+      "error": 10,
+      "accuracy": "99.78%"
+    },
+    "large": {
+      "predicted": 45022,
+      "actual": 45052,
+      "error": 30,
+      "accuracy": "99.93%"
+    }
+  },
+  "anthropic/claude-opus-5.5": {
+    "model": "anthropic/claude-opus-5.5",
+    "configHash": "3f7f2760",
+    "small": {
+      "predicted": 779,
+      "actual": 787,
+      "error": 8,
+      "accuracy": "98.98%"
+    },
+    "medium": {
+      "predicted": 4544,
+      "actual": 4554,
+      "error": 10,
+      "accuracy": "99.78%"
+    },
+    "large": {
+      "predicted": 45068,
+      "actual": 45098,
+      "error": 30,
+      "accuracy": "99.93%"
+    }
+  },
+  "anthropic/claude-sonnet-4.6": {
+    "model": "anthropic/claude-sonnet-4.6",
+    "configHash": "edb7dcc6",
+    "small": {
+      "predicted": 856,
+      "actual": 858,
+      "error": 2,
+      "accuracy": "99.77%"
+    },
+    "medium": {
+      "predicted": 4526,
+      "actual": 4525,
+      "error": 1,
+      "accuracy": "99.98%"
+    },
+    "large": {
+      "predicted": 45048,
+      "actual": 45022,
+      "error": 26,
+      "accuracy": "99.94%"
+    }
+  },
+  "anthropic/claude-sonnet-5": {
+    "model": "anthropic/claude-sonnet-5",
+    "configHash": "844c2051",
+    "small": {
+      "predicted": 845,
+      "actual": 853,
+      "error": 8,
+      "accuracy": "99.06%"
+    },
+    "medium": {
+      "predicted": 4523,
+      "actual": 4533,
+      "error": 10,
+      "accuracy": "99.78%"
+    },
+    "large": {
+      "predicted": 45018,
+      "actual": 45048,
+      "error": 30,
+      "accuracy": "99.93%"
+    }
+  },
+  "anthropic/claude-sonnet-5.5": {
+    "model": "anthropic/claude-sonnet-5.5",
+    "configHash": "3f7f2760",
+    "small": {
+      "predicted": 779,
+      "actual": 787,
+      "error": 8,
+      "accuracy": "98.98%"
+    },
+    "medium": {
+      "predicted": 4544,
+      "actual": 4554,
+      "error": 10,
+      "accuracy": "99.78%"
+    },
+    "large": {
+      "predicted": 45068,
+      "actual": 45098,
+      "error": 30,
+      "accuracy": "99.93%"
     }
   }
 }
