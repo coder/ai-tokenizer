@@ -513,6 +513,69 @@ describe("tool schemas", () => {
       );
     });
 
+    test("an anchor is not resolved", () => {
+      const anchored = {
+        type: "object",
+        properties: { a: { $ref: "#A" } },
+        $defs: { A: { $anchor: "A", properties: { b: { type: "string" } } } },
+      };
+      expect(inline(jsonSchema(anchored as never))).toBe(
+        enc("a") + tokens.perFirstProp
+      );
+    });
+
+    test("definitions that reference each other count from where the walk enters", () => {
+      const first = tokens.perFirstProp + tokens.perNestedObject;
+      const next = tokens.perAdditionalProp + tokens.perNestedObject;
+      const mutual = {
+        type: "object",
+        properties: { a: { $ref: "#/$defs/A" }, b: { $ref: "#/$defs/B" } },
+        $defs: {
+          A: { type: "object", properties: { b: { $ref: "#/$defs/B" } } },
+          B: { type: "object", properties: { a: { $ref: "#/$defs/A" } } },
+        },
+      };
+      // Each branch stops where it meets a definition it is already inside.
+      const viaA = enc("b") + first + (enc("a") + first);
+      const viaB = enc("a") + first + (enc("b") + first);
+      expect(inline(jsonSchema(mutual as never))).toBe(
+        enc("a") + first + viaA + (enc("b") + next + viaB)
+      );
+    });
+
+    test("definitions that share definitions are walked once, not once per path", () => {
+      const depth = 22;
+      const $defs: Record<string, unknown> = {
+        [`D${depth}`]: {
+          type: "object",
+          properties: { x: { type: "string" } },
+        },
+      };
+      let expected = enc("x") + tokens.perFirstProp;
+      for (let level = depth - 1; level >= 0; level--) {
+        const next = { $ref: `#/$defs/D${level + 1}` };
+        $defs[`D${level}`] = {
+          type: "object",
+          properties: { a: next, b: next },
+        };
+        expected =
+          enc("a") +
+          tokens.perFirstProp +
+          tokens.perNestedObject +
+          expected +
+          (enc("b") +
+            tokens.perAdditionalProp +
+            tokens.perNestedObject +
+            expected);
+      }
+      const dag = { $ref: "#/$defs/D0", $defs };
+
+      const start = performance.now();
+      const counted = inline(jsonSchema(dag as never));
+      expect(performance.now() - start).toBeLessThan(500);
+      expect(counted).toBe(expected);
+    });
+
     test("a $ref to somewhere else counts nothing", () => {
       const remote = {
         type: "object",
@@ -650,11 +713,10 @@ const fixtures: Fixture[] = [
     media: IMAGE,
   },
   {
-    name: "assistant reasoning",
+    name: "assistant reasoning is not counted",
     since: 5,
     role: "assistant",
     content: { type: "reasoning", text: "Let me think." },
-    text: ["Let me think."],
   },
   {
     name: "assistant generated image",
@@ -664,42 +726,42 @@ const fixtures: Fixture[] = [
     media: IMAGE,
   },
   {
-    name: "output text",
+    name: "output text counts its wrapper",
     since: 5,
     role: "tool",
     content: toolResult({ type: "text", value: "sunny" }),
-    text: ["sunny"],
+    text: ['{"type":"text","value":"sunny"}'],
   },
   {
     name: "output error-text",
     since: 5,
     role: "tool",
     content: toolResult({ type: "error-text", value: "not found" }),
-    text: ["not found"],
+    text: ['{"type":"error-text","value":"not found"}'],
   },
   {
-    name: "output json counts the value, not the wrapper",
+    name: "output json counts its wrapper",
     since: 5,
     role: "tool",
     content: toolResult({ type: "json", value: { temp: 21 } }),
-    text: ['{"temp":21}'],
+    text: ['{"type":"json","value":{"temp":21}}'],
   },
   {
     name: "output error-json",
     since: 5,
     role: "tool",
     content: toolResult({ type: "error-json", value: { code: 404 } }),
-    text: ['{"code":404}'],
+    text: ['{"type":"error-json","value":{"code":404}}'],
   },
   {
     name: "output json with a falsy value",
     since: 5,
     role: "tool",
     content: toolResult({ type: "json", value: 0 }),
-    text: ["0"],
+    text: ['{"type":"json","value":0}'],
   },
   {
-    name: "output content: text and media",
+    name: "output content: text counts its wrapper, media is priced",
     since: 5,
     role: "tool",
     content: toolResult({
@@ -710,7 +772,9 @@ const fixtures: Fixture[] = [
         { type: "media", data: B64, mediaType: "application/pdf" },
       ],
     }),
-    text: ["Here is the chart"],
+    text: [
+      '{"type":"content","value":[{"type":"text","text":"Here is the chart"}]}',
+    ],
     media: IMAGE + FILE,
   },
   {
@@ -739,14 +803,14 @@ const fixtures: Fixture[] = [
     since: 6,
     role: "tool",
     content: toolResult({ type: "execution-denied", reason: "User said no" }),
-    text: ["User said no"],
+    text: ['{"type":"execution-denied","reason":"User said no"}'],
   },
   {
-    name: "output execution-denied without a reason counts the default text providers send",
+    name: "output execution-denied without a reason",
     since: 6,
     role: "tool",
     content: toolResult({ type: "execution-denied" }),
-    text: ["Tool call execution denied."],
+    text: ['{"type":"execution-denied"}'],
   },
   {
     name: "output content: image-* items are images",
@@ -760,6 +824,7 @@ const fixtures: Fixture[] = [
         { type: "image-file-id", fileId: "file_1" },
       ],
     }),
+    text: ['{"type":"content","value":[]}'],
     media: 3 * IMAGE,
   },
   {
@@ -776,6 +841,9 @@ const fixtures: Fixture[] = [
         { type: "custom", providerOptions: {} },
       ],
     }),
+    text: [
+      '{"type":"content","value":[{"type":"custom","providerOptions":{}}]}',
+    ],
     media: 3 * FILE + IMAGE,
   },
   {
@@ -862,7 +930,7 @@ const fixtures: Fixture[] = [
     media: IMAGE,
   },
   {
-    name: "reasoning-file image",
+    name: "reasoning-file image is not counted",
     since: 7,
     role: "assistant",
     content: {
@@ -870,10 +938,9 @@ const fixtures: Fixture[] = [
       mediaType: "image/png",
       data: { type: "data", data: B64 },
     },
-    media: IMAGE,
   },
   {
-    name: "reasoning-file other",
+    name: "reasoning-file other is not counted",
     since: 7,
     role: "assistant",
     content: {
@@ -881,7 +948,6 @@ const fixtures: Fixture[] = [
       mediaType: "application/octet-stream",
       data: B64,
     },
-    media: FILE,
   },
   {
     name: "custom part",
@@ -918,7 +984,9 @@ const fixtures: Fixture[] = [
         },
       ],
     }),
-    text: ["inline"],
+    text: [
+      '{"type":"content","value":[{"type":"file","mediaType":"text/plain","data":{"type":"text","text":"inline"}}]}',
+    ],
     media: IMAGE + 2 * FILE,
   },
 ];
@@ -972,12 +1040,15 @@ describe("message parts", () => {
         },
       ] as unknown as ModelMessage[],
     }).messages;
+    const serialized =
+      '{"type":"content","value":[{"type":"text","text":"ok"}]}';
     expect(counted!.content[0]).toEqual({
       type: "tool-result",
       total:
-        Math.round((enc("call_1") + enc("ok")) * tokens.contentMultiplier) +
-        IMAGE,
-      output: Math.round(enc("ok") * tokens.contentMultiplier) + IMAGE,
+        Math.round(
+          (enc("call_1") + enc(serialized)) * tokens.contentMultiplier
+        ) + IMAGE,
+      output: Math.round(enc(serialized) * tokens.contentMultiplier) + IMAGE,
     });
   });
 

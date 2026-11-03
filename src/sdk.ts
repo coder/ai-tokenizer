@@ -294,8 +294,8 @@ function propertiesOf(schema: unknown): Record<string, unknown> | undefined {
 }
 
 /**
- * Follows a local `$ref` ("#", "#/definitions/X", "#/$defs/X") to its target in
- * the root schema. zod 4 emits one for a schema registered with `.meta({ id })`
+ * Follows a local JSON pointer `$ref` ("#", "#/definitions/X", "#/$defs/X") to
+ * its target in the root schema. Anchors ("#name") are not resolved. zod 4 emits one for a schema registered with `.meta({ id })`
  * and pydantic-based MCP servers emit them for nested models. A `description`
  * next to the `$ref` wins over the target's.
  */
@@ -304,7 +304,7 @@ function resolveRef(
   root: unknown
 ): Record<string, unknown> {
   const ref = schema.$ref;
-  if (typeof ref !== "string" || !ref.startsWith("#")) {
+  if (typeof ref !== "string" || (ref !== "#" && !ref.startsWith("#/"))) {
     return schema;
   }
   let target: unknown = root;
@@ -357,6 +357,13 @@ interface SchemaWalk {
   root: unknown;
   /** `properties` objects being walked, so a recursive schema ends. */
   ancestors: Set<unknown>;
+  /**
+   * Tokens of each `properties` object already walked. A schema whose
+   * definitions share definitions would otherwise be walked once per path.
+   */
+  counted: Map<unknown, number>;
+  /** Times a recursive branch was skipped, to tell a complete count. */
+  cycleCuts: number;
 }
 
 /** The schema a property stands for once `$ref` and `null` wrappers are read through. */
@@ -377,6 +384,8 @@ function countToolSchema(
     config,
     root: jsonSchema,
     ancestors: new Set(),
+    counted: new Map(),
+    cycleCuts: 0,
   };
   return countSchemaProperties(resolveRef(jsonSchema, jsonSchema), walk);
 }
@@ -388,10 +397,19 @@ function countToolSchema(
 function countSchemaProperties(schema: unknown, walk: SchemaWalk): number {
   const { tokenizer, config, ancestors } = walk;
   const properties = propertiesOf(schema);
-  if (!properties || ancestors.has(properties)) {
+  if (!properties) {
+    return 0;
+  }
+  const counted = walk.counted.get(properties);
+  if (counted !== undefined) {
+    return counted;
+  }
+  if (ancestors.has(properties)) {
+    walk.cycleCuts++;
     return 0;
   }
   ancestors.add(properties);
+  const cycleCutsBefore = walk.cycleCuts;
 
   let tokens = 0;
   let isFirstProp = true;
@@ -438,6 +456,10 @@ function countSchemaProperties(schema: unknown, walk: SchemaWalk): number {
   }
 
   ancestors.delete(properties);
+  // A count that skipped a recursive branch depends on where the walk entered.
+  if (walk.cycleCuts === cycleCutsBefore) {
+    walk.counted.set(properties, tokens);
+  }
   return tokens;
 }
 
@@ -489,14 +511,16 @@ function countMessageContentTokensDetailed(
 
   if (Array.isArray(content)) {
     // Parts are read as plain records: their shape differs between AI SDK
-    // v5, v6 and v7, and unknown parts are skipped.
+    // v5, v6 and v7, and unknown parts are skipped. That includes `reasoning`
+    // and `reasoning-file`: Anthropic's count_tokens gives the same total with
+    // and without the signed thinking block of an earlier assistant turn.
     for (const part of content as unknown[]) {
       if (!isRecord(part)) {
         continue;
       }
       const tally = createTally(tokenizer);
 
-      if (part.type === "text" || part.type === "reasoning") {
+      if (part.type === "text") {
         if (typeof part.text === "string") {
           tally.addText(part.text);
         }
@@ -589,8 +613,7 @@ function countMediaTokens(media: Media): number {
 /**
  * Message parts and tool-result content items that carry an image or a file,
  * with the kind to use when the media type does not say. The names are from
- * AI SDK v5 (`media`), v6 (`image-*`, `file-*`) and v7 (`file`,
- * `reasoning-file`).
+ * AI SDK v5 (`media`), v6 (`image-*`, `file-*`) and v7 (`file`).
  */
 const MEDIA_KINDS = new Map<string, MediaKind>([
   ["image", "image"],
@@ -599,7 +622,6 @@ const MEDIA_KINDS = new Map<string, MediaKind>([
   ["image-file-id", "image"],
   ["image-file-reference", "image"],
   ["file", "file"],
-  ["reasoning-file", "file"],
   ["media", "file"],
   ["file-data", "file"],
   ["file-url", "file"],
@@ -607,39 +629,61 @@ const MEDIA_KINDS = new Map<string, MediaKind>([
   ["file-reference", "file"],
 ]);
 
-function tallyMedia(tally: Tally, part: Record<string, unknown>): void {
-  const data =
-    part.data ??
-    part.image ??
-    part.url ??
-    part.fileId ??
-    part.providerReference;
+function mediaData(part: Record<string, unknown>): unknown {
+  return (
+    part.data ?? part.image ?? part.url ?? part.fileId ?? part.providerReference
+  );
+}
 
-  // AI SDK v7 inline text documents are text, not a binary file.
-  if (isRecord(data) && data.type === "text" && typeof data.text === "string") {
-    tally.addText(data.text);
-    return;
-  }
+/** AI SDK v7 inline text documents are text, not a binary file. */
+function inlineText(part: Record<string, unknown>): string | undefined {
+  const data = mediaData(part);
+  return isRecord(data) && data.type === "text" && typeof data.text === "string"
+    ? data.text
+    : undefined;
+}
 
+function isBinaryMediaPart(part: Record<string, unknown>): boolean {
+  return (
+    typeof part.type === "string" &&
+    MEDIA_KINDS.has(part.type) &&
+    inlineText(part) === undefined
+  );
+}
+
+function toMedia(part: Record<string, unknown>): Media {
   const mediaType =
     typeof part.mediaType === "string" ? part.mediaType : undefined;
   const isImageMediaType =
     mediaType !== undefined &&
     (mediaType === "image" || mediaType.startsWith("image/"));
-  tally.addMedia({
+  return {
     kind:
       isImageMediaType || MEDIA_KINDS.get(part.type as string) === "image"
         ? "image"
         : "file",
     mediaType,
-    data,
-  });
+    data: mediaData(part),
+  };
+}
+
+function tallyMedia(tally: Tally, part: Record<string, unknown>): void {
+  const text = inlineText(part);
+  if (text !== undefined) {
+    tally.addText(text);
+  } else {
+    tally.addMedia(toMedia(part));
+  }
 }
 
 /**
- * Count the payload the provider sees for a tool result, not the
- * `{ type, value }` wrapper around it. Shapes we do not know are counted as
- * JSON, as they were before.
+ * A tool result counts as `JSON.stringify(output)`, the `{ type, value }`
+ * wrapper included, as it always has. The wrapper stands in for the
+ * `tool_result` block overhead that `ModelTokens` has no field for yet, and
+ * counting only the payload under-counts every result by about 6 tokens.
+ *
+ * The one exception is a `content` output: its images and files are priced by
+ * `countMediaTokens` instead of serialising their base64 or URL.
  */
 function tallyToolOutput(tally: Tally, output: unknown): void {
   if (!output) {
@@ -649,51 +693,21 @@ function tallyToolOutput(tally: Tally, output: unknown): void {
     tally.addText(output);
     return;
   }
-  if (isRecord(output)) {
-    switch (output.type) {
-      case "text":
-      case "error-text":
-        if (typeof output.value === "string") {
-          tally.addText(output.value);
-          return;
-        }
-        break;
-      case "json":
-      case "error-json":
-        if (output.value !== undefined) {
-          tally.addText(JSON.stringify(output.value));
-        }
-        return;
-      case "execution-denied":
-        // OpenAI and Anthropic send this text when there is no reason.
-        tally.addText(
-          typeof output.reason === "string"
-            ? output.reason
-            : "Tool call execution denied."
-        );
-        return;
-      case "content":
-        if (Array.isArray(output.value)) {
-          for (const item of output.value as unknown[]) {
-            tallyToolContentItem(tally, item);
-          }
-          return;
-        }
-        break;
+  if (
+    isRecord(output) &&
+    output.type === "content" &&
+    Array.isArray(output.value)
+  ) {
+    const rest: unknown[] = [];
+    for (const item of output.value as unknown[]) {
+      if (isRecord(item) && isBinaryMediaPart(item)) {
+        tally.addMedia(toMedia(item));
+      } else {
+        rest.push(item);
+      }
     }
-  }
-  tally.addText(JSON.stringify(output));
-}
-
-function tallyToolContentItem(tally: Tally, item: unknown): void {
-  if (!isRecord(item)) {
+    tally.addText(JSON.stringify({ ...output, value: rest }));
     return;
   }
-  if (item.type === "text" && typeof item.text === "string") {
-    tally.addText(item.text);
-  } else if (typeof item.type === "string" && MEDIA_KINDS.has(item.type)) {
-    tallyMedia(tally, item);
-  } else if (item.type !== "custom") {
-    tally.addText(JSON.stringify(item));
-  }
+  tally.addText(JSON.stringify(output));
 }
