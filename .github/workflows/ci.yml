@@ -33,6 +33,9 @@ jobs:
       - name: Build
         run: bun run build --dts=false
 
+      - name: Check that the sdk fails clearly without ai
+        run: node scripts/check-sdk-without-ai.mjs
+
       - name: Build with type declarations
         run: bun run build
 
