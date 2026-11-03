@@ -4,9 +4,10 @@
  */
 
 import { describe, test, expect, beforeAll, afterAll } from "bun:test";
-import Tokenizer from "./tokenizer";
+import Tokenizer, { type Encoding } from "./tokenizer";
 import * as o200k from "./encoding/o200k_base";
 import * as cl100k from "./encoding/cl100k_base";
+import * as p50k from "./encoding/p50k_base";
 import { get_encoding, type Tiktoken } from "tiktoken";
 import { encode as gptEncode, decode as gptDecode } from "gpt-tokenizer";
 
@@ -239,6 +240,48 @@ describe("correctness", () => {
   });
 });
 
+describe("tiktoken parity", () => {
+  const cases: Array<{ name: string; data: Encoding; texts: string[] }> = [
+    {
+      name: "o200k_base",
+      data: o200k,
+      texts: ["\ufeff", "\ufeff\n", "\ufeff//", "a\ufeffb", " \ufeffa"],
+    },
+    { name: "o200k_base", data: o200k, texts: [" \u0085a", "  \u0085"] },
+    {
+      name: "p50k_base",
+      data: p50k,
+      texts: ["constructor", "toString", "__proto__", "x.hasOwnProperty"],
+    },
+  ];
+
+  test.each(cases)("$name encodes $texts", ({ name, data, texts }) => {
+    const ours = new Tokenizer(data);
+    const tiktoken = get_encoding(name as "o200k_base" | "p50k_base");
+    try {
+      for (const text of texts) {
+        expect(ours.encode(text)).toEqual(Array.from(tiktoken.encode(text)));
+        expect(ours.decode(ours.encode(text))).toBe(text);
+      }
+    } finally {
+      tiktoken.free();
+    }
+  });
+
+  test('allowedSpecial "all" encodes special tokens', () => {
+    const ours = new Tokenizer(o200k);
+    const tiktoken = get_encoding("o200k_base");
+    try {
+      const text = "hi <|endoftext|> there<|endofprompt|>";
+      expect(ours.encode(text, "all")).toEqual(
+        Array.from(tiktoken.encode(text, "all"))
+      );
+    } finally {
+      tiktoken.free();
+    }
+  });
+});
+
 describe("merge cache", () => {
   // Seeded texts full of distinct non-vocabulary pieces (UUIDs, SHAs, long
   // numbers, base64) so a small cache evicts constantly.
@@ -294,5 +337,21 @@ describe("merge cache", () => {
       tokenizer.encode(piece);
     }
     expect([...cache.keys()]).toEqual(["qzxvy", "qzxvz", "qzxvq"]);
+  });
+
+  test("size 0 caches nothing", () => {
+    const tokenizer = new Tokenizer(o200k, undefined, 0);
+    const cache = (
+      tokenizer as unknown as { mergeCache: Map<string, number[]> }
+    ).mergeCache;
+    expect(tokenizer.encode("qzxvw qzxvy")).toEqual(
+      new Tokenizer(o200k).encode("qzxvw qzxvy")
+    );
+    expect(cache.size).toBe(0);
+  });
+
+  test("rejects a size that is not a non-negative number", () => {
+    expect(() => new Tokenizer(o200k, undefined, -1)).toThrow(RangeError);
+    expect(() => new Tokenizer(o200k, undefined, NaN)).toThrow(RangeError);
   });
 });
