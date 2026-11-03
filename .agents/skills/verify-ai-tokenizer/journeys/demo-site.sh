@@ -98,9 +98,9 @@ record special-token "fill #input-text \"$stext\" (GPT-5)" "tokens=$want, no err
 
 # 6. Keep typing after the special token: every edit tokenizes again.
 act ab type '#input-text' " again" >/dev/null; wait_tokenized
-got="$(stat_text token-count | digits)"; alerts="$(ab console | grep -c 'Tokenization error')"
+want="$(oracle o200k_base "$stext again")"; got="$(stat_text token-count | digits)"; alerts="$(ab console | grep -c 'Tokenization error')"
 evidence special-token-keep-typing
-record special-token-keep-typing "type \" again\" after the special token" "tokens=$(oracle o200k_base "$stext again"), no new alert" "tokens=$got, new error alerts=$alerts" "$([[ "$alerts" == 0 ]] && echo 1 || echo 0)"
+record special-token-keep-typing "type \" again\" after the special token" "tokens=$want, no new alert" "tokens=$got, new error alerts=$alerts" "$([[ "$got" == "$want" && "$alerts" == 0 ]] && echo 1 || echo 0)"
 
 # 7. Remove the special token: the page recovers.
 act ab fill '#input-text' "hello world" >/dev/null; wait_tokenized

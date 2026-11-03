@@ -11,17 +11,23 @@ FEATURES="encode-decode special-tokens sdk-count entry-points demo-site"
 
 die() { echo "FAIL: $*" >&2; exit 1; }
 
+# VAT_ROOT is shared by every checkout on the host, so the lock and the latest pointer are keyed by checkout path.
+CHECKOUT_KEY="$(printf '%s' "$REPO" | sha256sum | cut -c1-12)"
+LATEST="$VAT_ROOT/latest-$CHECKOUT_KEY"
+
 run_dir() {
   local id="${VAT_RUN:-}"
-  if [[ -z "$id" && -f "$VAT_ROOT/latest" ]]; then id="$(cat "$VAT_ROOT/latest")"; fi
-  [[ -n "$id" && -d "$VAT_ROOT/$id" ]] || die "no run found. Run 'verify.sh launch' first or set VAT_RUN."
+  if [[ -z "$id" && -f "$LATEST" ]]; then id="$(cat "$LATEST")"; fi
+  [[ -n "$id" && -d "$VAT_ROOT/$id" ]] || die "no run found for this checkout. Run 'verify.sh launch' first or prefix VAT_RUN=<id>."
   echo "$VAT_ROOT/$id"
 }
 
 load_meta() {
   RUN="$(run_dir)"
+  local here="$REPO"
   # shellcheck disable=SC1091
   source "$RUN/meta.env"
+  [[ "$REPO" == "$here" ]] || die "run $RUN_ID belongs to checkout $REPO, not $here. Use a run launched from this checkout."
 }
 
 set_meta() { # key value
@@ -34,7 +40,7 @@ set_meta() { # key value
 # Serializes writes to the checkout's dist/ and site/node_modules between concurrent runs.
 with_checkout_lock() {
   local lock
-  lock="$VAT_ROOT/checkout-$(printf '%s' "$REPO" | sha256sum | cut -c1-12).lock"
+  lock="$VAT_ROOT/checkout-$CHECKOUT_KEY.lock"
   flock "$lock" "$@"
 }
 
@@ -59,8 +65,9 @@ cmd_launch() {
   [[ -x "$BUN" ]] || die "bun not found. Set BUN=/path/to/bun"
   local id="${VAT_RUN:-$(date -u +%Y%m%dT%H%M%SZ)-$$}"
   RUN="$VAT_ROOT/$id"
-  [[ ! -e "$RUN" ]] || die "run dir $RUN already exists"
+  [[ ! -e "$RUN" ]] || die "run $id already exists. Drop the VAT_RUN prefix to launch a new run."
   mkdir -p "$RUN/work/pkgs" "$RUN/work/consumer" "$RUN/evidence"
+  echo "== run $id at $RUN"
   : > "$RUN/meta.env"
   set_meta RUN_ID "$id"
   set_meta REPO "$REPO"
@@ -71,7 +78,8 @@ cmd_launch() {
   set_meta NODE_VERSION "$(node --version)"
   set_meta PKG_VERSION "$(node -p "require('$REPO/package.json').version")"
   set_meta SESSION "verify-ai-tokenizer-$id"
-  echo "$id" > "$VAT_ROOT/latest"
+  git -C "$REPO" diff HEAD > "$RUN/evidence/checkout.diff"
+  git -C "$REPO" status --porcelain > "$RUN/evidence/checkout.status"
 
   echo "== build and pack (logs: $RUN/work/build.log)"
   export -f build_and_pack
@@ -86,8 +94,8 @@ cmd_launch() {
     || { tail -20 "$RUN/work/install.log"; die "consumer install failed"; }
   cp -R "$SKILL_DIR/journeys" "$RUN/work/consumer/journeys"
   cp "$RUN/meta.env" "$RUN/evidence/meta.env"
+  echo "$id" > "$LATEST"
   echo "READY run=$id consumer=$RUN/work/consumer ai-tokenizer@$(node -p "require('./node_modules/ai-tokenizer/package.json').version")"
-  echo "export VAT_RUN=$id"
 }
 
 site_build() {
@@ -161,7 +169,7 @@ cmd_doctor() {
   [[ -f "$c/node_modules/tiktoken/package.json" ]] && ok "tiktoken oracle installed" || no "tiktoken oracle missing"
   if [[ -n "${SITE_PGID:-}" ]]; then
     local port="${SITE_URL#http://127.0.0.1:}"; port="${port%%/*}"
-    local lpid; lpid="$(ss -ltnpH "sport = :$port" 2>/dev/null | grep -o 'pid=[0-9]*' | head -1 | cut -d= -f2)"
+    local lpid; lpid="$(ss -ltnpH "sport = :$port" 2>/dev/null | grep -o 'pid=[0-9]*' | head -1 | cut -d= -f2)" || true
     if [[ -n "$lpid" && "$(ps -o pgid= -p "$lpid" | tr -d ' ')" == "$SITE_PGID" ]]; then ok "port $port owned by our preview (pgid $SITE_PGID)"
     else no "port $port is not owned by pgid $SITE_PGID"; fi
     if cmp -s "$REPO/site/node_modules/ai-tokenizer/dist/index.js" "$REPO/dist/index.js"; then ok "site was built against checkout dist/"
@@ -223,6 +231,10 @@ cmd_drive() {
 cmd_cleanup() {
   load_meta
   cmd_site_down >/dev/null
+  mkdir -p "$RUN/evidence/logs"
+  for log in build install site-build site; do
+    if [[ -f "$RUN/work/$log.log" ]]; then cp "$RUN/work/$log.log" "$RUN/evidence/logs/"; fi
+  done
   rm -rf "$RUN/work"
   # Re-read meta so the evidence copy records the final site state.
   cp "$RUN/meta.env" "$RUN/evidence/meta.env"

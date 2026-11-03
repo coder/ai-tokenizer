@@ -30,7 +30,7 @@ for (const name of ["o200k_base", "cl100k_base", "p50k_base"]) {
 
   const cnt = outcome(() => ours.count(text));
   const ordinary = oracle.encode_ordinary(text).length;
-  check(`${name}/count-ordinary`, `count("${text}")`, { value: ordinary }, cnt, cnt.value === ordinary);
+  check(`${name}/count-ordinary`, `count("${text}")`, { value: ordinary, source: "tiktoken encode_ordinary; count() treats special-token text as ordinary since PR #9" }, cnt, cnt.value === ordinary);
   oracle.free();
 }
 

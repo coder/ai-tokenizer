@@ -5,7 +5,7 @@ This folder is the maintained source for verifying what ai-tokenizer users see. 
 ## Baseline preconditions
 
 - `verify.sh launch` printed `READY run=<id>` and `verify.sh doctor` exits 0.
-- The consumer at `${TMPDIR:-/tmp}/verify-ai-tokenizer/<run-id>/work/consumer` has the packed `ai-tokenizer` tarball plus `tiktoken`, `ai` and `zod`.
+- The consumer at `$VAT_ROOT/<run-id>/work/consumer` (default `VAT_ROOT` is `${TMPDIR:-/tmp}/verify-ai-tokenizer`) has the packed `ai-tokenizer` tarball plus `tiktoken`, `ai` and `zod`.
 - For the demo site: `verify.sh site-up` printed `SITE READY` and `doctor` reports the port as ours.
 - Never drive a site or browser session that this run did not start.
 

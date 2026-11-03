@@ -9,7 +9,7 @@ The demo page lets a user pick a model, type or paste text, and see the token co
 - `chip-claude`: the `Claude Opus 4.5` chip switches the encoding to `claude`.
 - `select-gpt4-turbo`: choosing `openai/gpt-4-turbo` in the all-models list loads `cl100k_base`.
 - `special-token`: text that contains `<|endoftext|>` gives a plain-text count and no error.
-- `special-token-keep-typing`: further typing after such text gives no new error alert.
+- `special-token-keep-typing`: further typing after such text gives the tiktoken plain-text count and no new error alert.
 - `recover`: removing the special token restores a numeric count.
 - `clear`: the `Clear` button empties the text and resets both counts to 0.
 
