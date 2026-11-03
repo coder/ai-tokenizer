@@ -1,6 +1,7 @@
 /**
- * Claude encoding timings: 1M characters of prose and 100k of one repeated
- * character, each also at twice the size. A 2x/1x ratio near 2 is linear.
+ * Claude encoding timings: 1M characters of prose, 100k of one repeated
+ * character and 100k combining marks in the wrong order, each also at twice
+ * the size. A 2x/1x ratio near 2 is linear.
  *
  *   bun bench/claude.ts
  */
@@ -55,6 +56,10 @@ const inputs: Array<[string, (scale: number) => string]> = [
       (k) => ch.repeat(100_000 * k),
     ]
   ),
+  [
+    "marks x 100k",
+    (k) => "a" + "\u0301".repeat(50_000 * k) + "\u0316".repeat(50_000 * k),
+  ],
 ];
 
 for (const encoding of [claude_v3, claude_v4_7]) {
