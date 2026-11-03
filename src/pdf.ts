@@ -53,24 +53,35 @@ type Value =
   | Stream;
 type Token = Value | Keyword;
 
+// Shared instances for the words the parsers compare by identity and for the
+// common content operators. Other words get a fresh Keyword, so a hostile file
+// cannot grow this table.
 const keywords = new Map<string, Keyword>();
-function keyword(word: string): Keyword {
-  let k = keywords.get(word);
-  if (!k) keywords.set(word, (k = new Keyword(word)));
+function intern(word: string): Keyword {
+  const k = new Keyword(word);
+  keywords.set(word, k);
   return k;
 }
-const ARRAY_OPEN = keyword("[");
-const ARRAY_CLOSE = keyword("]");
-const DICT_OPEN = keyword("<<");
-const DICT_CLOSE = keyword(">>");
-const R = keyword("R");
-const OBJ = keyword("obj");
-const STREAM = keyword("stream");
-const XREF = keyword("xref");
-const TRAILER = keyword("trailer");
-const N = keyword("n");
-const F = keyword("f");
+function keyword(word: string): Keyword {
+  return keywords.get(word) ?? new Keyword(word);
+}
+const ARRAY_OPEN = intern("[");
+const ARRAY_CLOSE = intern("]");
+const DICT_OPEN = intern("<<");
+const DICT_CLOSE = intern(">>");
+const R = intern("R");
+const OBJ = intern("obj");
+const STREAM = intern("stream");
+const XREF = intern("xref");
+const TRAILER = intern("trailer");
+const N = intern("n");
+const F = intern("f");
 const JUNK = new Keyword("");
+for (const word of "BT ET Tf Td TD Tm T* Tj TJ ' \" Tc Tw Tz TL Ts Tr q Q cm Do BI ID EI re m l c h f* S s B b n W W* g G rg RG k K cs CS sc SC scn SCN gs BDC BMC EMC endobj endstream".split(
+  " "
+)) {
+  if (!keywords.has(word)) intern(word);
+}
 
 const REGULAR = 0;
 const WHITESPACE = 1;
