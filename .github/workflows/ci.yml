@@ -38,3 +38,39 @@ jobs:
 
       - name: Check packed types
         run: bun scripts/check-package-types.ts
+
+  sdk-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      cells: ${{ steps.cells.outputs.cells }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: List AI SDK cells
+        id: cells
+        run: echo "cells=$(scripts/test-sdk-matrix.sh --list-json)" >> "$GITHUB_OUTPUT"
+
+  sdk-compat:
+    name: sdk (ai@${{ matrix.ai }}, zod@${{ matrix.zod }}, node ${{ matrix.node }})
+    needs: sdk-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.sdk-matrix.outputs.cells) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Test the sdk against this AI SDK and zod
+        run: scripts/test-sdk-matrix.sh "${{ matrix.ai }}" "${{ matrix.zod }}"
