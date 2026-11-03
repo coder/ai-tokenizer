@@ -91,6 +91,33 @@ const total = tokenizer.count("some text input");
 > [!WARNING]
 > Import encodings selectively based on what you need. Each encoding is 2-8MB uncompressed.
 
+## Claude encodings
+
+Anthropic changed its tokenizer at Claude Opus 4.7. Two encodings count Claude tokens offline, and they match the `count_tokens` API exactly on every case in `src/fixtures/claude-count-tokens.json`.
+
+| Encoding | Models |
+| --- | --- |
+| `claude_v3` | Claude 3 through Claude Opus 4.6 |
+| `claude_v4_7` | Claude Opus 4.7 and later |
+
+```ts
+import { Tokenizer } from "ai-tokenizer";
+import * as claude_v4_7 from "ai-tokenizer/encoding/claude_v4_7";
+
+const tokenizer = new Tokenizer(claude_v4_7);
+tokenizer.count("hello, world"); // 4
+```
+
+- `count()` counts the content of one user message. `count_tokens` also charges a fixed message frame (7 tokens on Claude Opus 4.6, 6 on Claude Opus 4.8). The frame comes from the model config, not from the encoding.
+- The content count includes what the frame does to the content. On `claude_v3` the frame absorbs one leading space, and newlines at the end of the content cost what the frame makes of them.
+- `claude_v4_7` follows Claude Opus 4.8 and later. Claude Opus 4.7 has the same vocabulary but a different frame, so its count can differ at the start of a message and on newlines at the end of the content.
+- `count("")` is 0. The API rejects empty content.
+- Token ids are synthetic, because Anthropic does not publish its ids. They are stable for one version of this package only.
+- `decode()` returns the normalized text, so it is lossy. Plain ASCII prose comes back unchanged. Unicode normalization, folded quotes and spaces, removed control characters, the absorbed leading space, some case changes and trailing newlines do not.
+- Counts use Unicode 15.1 data, like the reference. A JavaScript engine with Unicode data older than 15.1 can count text with newer characters differently.
+
+The encodings are a TypeScript port of [ctok](https://github.com/sanderland/ctok) by Sander Land (MIT License), at commit [`8c43ffd`](https://github.com/sanderland/ctok/tree/8c43ffd3c7be467622a540f025516e49ef78d8b1). `scripts/generate-claude-encodings.ts` regenerates the data from that commit, and `scripts/compare-claude-ctok.ts` compares the port with ctok.
+
 ## Accuracy
 
 Validated against actual API responses with pseudo-random messages:
