@@ -13,6 +13,8 @@
  * - ASCII fast path
  */
 
+import { resolve } from "./lazy";
+
 /**
  * Encoding data format (optimized)
  */
@@ -100,10 +102,11 @@ export default class Tokenizer {
     this.mergeCache = new Map();
     this.mergeCacheKeys = [];
 
-    // Use pre-optimized storage directly (zero-cost initialization)
-    this.stringRankEncoder = data.stringEncoder;
-    this.binaryRankEncoder = data.binaryEncoder;
-    this.decoder = data.decoder;
+    // An encoding module builds its tables on the first read. resolve() makes
+    // that read happen here and returns the real tables, not their stand-ins.
+    this.stringRankEncoder = resolve(data.stringEncoder);
+    this.binaryRankEncoder = resolve(data.binaryEncoder);
+    this.decoder = resolve(data.decoder);
     // Build first-byte index to reduce binary search domain size
     const idx: Array<Array<[Uint8Array, number]> | null> = new Array(256).fill(
       null

@@ -14,6 +14,7 @@
  * doubly linked symbol list. It runs in O(n log n), never O(n^2).
  */
 
+import { resolve } from "./lazy";
 import type { Codec } from "./tokenizer";
 
 /**
@@ -204,14 +205,15 @@ export default class SentencePieceTokenizer {
     extendedSpecialTokens?: Record<string, number>
   ) {
     this.name = data.name;
-    this.vocab = data.vocab;
+    const vocab = resolve(data.vocab);
+    this.vocab = vocab;
     this.merges = new MergeTable(data.merges);
 
     this.characterIds = new Map();
     this.byteIds = new Int32Array(256).fill(-1);
-    this.byteValues = new Int16Array(data.vocab.length).fill(-1);
-    for (let id = 0; id < data.vocab.length; id++) {
-      const piece = data.vocab[id]!;
+    this.byteValues = new Int16Array(vocab.length).fill(-1);
+    for (let id = 0; id < vocab.length; id++) {
+      const piece = vocab[id]!;
       const codePoint = piece.codePointAt(0);
       if (codePoint === undefined) continue;
       if (piece.length === (codePoint > 0xffff ? 2 : 1)) {

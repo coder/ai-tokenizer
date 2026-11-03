@@ -9,6 +9,7 @@
  *   [P + 256, P + 256 + B)   bytePrefixes[id - P - 256]
  * Ties break as in ctok, so the ids follow ctok's tokenize() one to one.
  */
+import { resolve } from "../lazy";
 import type { Codec } from "../tokenizer";
 import {
   BOW,
@@ -42,6 +43,8 @@ interface TrieNode {
 }
 
 interface Model {
+  /** The real pieces, not the lazy stand-in the vocabulary module exports. */
+  readonly pieces: readonly string[];
   readonly root: ReadonlyMap<number, TrieNode>;
   /** The id of byte 0. */
   readonly byteBase: number;
@@ -92,8 +95,9 @@ function trimTrailingWhitespace(text: string): string {
 }
 
 function buildModel(family: ClaudeFamily): Model {
+  const pieces = resolve(family.pieces);
   const root: TrieNode = { next: new Map(), id: -1 };
-  family.pieces.forEach((piece, id) => {
+  pieces.forEach((piece, id) => {
     const cps = Array.from(piece, (c) => c.codePointAt(0)!);
     let node = root;
     for (let k = cps.length - 1; k >= 0; k--) {
@@ -117,7 +121,7 @@ function buildModel(family: ClaudeFamily): Model {
     );
   }
 
-  const byteBase = family.pieces.length;
+  const byteBase = pieces.length;
   const prefixIds = new Map<string, number>();
   const prefixBytes: Uint8Array[] = [];
   let maxPrefixBytes = 1;
@@ -128,7 +132,14 @@ function buildModel(family: ClaudeFamily): Model {
     prefixBytes.push(bytes);
     maxPrefixBytes = Math.max(maxPrefixBytes, bytes.length);
   });
-  return { root: root.next!, byteBase, prefixIds, prefixBytes, maxPrefixBytes };
+  return {
+    pieces,
+    root: root.next!,
+    byteBase,
+    prefixIds,
+    prefixBytes,
+    maxPrefixBytes,
+  };
 }
 
 function encode(model: Model, family: ClaudeFamily, text: string): number[] {
@@ -275,7 +286,7 @@ function decode(model: Model, family: ClaudeFamily, tokens: number[]): string {
     }
     if (id < byteBase) {
       flush();
-      for (const ch of family.pieces[id]!) stream.push(ch.codePointAt(0)!);
+      for (const ch of model.pieces[id]!) stream.push(ch.codePointAt(0)!);
     } else if (id < byteBase + BYTES) {
       bytes.push(id - byteBase);
     } else {
