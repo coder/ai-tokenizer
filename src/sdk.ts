@@ -1,5 +1,5 @@
 import Tokenizer from "./tokenizer";
-import type { ModelMessage, ToolSet } from "ai";
+import { asSchema, type ModelMessage, type ToolSet } from "ai";
 import type { Model, ModelTokens } from ".";
 
 export interface CountOptions<TOOLS extends ToolSet = ToolSet> {
@@ -45,6 +45,22 @@ export interface CountResultMessage {
   content: Array<CountResultMessageContent>;
 }
 
+/**
+ * A tool description or input schema that `count()` could not read
+ * synchronously. It contributes 0 tokens to the total.
+ */
+export interface UnresolvedToolPart {
+  tool: string;
+  part: "description" | "inputSchema";
+  /**
+   * `async`: the schema is a Promise, or a thunk that returns one.
+   * `error`: reading it threw, for example a Standard Schema vendor without
+   * JSON Schema conversion. The thrown value is in `error`.
+   */
+  reason: "async" | "error";
+  error?: unknown;
+}
+
 export interface CountResultTools<TOOLS extends ToolSet = ToolSet> {
   total: number;
   definitions: Record<
@@ -55,6 +71,8 @@ export interface CountResultTools<TOOLS extends ToolSet = ToolSet> {
       inputSchema: number;
     }
   >;
+  /** Empty when every tool definition was counted in full. */
+  unresolved: UnresolvedToolPart[];
 }
 
 export interface CountResult<TOOLS extends ToolSet = ToolSet> {
@@ -130,6 +148,7 @@ function countToolsTokensDetailed<TOOLS extends ToolSet = ToolSet>(
       inputSchema: number;
     }
   >;
+  const unresolved: UnresolvedToolPart[] = [];
   let total = 0;
 
   if (tools && Object.keys(tools).length > 0) {
@@ -138,26 +157,46 @@ function countToolsTokensDetailed<TOOLS extends ToolSet = ToolSet>(
     const toolEntries = Object.entries(tools);
     for (let i = 0; i < toolEntries.length; i++) {
       const [toolName, tool] = toolEntries[i]!;
+      const definition = tool as {
+        description?: unknown;
+        inputSchema?: unknown;
+      };
 
       // Count name tokens
-      const nameTokens = tokenizer.encode(toolName).length;
+      const nameTokens = tokenizer.count(toolName);
 
       // Count description tokens
       let descriptionTokens = 0;
-      if (tool.description) {
-        descriptionTokens =
-          config.perDesc + tokenizer.encode(tool.description).length;
+      const description = readDescription(definition.description);
+      if ("error" in description) {
+        unresolved.push({
+          tool: toolName,
+          part: "description",
+          reason: "error",
+          error: description.error,
+        });
+      } else if (description.text) {
+        descriptionTokens = config.perDesc + tokenizer.count(description.text);
       }
 
       // Count inputSchema tokens
       let inputSchemaTokens = 0;
-      if (tool.inputSchema) {
-        const result = countZodSchemaProperties(
-          tool.inputSchema,
-          tokenizer,
-          config
-        );
-        inputSchemaTokens = result.tokens;
+      if (definition.inputSchema) {
+        const schema = readInputSchema(definition.inputSchema);
+        if (schema.status === "ok") {
+          inputSchemaTokens = countSchemaProperties(
+            schema.jsonSchema,
+            tokenizer,
+            config
+          );
+        } else {
+          unresolved.push({
+            tool: toolName,
+            part: "inputSchema",
+            reason: schema.status,
+            ...(schema.status === "error" && { error: schema.error }),
+          });
+        }
       }
 
       definitions[toolName as keyof TOOLS] = {
@@ -175,7 +214,158 @@ function countToolsTokensDetailed<TOOLS extends ToolSet = ToolSet>(
     }
   }
 
-  return { total, definitions };
+  return { total, definitions, unresolved };
+}
+
+/**
+ * AI SDK v7 allows a function that builds the description from the tool's
+ * runtime context. `count()` has no context, so the function gets an empty one.
+ */
+function readDescription(
+  description: unknown
+): { text: string | undefined } | { error: unknown } {
+  if (typeof description === "function") {
+    try {
+      const text: unknown = description({ context: {} });
+      return { text: typeof text === "string" ? text : undefined };
+    } catch (error) {
+      return { error };
+    }
+  }
+  return { text: typeof description === "string" ? description : undefined };
+}
+
+type InputSchemaRead =
+  | { status: "ok"; jsonSchema: unknown }
+  | { status: "async" }
+  | { status: "error"; error: unknown };
+
+/**
+ * Reads the JSON Schema the provider receives for a tool, whichever schema
+ * library defined it. `asSchema` is the AI SDK's own conversion, so zod 3,
+ * zod 4, `jsonSchema()` and (v6+) Standard Schema tools all arrive here as
+ * JSON Schema.
+ */
+function readInputSchema(inputSchema: unknown): InputSchemaRead {
+  try {
+    const jsonSchema: unknown = asSchema(
+      inputSchema as Parameters<typeof asSchema>[0]
+    ).jsonSchema;
+    if (isThenable(jsonSchema)) {
+      // Mark the rejection as handled: we are not going to await it.
+      jsonSchema.then(undefined, () => {});
+      return { status: "async" };
+    }
+    return { status: "ok", jsonSchema };
+  } catch (error) {
+    return { status: "error", error };
+  }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function isThenable(value: unknown): value is PromiseLike<unknown> {
+  return isRecord(value) && typeof value.then === "function";
+}
+
+/**
+ * Object schemas are recognised by `properties`, not `type: "object"`:
+ * AI SDK v5 omits `type` on the empty schema it makes for an undefined input.
+ */
+function propertiesOf(schema: unknown): Record<string, unknown> | undefined {
+  return isRecord(schema) && isRecord(schema.properties)
+    ? schema.properties
+    : undefined;
+}
+
+/**
+ * `.nullable()` becomes `anyOf: [inner, { type: "null" }]`. Read through it, so
+ * a nullable property counts like the same property without `null`. A real
+ * union (two or more non-null variants) is left alone.
+ */
+function withoutNull(schema: Record<string, unknown>): Record<string, unknown> {
+  const variants = schema.anyOf ?? schema.oneOf;
+  if (!Array.isArray(variants)) {
+    return schema;
+  }
+  const rest = variants.filter((v) => !(isRecord(v) && v.type === "null"));
+  const inner = rest[0];
+  if (
+    rest.length !== 1 ||
+    rest.length === variants.length ||
+    !isRecord(inner)
+  ) {
+    return schema;
+  }
+  return schema.description === undefined
+    ? inner
+    : { ...inner, description: schema.description };
+}
+
+/**
+ * Count the properties of a JSON Schema object by walking its structure.
+ * Unions (`anyOf`, `oneOf`, `allOf`) and `$ref` are not followed.
+ */
+function countSchemaProperties(
+  schema: unknown,
+  tokenizer: Tokenizer,
+  config: ModelTokens,
+  ancestors: Set<unknown> = new Set()
+): number {
+  const properties = propertiesOf(schema);
+  if (!properties || ancestors.has(properties)) {
+    return 0;
+  }
+  ancestors.add(properties);
+
+  let tokens = 0;
+  let isFirstProp = true;
+
+  for (const [key, value] of Object.entries(properties)) {
+    // Count property name tokens
+    tokens += tokenizer.count(key);
+
+    // Add property overhead (first vs additional)
+    tokens += isFirstProp ? config.perFirstProp : config.perAdditionalProp;
+    isFirstProp = false;
+
+    if (!isRecord(value)) {
+      continue;
+    }
+    const propSchema = withoutNull(value);
+
+    // Count property description if present
+    if (typeof propSchema.description === "string" && propSchema.description) {
+      tokens += config.perPropDesc;
+      tokens += tokenizer.count(propSchema.description);
+    }
+
+    // Handle enums - count each enum value + overhead
+    if (Array.isArray(propSchema.enum)) {
+      tokens += config.perEnum;
+      for (const enumValue of propSchema.enum) {
+        tokens += tokenizer.count(String(enumValue));
+      }
+    }
+
+    if (propertiesOf(propSchema)) {
+      // Handle nested objects
+      tokens += config.perNestedObject || 0;
+      tokens += countSchemaProperties(propSchema, tokenizer, config, ancestors);
+    } else if (isRecord(propSchema.items)) {
+      // Handle arrays with object items
+      const items = withoutNull(propSchema.items);
+      if (propertiesOf(items)) {
+        tokens += config.perArrayOfObjects || 0;
+      }
+      tokens += countSchemaProperties(items, tokenizer, config, ancestors);
+    }
+  }
+
+  ancestors.delete(properties);
+  return tokens;
 }
 
 /**
@@ -190,7 +380,7 @@ function countMessageTokensDetailed(
   const content: CountResultMessageContent[] = [];
 
   // Count role
-  total += tokenizer.encode(message.role).length;
+  total += tokenizer.count(message.role);
 
   // Count content with detailed breakdown
   if (message.content) {
@@ -218,65 +408,61 @@ function countMessageContentTokensDetailed(
   const results: CountResultMessageContent[] = [];
 
   if (typeof content === "string") {
-    const tokens = tokenizer.encode(content).length;
+    const tokens = tokenizer.count(content);
     const total = Math.round(tokens * multiplier);
     results.push({ type: "text", total });
     return results;
   }
 
   if (Array.isArray(content)) {
-    for (const part of content) {
-      if (part.type === "text") {
-        const tokens = tokenizer.encode(part.text).length;
-        const total = Math.round(tokens * multiplier);
-        results.push({ type: "text", total });
-      } else if (part.type === "tool-call") {
-        let toolCallTokens = 0;
-        let inputTokens = 0;
+    // Parts are read as plain records: their shape differs between AI SDK
+    // v5, v6 and v7, and unknown parts are skipped.
+    for (const part of content as unknown[]) {
+      if (!isRecord(part)) {
+        continue;
+      }
+      const tally = createTally(tokenizer);
 
-        if (part.toolName) {
-          toolCallTokens += tokenizer.encode(part.toolName).length;
+      if (part.type === "text" || part.type === "reasoning") {
+        if (typeof part.text === "string") {
+          tally.addText(part.text);
+        }
+        results.push({
+          type: "text",
+          total: Math.round(tally.text * multiplier) + tally.media,
+        });
+      } else if (part.type === "tool-call") {
+        let nameTokens = 0;
+        if (part.toolName && typeof part.toolName === "string") {
+          nameTokens = tokenizer.count(part.toolName);
         }
         if (part.input) {
-          inputTokens = tokenizer.encode(JSON.stringify(part.input)).length;
-          toolCallTokens += inputTokens;
+          tally.addText(JSON.stringify(part.input));
         }
 
-        const total = Math.round(toolCallTokens * multiplier);
         results.push({
           type: "tool-call",
-          total,
-          input: Math.round(inputTokens * multiplier),
+          total: Math.round((nameTokens + tally.text) * multiplier),
+          input: Math.round(tally.text * multiplier),
         });
       } else if (part.type === "tool-result") {
-        let toolResultTokens = 0;
-        let outputTokens = 0;
-
-        if (part.toolCallId) {
-          toolResultTokens += tokenizer.encode(part.toolCallId).length;
+        let idTokens = 0;
+        if (part.toolCallId && typeof part.toolCallId === "string") {
+          idTokens = tokenizer.count(part.toolCallId);
         }
-        if (part.output) {
-          if (typeof part.output === "string") {
-            outputTokens = tokenizer.encode(part.output).length;
-          } else {
-            outputTokens = tokenizer.encode(JSON.stringify(part.output)).length;
-          }
-          toolResultTokens += outputTokens;
-        }
+        tallyToolOutput(tally, part.output);
 
-        const total = Math.round(toolResultTokens * multiplier);
         results.push({
           type: "tool-result",
-          total,
-          output: Math.round(outputTokens * multiplier),
+          total: Math.round((idTokens + tally.text) * multiplier) + tally.media,
+          output: Math.round(tally.text * multiplier) + tally.media,
         });
-      } else if (part.type === "image") {
-        // Images have a fixed token count (approximate for GPT-4o)
-        results.push({ type: "text", total: 85 });
-      } else if (part.type === "file") {
-        // Files are treated similarly to text
-        // This is an approximation - actual token count may vary
-        results.push({ type: "text", total: 100 });
+      } else if (typeof part.type === "string" && MEDIA_KINDS.has(part.type)) {
+        tallyMedia(tally, part);
+        results.push({
+          type: "text",
+          total: Math.round(tally.text * multiplier) + tally.media,
+        });
       }
     }
   }
@@ -285,89 +471,153 @@ function countMessageContentTokensDetailed(
 }
 
 /**
- * Count properties in a Zod schema by walking its structure
+ * Tokens of one content part. `text` is raw tokenizer tokens and still gets
+ * `contentMultiplier`. `media` is a fixed estimate and never does.
  */
-function countZodSchemaProperties(
-  schema: any,
-  tokenizer: Tokenizer,
-  config: ModelTokens
-): { tokens: number; propCount: number } {
-  let tokens = 0;
-  let propCount = 0;
+function createTally(tokenizer: Tokenizer) {
+  const tally = {
+    text: 0,
+    media: 0,
+    addText(text: string) {
+      tally.text += tokenizer.count(text);
+    },
+    addMedia(media: Media) {
+      tally.media += countMediaTokens(media);
+    },
+  };
+  return tally;
+}
 
-  if (!schema || !schema._def) {
-    return { tokens, propCount };
+type Tally = ReturnType<typeof createTally>;
+
+type MediaKind = "image" | "file";
+
+interface Media {
+  kind: MediaKind;
+  /** IANA media type, `"image"` (AI SDK v7 wildcard) or undefined. */
+  mediaType: string | undefined;
+  /**
+   * The part's payload as the caller gave it: base64 string, bytes, URL,
+   * AI SDK v7 tagged file data, or a provider file reference.
+   */
+  data: unknown;
+}
+
+/**
+ * The single place that prices an image or a file. Every image-like and
+ * file-like part reaches it, whatever its AI SDK shape.
+ */
+function countMediaTokens(media: Media): number {
+  // Images have a fixed token count (approximate for GPT-4o)
+  // Files are treated similarly to text, which is an approximation too.
+  return media.kind === "image" ? 85 : 100;
+}
+
+/**
+ * Message parts and tool-result content items that carry an image or a file,
+ * with the kind to use when the media type does not say. The names are from
+ * AI SDK v5 (`media`), v6 (`image-*`, `file-*`) and v7 (`file`,
+ * `reasoning-file`).
+ */
+const MEDIA_KINDS = new Map<string, MediaKind>([
+  ["image", "image"],
+  ["image-data", "image"],
+  ["image-url", "image"],
+  ["image-file-id", "image"],
+  ["image-file-reference", "image"],
+  ["file", "file"],
+  ["reasoning-file", "file"],
+  ["media", "file"],
+  ["file-data", "file"],
+  ["file-url", "file"],
+  ["file-id", "file"],
+  ["file-reference", "file"],
+]);
+
+function tallyMedia(tally: Tally, part: Record<string, unknown>): void {
+  const data =
+    part.data ??
+    part.image ??
+    part.url ??
+    part.fileId ??
+    part.providerReference;
+
+  // AI SDK v7 inline text documents are text, not a binary file.
+  if (isRecord(data) && data.type === "text" && typeof data.text === "string") {
+    tally.addText(data.text);
+    return;
   }
 
-  const def = schema._def;
+  const mediaType =
+    typeof part.mediaType === "string" ? part.mediaType : undefined;
+  const isImageMediaType =
+    mediaType !== undefined &&
+    (mediaType === "image" || mediaType.startsWith("image/"));
+  tally.addMedia({
+    kind:
+      isImageMediaType || MEDIA_KINDS.get(part.type as string) === "image"
+        ? "image"
+        : "file",
+    mediaType,
+    data,
+  });
+}
 
-  // Handle object schemas
-  if (def.type === "object") {
-    const shape = typeof def.shape === "function" ? def.shape() : def.shape;
-
-    if (!shape) {
-      return { tokens, propCount };
-    }
-
-    for (const [key, value] of Object.entries(shape)) {
-      const isFirstProp = propCount === 0;
-      propCount++;
-      const propSchema = value as any;
-
-      // Count property name tokens
-      tokens += tokenizer.encode(key).length;
-
-      // Add property overhead (first vs additional)
-      tokens += isFirstProp ? config.perFirstProp : config.perAdditionalProp;
-
-      // Count property description if present
-      if (propSchema.description) {
-        tokens += config.perPropDesc;
-        tokens += tokenizer.encode(propSchema.description).length;
-      }
-
-      // Handle enums - count each enum value + overhead
-      if (propSchema._def && propSchema._def.type === "enum") {
-        const enumDef = propSchema._def;
-        const enumValues =
-          enumDef.values || Object.values(enumDef.entries || {});
-        tokens += config.perEnum; // Enum overhead
-        for (const enumValue of enumValues) {
-          tokens += tokenizer.encode(String(enumValue)).length;
+/**
+ * Count the payload the provider sees for a tool result, not the
+ * `{ type, value }` wrapper around it. Shapes we do not know are counted as
+ * JSON, as they were before.
+ */
+function tallyToolOutput(tally: Tally, output: unknown): void {
+  if (!output) {
+    return;
+  }
+  if (typeof output === "string") {
+    tally.addText(output);
+    return;
+  }
+  if (isRecord(output)) {
+    switch (output.type) {
+      case "text":
+      case "error-text":
+        if (typeof output.value === "string") {
+          tally.addText(output.value);
+          return;
         }
-      }
-
-      // Handle nested objects
-      if (propSchema._def) {
-        const innerDef = propSchema._def;
-        if (innerDef.type === "object") {
-          // Add overhead for nested object if configured
-          tokens += config.perNestedObject || 0;
-          const nested = countZodSchemaProperties(
-            propSchema,
-            tokenizer,
-            config
-          );
-          tokens += nested.tokens;
-          // Don't accumulate propCount across nesting levels - each level is independent
-        } else if (innerDef.type === "array" && innerDef.element) {
-          // Handle arrays with object/complex items
-          const elementDef = innerDef.element._def;
-          if (elementDef && elementDef.type === "object") {
-            // Add overhead for array of objects if configured
-            tokens += config.perArrayOfObjects || 0;
+        break;
+      case "json":
+      case "error-json":
+        if (output.value !== undefined) {
+          tally.addText(JSON.stringify(output.value));
+        }
+        return;
+      case "execution-denied":
+        if (typeof output.reason === "string") {
+          tally.addText(output.reason);
+        }
+        return;
+      case "content":
+        if (Array.isArray(output.value)) {
+          for (const item of output.value as unknown[]) {
+            tallyToolContentItem(tally, item);
           }
-          const nested = countZodSchemaProperties(
-            innerDef.element,
-            tokenizer,
-            config
-          );
-          tokens += nested.tokens;
-          // Don't accumulate propCount across nesting levels
+          return;
         }
-      }
+        break;
     }
   }
+  tally.addText(JSON.stringify(output));
+}
 
-  return { tokens, propCount };
+function tallyToolContentItem(tally: Tally, item: unknown): void {
+  if (!isRecord(item)) {
+    return;
+  }
+  if (item.type === "text" && typeof item.text === "string") {
+    tally.addText(item.text);
+  } else if (typeof item.type === "string" && MEDIA_KINDS.has(item.type)) {
+    tallyMedia(tally, item);
+  } else if (item.type !== "custom") {
+    tally.addText(JSON.stringify(item));
+  }
 }
