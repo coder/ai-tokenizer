@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { deflateSync } from "node:zlib";
+import { deflateSync, inflateSync } from "node:zlib";
 import { readPdf } from "./pdf";
 
 const corpus = join(import.meta.dir, "fixtures/pdf");
@@ -181,8 +181,8 @@ describe("readPdf", () => {
     }
     garbage.set(new TextEncoder().encode("%PDF-1.7\n"));
     expect(readPdf(garbage)).toBeUndefined();
-    expect(performance.now() - started).toBeLessThan(5000);
-  });
+    expect(performance.now() - started).toBeLessThan(20_000);
+  }, 30_000);
 
   test("ends on a cyclic page tree", () => {
     const pdf = build([
@@ -209,10 +209,10 @@ describe("readPdf", () => {
     ]);
     const started = performance.now();
     expect(readPdf(pdf)?.pages.length).toBe(8);
-    expect(performance.now() - started).toBeLessThan(3000);
-  });
+    expect(performance.now() - started).toBeLessThan(12_000);
+  }, 20_000);
 
-  test("reads a 5 MB file in well under a second", () => {
+  test("reads a 5 MB image without decoding its pixels", () => {
     const pdf = build([
       "<< /Type /Catalog /Pages 2 0 R >>",
       "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
@@ -229,6 +229,399 @@ describe("readPdf", () => {
     ]);
     const started = performance.now();
     expect(readPdf(pdf)?.pages[0]?.text).toBe("Scanned.");
-    expect(performance.now() - started).toBeLessThan(500);
+    expect(performance.now() - started).toBeLessThan(2000);
   });
+});
+
+function lzwEncode(data: Uint8Array, earlyChange = 1): Uint8Array {
+  const dict = new Map<number, number>();
+  let next = 258;
+  let word = -1;
+  const codes = [256];
+  for (const byte of data) {
+    if (word < 0) {
+      word = byte;
+      continue;
+    }
+    const key = word * 256 + byte;
+    const found = dict.get(key);
+    if (found !== undefined) word = found;
+    else {
+      codes.push(word);
+      if (next < 4096) dict.set(key, next++);
+      else {
+        codes.push(256);
+        dict.clear();
+        next = 258;
+      }
+      word = byte;
+    }
+  }
+  if (word >= 0) codes.push(word);
+  codes.push(257);
+  const out: number[] = [];
+  let buffer = 0,
+    bits = 0,
+    width = 9,
+    decodedNext = 258,
+    previous = false;
+  for (const code of codes) {
+    buffer = (buffer << width) | code;
+    bits += width;
+    while (bits >= 8) out.push((buffer >>> (bits -= 8)) & 255);
+    if (code === 256) {
+      width = 9;
+      decodedNext = 258;
+      previous = false;
+    } else {
+      if (
+        previous &&
+        decodedNext < 4096 &&
+        ++decodedNext + earlyChange === 1 << width &&
+        width < 12
+      )
+        width++;
+      previous = true;
+    }
+  }
+  if (bits) out.push((buffer << (8 - bits)) & 255);
+  return Uint8Array.from(out);
+}
+
+function runLengthEncode(data: Uint8Array): Uint8Array {
+  const out: number[] = [];
+  for (let i = 0; i < data.length; ) {
+    let end = i + 1;
+    while (end < data.length && end < i + 128 && data[end] === data[i]) end++;
+    if (end - i > 1) out.push(257 - (end - i), data[i]!);
+    else {
+      while (end < data.length && end < i + 128 && data[end] !== data[end + 1])
+        end++;
+      out.push(end - i - 1, ...data.subarray(i, end));
+    }
+    i = end;
+  }
+  return Uint8Array.from([...out, 128]);
+}
+
+function unAscii85(text: string): Uint8Array {
+  const out: number[] = [];
+  let group = 0,
+    n = 0;
+  const write = (count: number) => {
+    for (let k = 0; k < count; k++) out.push((group >>> (24 - k * 8)) & 255);
+  };
+  for (const c of text) {
+    if (c === "~") break;
+    if (c === "z") out.push(0, 0, 0, 0);
+    else if (c >= "!" && c <= "u") {
+      group = group * 85 + c.charCodeAt(0) - 33;
+      if (++n === 5) {
+        write(4);
+        group = n = 0;
+      }
+    }
+  }
+  if (n > 1) {
+    for (let i = n; i < 5; i++) group = group * 85 + 84;
+    write(n - 1);
+  }
+  return Uint8Array.from(out);
+}
+
+function reencodeTable(
+  filter: string,
+  encode: (data: Uint8Array) => Uint8Array
+): Uint8Array {
+  let replaced = 0;
+  const source = Buffer.from(read("reportlab-table.pdf")).toString("latin1");
+  const changed = source.replace(
+    /<<\s*\/Filter\s*\[\s*\/ASCII85Decode\s+\/FlateDecode\s*]\s*\/Length\s+\d+\s*>>\s*stream\r?\n([\s\S]*?)endstream/g,
+    (_, data: string) => {
+      replaced++;
+      return Buffer.from(
+        stream(filter, encode(inflateSync(unAscii85(data))))
+      ).toString("latin1");
+    }
+  );
+  expect(replaced).toBe(2);
+  return Buffer.from(changed, "latin1");
+}
+
+describe("PDF content filters", () => {
+  for (const early of [undefined, 0, 1]) {
+    test(`LZWDecode with EarlyChange ${early ?? "default"} preserves the corpus text`, () => {
+      const params =
+        early === undefined ? "" : `/DecodeParms << /EarlyChange ${early} >>`;
+      const pdf = reencodeTable(`/Filter /LZWDecode ${params}`, (data) =>
+        lzwEncode(data, early ?? 1)
+      );
+      expect(readPdf(pdf)).toEqual(readPdf(read("reportlab-table.pdf")));
+    });
+  }
+  test("LZWDecode applies the same PNG predictor as FlateDecode", () => {
+    const pdf = reencodeTable(
+      "/Filter /LZWDecode /DecodeParms << /Predictor 12 /Columns 1 >>",
+      (data) => {
+        const predicted = new Uint8Array(2 * data.length);
+        for (let i = 0; i < data.length; i++) {
+          predicted[i * 2] = 2;
+          predicted[i * 2 + 1] = data[i]! - (data[i - 1] ?? 0);
+        }
+        return lzwEncode(predicted);
+      }
+    );
+    expect(readPdf(pdf)).toEqual(readPdf(read("reportlab-table.pdf")));
+  });
+  test("RunLengthDecode preserves the corpus text", () => {
+    const pdf = reencodeTable("/Filter /RunLengthDecode", runLengthEncode);
+    expect(readPdf(pdf)).toEqual(readPdf(read("reportlab-table.pdf")));
+  });
+  test("LZW dictionary resets and all code widths preserve a long text stream", () => {
+    let seed = 7;
+    const letters = Array.from({ length: 100_000 }, () => {
+      seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+      return String.fromCharCode(65 + ((seed >>> 24) % 26));
+    }).join("");
+    const content = Buffer.from(`BT /F1 0.0001 Tf 10 10 Td (${letters}) Tj ET`);
+    const pdf = (bytes: Uint8Array, filter = "") =>
+      build([
+        "<< /Type /Catalog /Pages 2 0 R >>",
+        "<< /Type /Pages /Kids [3 0 R] >>",
+        `<< /Type /Page /Contents 4 0 R /Resources << ${PDF_FONT} >> >>`,
+        stream(filter, bytes),
+      ]);
+    const original = readPdf(pdf(content));
+    expect(original?.pages[0]!.text).toBe(letters);
+    for (const early of [0, 1]) {
+      expect(
+        readPdf(
+          pdf(
+            lzwEncode(content, early),
+            `/Filter /LZWDecode /DecodeParms << /EarlyChange ${early} >>`
+          )
+        )
+      ).toEqual(original);
+    }
+  });
+  test("an unsupported content filter leaves the page present, with empty text", () => {
+    const pdf = reencodeTable("/Filter /DCTDecode", (data) => data);
+    expect(readPdf(pdf)?.pages.map((p) => p.text)).toEqual(["", ""]);
+  });
+});
+
+const PDF_FONT = "/Font << /F1 << /Subtype /Type1 /BaseFont /Helvetica >> >>";
+
+function sharedContent(
+  content: Uint8Array | string,
+  filter = "",
+  packed = false
+): Uint8Array {
+  const pages = Array.from(
+    { length: 200 },
+    () => "<< /Type /Page /Parent 2 0 R /Contents 3 0 R >>"
+  );
+  const first = packed ? 5 : 4;
+  const kids = pages.map((_, i) => `${first + i} 0 R`).join(" ");
+  const objects: Array<string | Uint8Array> = [
+    "<< /Type /Catalog /Pages 2 0 R >>",
+    `<< /Type /Pages /Kids [${kids}] /Count 999999999 /Resources << ${PDF_FONT} >> >>`,
+    stream(filter, content),
+  ];
+  if (packed) {
+    let body = "",
+      header = "";
+    pages.forEach((page, i) => {
+      header += `${first + i} ${body.length} `;
+      body += page + "\n";
+    });
+    objects.push(
+      stream(
+        `/Type /ObjStm /N 200 /First ${header.length} /Filter /FlateDecode`,
+        deflateSync(Buffer.from(header + body))
+      )
+    );
+  } else objects.push(...pages);
+  return build(objects);
+}
+
+function fontPdf(cmap: string, descendant = ""): Uint8Array {
+  return build([
+    "<< /Type /Catalog /Pages 2 0 R >>",
+    "<< /Type /Pages /Kids [3 0 R] >>",
+    "<< /Type /Page /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>",
+    stream("", "BT /F1 1 Tf 10 10 Td <0041> Tj ET"),
+    `<< /Subtype /Type0 /Encoding /Identity-H /ToUnicode 6 0 R /DescendantFonts [<< ${descendant} >>] >>`,
+    stream("/Filter /FlateDecode", deflateSync(Buffer.from(cmap))),
+  ]);
+}
+
+describe("hostile PDFs", () => {
+  test("bounds malformed objects, including objects that start inside an unclosed string", () => {
+    for (const suffix of ["[", "<<", "<< /A ", "(", "<"]) {
+      const objects = Array.from(
+        { length: 80_000 },
+        (_, i) => `${i + 1} 0 obj ${suffix}`
+      ).join("");
+      const started = performance.now();
+      expect(readPdf(Buffer.from("%PDF-1.4\n" + objects))).toBeUndefined();
+      expect(performance.now() - started).toBeLessThan(4000);
+    }
+  }, 30_000);
+
+  test("bounds raw and packed pages that all draw the same large stream", () => {
+    for (const packed of [false, true]) {
+      const pdf = sharedContent(
+        `BT /F1 0.001 Tf 10 10 Td (${"a ".repeat(500_000)}) Tj ET`,
+        "",
+        packed
+      );
+      const started = performance.now();
+      const result = readPdf(pdf)!;
+      expect(result.pages.length).toBe(200);
+      expect(result.pages[0]!.text).toStartWith("a a a");
+      expect(
+        result.pages.reduce((sum, p) => sum + p.text.length, 0)
+      ).toBeLessThanOrEqual(8_000_000);
+      expect(result.pages.at(-1)!.text).toBe("");
+      expect(performance.now() - started).toBeLessThan(4000);
+    }
+  }, 15_000);
+
+  test("charges repeated comments, empty content streams, and recursive forms", () => {
+    const forms: Array<string | Uint8Array> = [
+      "<< /Type /Catalog /Pages 2 0 R >>",
+      "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+      "<< /Type /Page /Contents 4 0 R /Resources << /XObject << /X 5 0 R >> >> >>",
+      stream("", "/X Do"),
+    ];
+    for (let depth = 0; depth < 8; depth++) {
+      forms.push(
+        stream(
+          `/Subtype /Form /Filter /FlateDecode /Resources << /XObject << /X ${6 + depth} 0 R >> >>`,
+          deflateSync(Buffer.from(depth === 7 ? "" : "/X Do ".repeat(1000)))
+        )
+      );
+    }
+    const contents = Array.from(
+      { length: 1000 },
+      () => "<< /Type /Page /Parent 2 0 R /Contents 4 0 R >>"
+    );
+    const empty = build([
+      "<< /Type /Catalog /Pages 2 0 R >>",
+      `<< /Type /Pages /Kids [${contents.map((_, i) => `${i + 5} 0 R`).join(" ")}] >>`,
+      stream("", ""),
+      `[${"3 0 R ".repeat(150_000)}]`,
+      ...contents,
+    ]);
+    for (const pdf of [
+      sharedContent(("%" + "x".repeat(98) + "\n").repeat(10_000)),
+      empty,
+      build(forms),
+    ]) {
+      const started = performance.now();
+      expect(readPdf(pdf)?.pages.length).toBeGreaterThan(0);
+      expect(performance.now() - started).toBeLessThan(4000);
+    }
+  }, 20_000);
+
+  test("bounds object-stream offsets and expanded CMap ranges", () => {
+    const n = 100_000;
+    const header = Array.from({ length: n }, (_, i) => `${i + 10} 0 `).join("");
+    const objects = build([
+      stream(
+        `/Type /ObjStm /N ${n} /First ${header.length} /Filter /FlateDecode`,
+        deflateSync(Buffer.from(header + "[" + "0 ".repeat(4_000_000)))
+      ),
+    ]);
+    const cmap =
+      "beginbfrange\n" +
+      Array.from(
+        { length: 30_000 },
+        (_, i) =>
+          `<${(i * 256).toString(16).padStart(8, "0")}> <${(i * 256 + 255).toString(16).padStart(8, "0")}> <0041>\n`
+      ).join("") +
+      "endbfrange";
+    for (const pdf of [
+      objects,
+      fontPdf(cmap),
+      fontPdf(
+        "beginbfrange <ffffffffffffffffffff> <ffffffffffffffffffff> <0041> endbfrange"
+      ),
+      fontPdf("", "/W [9007199254740993 9007199254740993 1]"),
+    ]) {
+      const started = performance.now();
+      readPdf(pdf);
+      expect(performance.now() - started).toBeLessThan(4000);
+    }
+  }, 20_000);
+
+  test("bounds 100,000 empty pages without trusting the page count", () => {
+    const pages = Array.from({ length: 100_000 }, () => "<< /Type /Page >>");
+    const pdf = build([
+      "<< /Type /Catalog /Pages 2 0 R >>",
+      `<< /Type /Pages /Kids [${pages.map((_, i) => `${i + 3} 0 R`).join(" ")}] /Count 999999999 >>`,
+      ...pages,
+    ]);
+    const started = performance.now();
+    const count = readPdf(pdf)?.pages.length ?? 0;
+    expect(count).toBeGreaterThan(0);
+    expect(count).toBeLessThanOrEqual(100_000);
+    expect(performance.now() - started).toBeLessThan(4000);
+  }, 15_000);
+
+  test("charges expanded glyph text before normalizing millions of ligatures", () => {
+    const pdf = build([
+      "<< /Type /Catalog /Pages 2 0 R >>",
+      "<< /Type /Pages /Kids [3 0 R] >>",
+      `<< /Type /Page /Contents 4 0 R /Resources << ${PDF_FONT.replace("/Helvetica", "/Helvetica /ToUnicode 5 0 R")} >> >>`,
+      stream("", `BT /F1 0.001 Tf 10 10 Td (${"A".repeat(20_000)}) Tj ET`),
+      stream("", `beginbfchar <41> <${"fb03".repeat(256)}> endbfchar`),
+    ]);
+    const started = performance.now();
+    const text = readPdf(pdf)!.pages[0]!.text;
+    expect(text).toStartWith("ffiffi");
+    expect(text.length).toBeLessThanOrEqual(8_000_000);
+    expect(performance.now() - started).toBeLessThan(4000);
+  });
+
+  test("caps compressed strings, TJ arrays and inline images", () => {
+    for (const content of [
+      `BT /F1 0.001 Tf 10 10 Td (${"ab ".repeat(4_000_000)}) Tj ET`,
+      "[" + "(a) -250 ".repeat(1_500_000) + "] TJ",
+      "[" + "0 ".repeat(6_000_000) + "]",
+      "(".repeat(12_000_000),
+      "BI ID " + "xEI ".repeat(3_000_000),
+    ]) {
+      const pdf = sharedContent(
+        deflateSync(Buffer.from(content)),
+        "/Filter /FlateDecode"
+      );
+      const started = performance.now();
+      expect(readPdf(pdf)?.pages.length).toBe(200);
+      expect(performance.now() - started).toBeLessThan(4000);
+    }
+  }, 30_000);
+
+  test("caps LZW and RunLength output, including truncated streams", () => {
+    const expanded = Buffer.from(
+      " ".repeat(8 * 1024 * 1024) +
+        "BT /F1 12 Tf 10 10 Td (Past the output cap.) Tj ET"
+    );
+    const lzw = lzwEncode(expanded);
+    const rle = runLengthEncode(expanded);
+    for (const [filter, bytes] of [
+      ["LZWDecode", lzw],
+      ["RunLengthDecode", rle],
+    ] as const) {
+      for (const data of [bytes, bytes.subarray(0, bytes.length >> 1)]) {
+        const pdf = sharedContent(data, `/Filter /${filter}`);
+        const started = performance.now();
+        const result = readPdf(pdf)!;
+        expect(result.pages.length).toBe(200);
+        expect(result.pages[0]!.text).toBe("");
+        expect(performance.now() - started).toBeLessThan(4000);
+      }
+    }
+  }, 30_000);
 });

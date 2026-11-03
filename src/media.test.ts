@@ -217,6 +217,14 @@ const inside = (bytes: Uint8Array) => {
 const forms: [string, (bytes: Uint8Array) => unknown][] = [
   ["base64", toBase64],
   ["data URL", (b) => `data:image/png;base64,${toBase64(b)}`],
+  ["data URL object", (b) => new URL(`data:image/png;base64,${toBase64(b)}`)],
+  [
+    "v7 data URL object",
+    (b) => ({
+      type: "data",
+      data: new URL(`data:image/png;base64,${toBase64(b)}`),
+    }),
+  ],
   [
     "data URL with a parameter and capitals",
     (b) => `DATA:image/png;name=a.png;BASE64,${toBase64(b)}`,
@@ -302,6 +310,7 @@ describe("imageSizeOf and mediaBytesOf refuse", () => {
     ["a string that is not base64", "this is not base64!"],
     ["base64 with a dangling character", "iVBOR"],
     ["a data URL that is not base64", "data:text/plain,QUJD"],
+    ["a data URL object that is not base64", new URL("data:text/plain,QUJD")],
     [
       "a data URL without a comma",
       `data:image/png;base64;${toBase64(png.bytes)}`,
