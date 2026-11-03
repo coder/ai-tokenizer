@@ -6,7 +6,7 @@
  * arrays and index ranges. The Unicode facts come from ./unicode.ts, which
  * holds ctok's own answers for Unicode 15.1, so no rule asks the JS engine.
  */
-import { ASSIGNED, CLASS, FACT_RUNS, FLAG, LOWER } from "./unicode";
+import { ASSIGNED, CCC, CLASS, FACT_RUNS, FLAG, LOWER } from "./unicode";
 
 export const BOW = 0xfdd0;
 export const EOW = 0xfdd1;
@@ -75,6 +75,62 @@ function assigned(cp: number): boolean {
   return lo * 2 < ASSIGNED.length && ASSIGNED[lo * 2]! <= cp;
 }
 
+/** Canonical combining class of a codepoint, 0 for a starter. */
+function ccc(cp: number): number {
+  let lo = 0;
+  let hi = CCC.length / 3;
+  while (lo < hi) {
+    const mid = (lo + hi) >>> 1;
+    if (CCC[mid * 3 + 1]! < cp) lo = mid + 1;
+    else hi = mid;
+  }
+  return lo * 3 < CCC.length && CCC[lo * 3]! <= cp ? CCC[lo * 3 + 2]! : 0;
+}
+
+/** The marks of one run, stably sorted by class. */
+function sortMarks(marks: string): string {
+  const chars = Array.from(marks);
+  const classes = chars.map((ch) => ccc(ch.codePointAt(0)!));
+  const order = chars
+    .map((_, k) => k)
+    .sort((a, b) => classes[a]! - classes[b]!);
+  return order.map((k) => chars[k]!).join("");
+}
+
+/**
+ * Sorts every run of marks by class before the engine's NFC. ICU and JSC order
+ * a run by insertion, which is quadratic when it is out of order. The NFC text
+ * stays the same: NFC stable-sorts each run by class too, and decomposing a
+ * mark never changes its class (ctok-export.py asserts that).
+ */
+function orderMarks(text: string): string {
+  let out = "";
+  let copied = 0;
+  let runStart = 0;
+  let prev = 0;
+  let ordered = true;
+  for (let i = 0; i <= text.length; ) {
+    // A starter past the end closes the last run.
+    const cp = i < text.length ? text.codePointAt(i)! : 0;
+    const cls = cp < CCC[0]! ? 0 : ccc(cp);
+    if (cls === 0) {
+      if (!ordered) {
+        out +=
+          text.slice(copied, runStart) + sortMarks(text.slice(runStart, i));
+        copied = i;
+        ordered = true;
+      }
+    } else if (prev === 0) {
+      runStart = i;
+    } else if (cls < prev) {
+      ordered = false;
+    }
+    prev = cls;
+    i += cp > 0xffff ? 2 : 1;
+  }
+  return copied === 0 ? text : out + text.slice(copied);
+}
+
 const NON_ASCII = /[^\x00-\x7f]/;
 const LONE_SURROGATE =
   /[\ud800-\udbff](?![\udc00-\udfff])|(?<![\ud800-\udbff])[\udc00-\udfff]/g;
@@ -90,6 +146,7 @@ const FUNNY_SPACE = /[\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f]/g;
  */
 function pinnedNfc(text: string): string {
   if (!NON_ASCII.test(text)) return text;
+  text = orderMarks(text);
   let out = "";
   let from = 0;
   for (let i = 0; i < text.length; ) {
