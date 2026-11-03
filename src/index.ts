@@ -37,6 +37,35 @@ export interface AnthropicTokens {
   emptyToolResult: number;
   /** Text that follows a tool result in the same user turn. */
   textAfterToolResult: number;
+  /** An image in a tool result, on top of what the same image costs in a user turn. */
+  imageInToolResult: number;
+  /** A tool result that holds an image, once, on top of its blocks. */
+  toolResultWithImage: number;
+  /** Each text block of a tool result that also holds an image. */
+  textInImageToolResult: number;
+}
+
+/**
+ * An image that is scaled down to fit a limit and then charged per square
+ * patch of pixels. The long edge is cut to `maxEdge`. While the image still has
+ * more than `maxPatches` patches, the long edge loses one pixel at a time and
+ * the short edge follows at the same aspect ratio, rounded.
+ */
+export interface PatchImageTokens {
+  kind: "patches";
+  /** Side of a patch, in pixels. */
+  patch: number;
+  maxEdge: number;
+  maxPatches: number;
+  /** Tokens an image costs on top of its patches. */
+  overhead: number;
+}
+
+/** How a model prices an image from its size. Measured by `scripts/measure-media-*.ts`. */
+export type ImageTokens = PatchImageTokens;
+
+export interface MediaTokens {
+  image: ImageTokens;
 }
 
 export interface ModelTokens {
@@ -56,6 +85,8 @@ export interface ModelTokens {
   /** 1 when `anthropic` is set: the encoding is exact. */
   contentMultiplier: number;
   anthropic?: AnthropicTokens;
+  /** Image prices by size. A model without it counts every image as 85 tokens and every file as 100. */
+  media?: MediaTokens;
 }
 
 // Override the encoding and tokens fields to be properly typed

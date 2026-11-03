@@ -9,7 +9,7 @@
  * the image, minus count_tokens of the turn with the text "a" alone.
  */
 import { writeFileSync } from "node:fs";
-import { greyPng, MEASURED_SIZES } from "./media-samples";
+import { greyPng, MEASURED_SIZES, randomSizes } from "./media-samples";
 import { mapLimit } from "./anthropic";
 
 const FIXTURE = new URL(
@@ -51,6 +51,8 @@ const EXTRA_SIZES: Array<[number, number]> = [
 ];
 
 const sizes = [...MEASURED_SIZES, ...EXTRA_SIZES];
+// A seeded random sample, to find where a recipe is wrong between the sizes above.
+const DENSE_SIZES = randomSizes(400, 7);
 const baseUrl = process.env.ANTHROPIC_BASE_URL ?? "https://api.anthropic.com";
 const headers: Record<string, string> = {
   "anthropic-version": "2023-06-01",
@@ -110,7 +112,10 @@ type Case =
   | { width: number; height: number; tokens: number }
   | { width: number; height: number; error: string };
 
-const out: Record<string, { baseline: number; cases: Case[] }> = {};
+const out: Record<
+  string,
+  { baseline: number; cases: Case[]; dense: number[] }
+> = {};
 let measured = 0;
 let rejected = 0;
 
@@ -130,8 +135,17 @@ for (const model of MODELS) {
       return { width, height, error: error.message } satisfies Case;
     }
   });
-  out[model] = { baseline, cases };
-  const ok = cases.filter((c): c is Case & { tokens: number } => "tokens" in c);
+  const dense = await mapLimit(DENSE_SIZES, 6, async ([width, height]) => {
+    measured++;
+    const total = await countTokens(model, [
+      user(text("a"), image(greyPng(width, height))),
+    ]);
+    return total - baseline;
+  });
+  out[model] = { baseline, cases, dense };
+  const ok = cases.filter((c) => "tokens" in c) as Array<
+    Extract<Case, { tokens: number }>
+  >;
   console.log(
     `${model.padEnd(18)} baseline ${baseline} 1338x579=${ok.find((c) => c.width === 1338 && c.height === 579)?.tokens} 2000x2000=${ok.find((c) => c.width === 2000 && c.height === 2000)?.tokens}`
   );
@@ -144,6 +158,7 @@ writeFileSync(
       provider: "anthropic",
       measuredAt: new Date().toISOString().slice(0, 10),
       unit: 'image tokens = count_tokens of a user turn with the text "a" and the image, minus count_tokens of the turn with the text "a" alone',
+      denseSizes: DENSE_SIZES,
       models: out,
     },
     null,

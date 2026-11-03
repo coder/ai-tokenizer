@@ -18,7 +18,10 @@ import Tokenizer from "../src/tokenizer";
 import * as encodings from "../src/encoding";
 import { count } from "../src/sdk";
 import type { AnthropicTokens, Model, ModelTokens } from "../src";
+import { imageTokens } from "../src/image-tokens";
 import { countMessagesTokens, mapLimit } from "./anthropic";
+import { greyPng } from "./media-samples";
+import { fitAnthropicImage } from "./fit-media";
 import { toolProbes, type ToolProbeName } from "./probes";
 
 /**
@@ -122,6 +125,24 @@ const toolResult = (output: {
   ],
 });
 
+/** Pixels of the image the probes send: 4 patches on every Claude model. */
+const PROBE_IMAGE = { width: 56, height: 56 };
+const probeImage = (size = PROBE_IMAGE) =>
+  greyPng(size.width, size.height).toString("base64");
+const userImage = (size?: { width: number; height: number }) => ({
+  type: "file",
+  mediaType: "image/png",
+  data: probeImage(size),
+});
+const resultImage = () => ({
+  type: "file",
+  mediaType: "image/png",
+  data: { type: "data", data: probeImage() },
+});
+const resultText = (text: string) => ({ type: "text", text });
+const toolContent = (...value: unknown[]): ModelMessage =>
+  toolResult({ type: "content", value });
+
 export interface MessageProbe {
   messages: ModelMessage[];
   tools?: ToolSet;
@@ -193,6 +214,34 @@ const messageProbes = {
       toolResult({ type: "text", value: "b" }),
       assistant("b"),
       user("c"),
+    ],
+    tools: { f },
+  },
+  userImage: {
+    messages: [
+      {
+        role: "user",
+        content: [{ type: "text", text: "a" }, userImage()],
+      } as ModelMessage,
+    ],
+  },
+  cycleImage: {
+    messages: [user("a"), toolCall({}), toolContent(resultImage())],
+    tools: { f },
+  },
+  cycleTwoImages: {
+    messages: [
+      user("a"),
+      toolCall({}),
+      toolContent(resultImage(), resultImage()),
+    ],
+    tools: { f },
+  },
+  cycleTextImage: {
+    messages: [
+      user("a"),
+      toolCall({}),
+      toolContent(resultText("b"), resultImage()),
     ],
     tools: { f },
   },
@@ -281,6 +330,33 @@ export const checkConversations: Record<string, MessageProbe> = {
   finalAssistant: {
     messages: [user("Say hi"), assistant("Hi there  ")],
   },
+  userImages: {
+    messages: [
+      {
+        role: "user",
+        content: [
+          { type: "text", text: "Compare these" },
+          userImage({ width: 640, height: 480 }),
+          userImage({ width: 3000, height: 2000 }),
+          userImage({ width: 1, height: 1 }),
+        ],
+      } as ModelMessage,
+    ],
+  },
+  toolImages: {
+    messages: [
+      user("Look"),
+      toolCall({ q: "screen" }),
+      toolContent(
+        resultText("Screenshot"),
+        resultImage(),
+        resultText("and its twin"),
+        resultImage()
+      ),
+      assistant("Seen."),
+    ],
+    tools: { f },
+  },
 };
 
 /**
@@ -359,6 +435,10 @@ async function measure(
   const userTurn = m.userAssistantUser - m.userAssistant - n("c");
   // From the second cycle: the first one costs 1 token more on some models.
   const toolResultTokens = m.twoCycles - m.cycle - userTurn - n("f") - n("b");
+  const media = fitAnthropicImage(apiModel);
+  const probeCost = imageTokens(media.image, PROBE_IMAGE);
+  const imageAlone = m.cycleImage - m.cycle + n("b") - probeCost;
+  const imageInToolResult = m.cycleTwoImages - m.cycleImage - probeCost;
   const anthropic: AnthropicTokens = {
     userTurn,
     system: m.system - m.user - n("x"),
@@ -370,6 +450,9 @@ async function measure(
     toolResultError: m.cycleError - m.cycle,
     emptyToolResult: m.cycleEmpty - m.cycle + n("b"),
     textAfterToolResult: m.cycleThenText - m.cycle - n("c"),
+    imageInToolResult,
+    toolResultWithImage: imageAlone - imageInToolResult,
+    textInImageToolResult: m.cycleTextImage - m.cycleImage - n("b"),
   };
   const perFirstProp = m.oneProp - m.emptyTool - n("y");
   const perPropDesc = m.propWithDesc - m.oneProp - n("Hi");
@@ -394,6 +477,7 @@ async function measure(
       n("Data"),
     perArrayOfObjects: m.arrayOfObjects - m.arrayOfStrings - innerProps,
     anthropic,
+    media,
   };
 
   // Every probe, and every check, must come out the way the API counted it.

@@ -1,6 +1,8 @@
 import Tokenizer from "./tokenizer";
 import { asSchema, type ModelMessage, type ToolSet } from "ai";
 import type { AnthropicTokens, Model, ModelTokens } from ".";
+import { imageTokens } from "./image-tokens";
+import { imageSizeOf } from "./media";
 
 export interface CountOptions<TOOLS extends ToolSet = ToolSet> {
   /**
@@ -96,7 +98,7 @@ export function count<TOOLS extends ToolSet = ToolSet>(
 
   // Count messages with detailed breakdown
   const messages: CountResultMessage[] = config.anthropic
-    ? countClaudeMessages(options.tokenizer, options.messages, config.anthropic)
+    ? countClaudeMessages(options.tokenizer, options.messages, config)
     : options.messages.map((message) =>
         countMessageTokensDetailed(options.tokenizer, message, config)
       );
@@ -681,7 +683,7 @@ function countMessageContentTokensDetailed(
       if (!isRecord(part)) {
         continue;
       }
-      const tally = createTally(tokenizer);
+      const tally = createTally(tokenizer, config);
 
       if (part.type === "text") {
         if (typeof part.text === "string") {
@@ -734,7 +736,7 @@ function countMessageContentTokensDetailed(
  * Tokens of one content part. `text` is raw tokenizer tokens and still gets
  * `contentMultiplier`. `media` is a fixed estimate and never does.
  */
-function createTally(tokenizer: Tokenizer) {
+function createTally(tokenizer: Tokenizer, config: ModelTokens) {
   const tally = {
     text: 0,
     media: 0,
@@ -742,7 +744,7 @@ function createTally(tokenizer: Tokenizer) {
       tally.text += tokenizer.count(text);
     },
     addMedia(media: Media) {
-      tally.media += countMediaTokens(media);
+      tally.media += countMediaTokens(media, config);
     },
   };
   return tally;
@@ -763,14 +765,21 @@ interface Media {
   data: unknown;
 }
 
+/** What an image costs on a model without a measured recipe, and a file on any model without one. */
+const FLAT_IMAGE_TOKENS = 85;
+const FLAT_FILE_TOKENS = 100;
+
 /**
  * The single place that prices an image or a file. Every image-like and
  * file-like part reaches it, whatever its AI SDK shape.
  */
-function countMediaTokens(media: Media): number {
-  // Images have a fixed token count (approximate for GPT-4o)
-  // Files are treated similarly to text, which is an approximation too.
-  return media.kind === "image" ? 85 : 100;
+function countMediaTokens(media: Media, config: ModelTokens): number {
+  if (media.kind === "image") {
+    return config.media
+      ? imageTokens(config.media.image, imageSizeOf(media.data))
+      : FLAT_IMAGE_TOKENS;
+  }
+  return FLAT_FILE_TOKENS;
 }
 
 /**
@@ -821,11 +830,8 @@ function toMedia(part: Record<string, unknown>): Media {
     mediaType !== undefined &&
     (mediaType === "image" || mediaType.startsWith("image/"));
   return {
-    // A `file` part counts as a file whatever its media type, as it always
-    // has. The image-counting change will decide this from `mediaType`.
     kind:
-      part.type !== "file" &&
-      (isImageMediaType || MEDIA_KINDS.get(part.type as string) === "image")
+      isImageMediaType || MEDIA_KINDS.get(part.type as string) === "image"
         ? "image"
         : "file",
     mediaType,
@@ -887,13 +893,7 @@ type ClaudeBlock =
       message: CountResultMessage;
     }
   | { kind: "tool-call"; name: string; input: unknown; part: ToolCallContent }
-  | {
-      kind: "tool-result";
-      text: string;
-      media: number;
-      isError: boolean;
-      part: ToolResultContent;
-    }
+  | ({ kind: "tool-result"; part: ToolResultContent } & ToolResultBody)
   | { kind: "media" };
 
 type TextContent = Extract<CountResultMessageContent, { type: "text" }>;
@@ -928,8 +928,10 @@ interface ClaudeTurn {
 function countClaudeMessages(
   tokenizer: Tokenizer,
   messages: ModelMessage[],
-  tokens: AnthropicTokens
+  config: ModelTokens
 ): CountResultMessage[] {
+  const tokens = config.anthropic!;
+  const price = (media: Media) => countMediaTokens(media, config);
   const results = messages.map(
     (): CountResultMessage => ({ total: 0, content: [] })
   );
@@ -939,7 +941,7 @@ function countClaudeMessages(
     const result = results[index]!;
     if (message.role === "system") {
       system.first = system.first < 0 ? index : system.first;
-      addClaudeBlocks(system, message.content, result);
+      addClaudeBlocks(system, message.content, result, price);
       return;
     }
     const role = message.role === "assistant" ? "assistant" : "user";
@@ -948,7 +950,7 @@ function countClaudeMessages(
       turn = { role, first: index, blocks: [] };
       turns.push(turn);
     }
-    addClaudeBlocks(turn, message.content, result);
+    addClaudeBlocks(turn, message.content, result, price);
   });
 
   // A final assistant message is what the model continues, and the provider
@@ -984,7 +986,8 @@ function countClaudeMessages(
 function addClaudeBlocks(
   turn: ClaudeTurn,
   content: ModelMessage["content"],
-  result: CountResultMessage
+  result: CountResultMessage,
+  price: (media: Media) => number
 ): void {
   const addText = (text: string) => {
     const part: TextContent = { type: "text", total: 0 };
@@ -1026,7 +1029,7 @@ function addClaudeBlocks(
       result.content.push(counted);
       turn.blocks.push({
         kind: "tool-result",
-        ...readToolResult(part.output),
+        ...readToolResult(part.output, price),
         part: counted,
       });
     } else if (typeof part.type === "string" && MEDIA_KINDS.has(part.type)) {
@@ -1036,7 +1039,7 @@ function addClaudeBlocks(
       } else {
         result.content.push({
           type: "text",
-          total: countMediaTokens(toMedia(part)),
+          total: price(toMedia(part)),
         });
         turn.blocks.push({ kind: "media" });
       }
@@ -1045,45 +1048,64 @@ function addClaudeBlocks(
 }
 
 /** The text and media of a tool result, as the provider puts them in `tool_result.content`. */
-function readToolResult(output: unknown): {
-  text: string;
-  media: number;
-  isError: boolean;
-} {
+function readToolResult(
+  output: unknown,
+  price: (media: Media) => number
+): ToolResultBody {
+  const plain = (text: string, isError = false): ToolResultBody => ({
+    text,
+    media: 0,
+    images: 0,
+    textBlocks: 1,
+    isError,
+  });
   if (typeof output === "string") {
-    return { text: output, media: 0, isError: false };
+    return plain(output);
   }
   if (!isRecord(output)) {
-    return { text: "", media: 0, isError: false };
+    return plain("");
   }
   const isError = output.type === "error-text" || output.type === "error-json";
   if (output.type === "text" || output.type === "error-text") {
-    return { text: String(output.value ?? ""), media: 0, isError };
+    return plain(String(output.value ?? ""), isError);
   }
   if (output.type === "execution-denied") {
     const reason =
       typeof output.reason === "string" ? output.reason : undefined;
-    return { text: reason ?? "Tool call execution denied.", media: 0, isError };
+    return plain(reason ?? "Tool call execution denied.", isError);
   }
   if (output.type === "content" && Array.isArray(output.value)) {
-    let text = "";
-    let media = 0;
+    const body: ToolResultBody = { ...plain(""), textBlocks: 0, isError };
     for (const item of output.value as unknown[]) {
       if (!isRecord(item)) {
         continue;
       }
       const inline = inlineText(item);
       if (item.type === "text" && typeof item.text === "string") {
-        text += item.text;
+        body.text += item.text;
+        body.textBlocks++;
       } else if (inline !== undefined) {
-        text += inline;
+        body.text += inline;
+        body.textBlocks++;
       } else if (isBinaryMediaPart(item)) {
-        media += countMediaTokens(toMedia(item));
+        const media = toMedia(item);
+        body.media += price(media);
+        body.images += media.kind === "image" ? 1 : 0;
       }
     }
-    return { text, media, isError };
+    return body;
   }
-  return { text: JSON.stringify(output.value) ?? "", media: 0, isError };
+  return plain(JSON.stringify(output.value) ?? "", isError);
+}
+
+interface ToolResultBody {
+  text: string;
+  /** Tokens of its images and files. */
+  media: number;
+  images: number;
+  /** The `text` blocks of a `content` output, or 1. */
+  textBlocks: number;
+  isError: boolean;
 }
 
 function countClaudeTurn(
@@ -1099,10 +1121,16 @@ function countClaudeTurn(
       block.part.input = input;
       block.part.total = tokenizer.countUntrimmed(block.name) + input;
     } else if (block.kind === "tool-result") {
+      const framing =
+        block.images > 0
+          ? tokens.toolResultWithImage +
+            block.images * tokens.imageInToolResult +
+            block.textBlocks * tokens.textInImageToolResult
+          : 0;
       const output =
         block.text === "" && block.media === 0
           ? tokens.emptyToolResult
-          : tokenizer.countUntrimmed(block.text) + block.media;
+          : tokenizer.countUntrimmed(block.text) + block.media + framing;
       block.part.output = output;
       block.part.total =
         tokens.toolResult +
