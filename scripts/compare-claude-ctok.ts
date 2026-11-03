@@ -16,7 +16,7 @@ import { parseArgs } from "node:util";
 import Tokenizer from "../src/tokenizer";
 import * as claude_v3 from "../src/encoding/claude_v3";
 import * as claude_v4_7 from "../src/encoding/claude_v4_7";
-import { CTOK_COMMIT, CTOK_REPO } from "./ctok";
+import { CTOK_COMMIT, CTOK_REGEX, CTOK_REPO } from "./ctok";
 
 const { values: args } = parseArgs({
   options: { ctok: { type: "string" }, n: { type: "string", default: "5000" } },
@@ -287,6 +287,8 @@ const proc = Bun.spawnSync(
     "3.13",
     "--with",
     `ctok @ git+${CTOK_REPO}@${CTOK_COMMIT}`,
+    "--with",
+    `regex==${CTOK_REGEX}`,
     "python",
     "-c",
     PY,
