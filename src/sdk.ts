@@ -466,6 +466,8 @@ interface SchemaWalk {
   counted: Map<Properties, number>;
   /** Tokens each key of a walked, plain `properties` contributes. */
   byKey: Map<Record<string, unknown>, Map<string, number>>;
+  /** The first key of each `properties` a merge looked at, read once per count. */
+  firstKeys: Map<Record<string, unknown>, string | undefined>;
 }
 
 /** The schema a property stands for once `$ref` and `null` wrappers are read through. */
@@ -488,6 +490,7 @@ function countToolSchema(
     ancestors: new Set(),
     counted: new Map(),
     byKey: new Map(),
+    firstKeys: new Map(),
   };
   return countSchemaProperties(resolveRef(jsonSchema, jsonSchema), walk);
 }
@@ -536,17 +539,14 @@ function countEntries(
   return tokens;
 }
 
-const firstKeys = new WeakMap<object, string | undefined>();
-
-function firstKey(properties: Record<string, unknown>): string | undefined {
-  if (!firstKeys.has(properties)) {
-    for (const key in properties) {
-      firstKeys.set(properties, key);
-      return key;
-    }
-    firstKeys.set(properties, undefined);
+function firstKey(
+  properties: Record<string, unknown>,
+  walk: SchemaWalk
+): string | undefined {
+  if (!walk.firstKeys.has(properties)) {
+    walk.firstKeys.set(properties, Object.keys(properties)[0]);
   }
-  return firstKeys.get(properties);
+  return walk.firstKeys.get(properties);
 }
 
 /**
@@ -561,8 +561,8 @@ function countMerged(merged: MergedProperties, walk: SchemaWalk): number {
   }
   let tokens = countProperties(target, walk);
   const targetKeys = walk.byKey.get(target);
-  const targetFirst = firstKey(target);
-  const siblingFirst = firstKey(siblings);
+  const targetFirst = firstKey(target, walk);
+  const siblingFirst = firstKey(siblings, walk);
   for (const [key, value] of Object.entries(siblings)) {
     const replaced = targetKeys?.get(key);
     const isFirst =
@@ -880,7 +880,12 @@ function tallyToolOutput(tally: Tally, output: unknown): void {
 
 /** One text, tool call, tool result or media part of a Claude request. */
 type ClaudeBlock =
-  | { kind: "text"; text: string; part: TextContent }
+  | {
+      kind: "text";
+      text: string;
+      part: TextContent;
+      message: CountResultMessage;
+    }
   | { kind: "tool-call"; name: string; input: unknown; part: ToolCallContent }
   | {
       kind: "tool-result";
@@ -984,7 +989,7 @@ function addClaudeBlocks(
   const addText = (text: string) => {
     const part: TextContent = { type: "text", total: 0 };
     result.content.push(part);
-    turn.blocks.push({ kind: "text", text, part });
+    turn.blocks.push({ kind: "text", text, part, message: result });
   };
   if (typeof content === "string") {
     addText(content);
@@ -1116,7 +1121,7 @@ function countClaudeTurn(
         (turn.role === "user" && end === blocks.length - 1);
       const shares = countTextRun(tokenizer, run, trimmed);
       if (blocks[i - 1]?.kind === "tool-result") {
-        shares[0]! += tokens.textAfterToolResult;
+        run[0]!.message.total += tokens.textAfterToolResult;
       }
       run.forEach((textBlock, k) => {
         textBlock.part.total = shares[k]!;

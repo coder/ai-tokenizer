@@ -58,9 +58,7 @@ export async function buildRequest(
     await generateText({
       model: provider(model),
       messages: rest,
-      ...(system.length > 0 && {
-        instructions: system.map((message) => message.content).join(""),
-      }),
+      ...(system.length > 0 && { instructions: system as never }),
       tools,
       maxRetries: 0,
     });

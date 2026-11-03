@@ -24,20 +24,71 @@
         { "role": "user", "content": "Hello there.  " }
       ],
       "api": {
-        "anthropic/claude-opus-4.5": 16,
-        "anthropic/claude-haiku-4.5": 16,
         "anthropic/claude-sonnet-4.5": 16,
+        "anthropic/claude-opus-4.5": 16,
         "anthropic/claude-fable-5": 19,
-        "anthropic/claude-opus-4.6": 17,
-        "anthropic/claude-opus-4.7": 24,
+        "anthropic/claude-haiku-4.5": 16,
         "anthropic/claude-fable-5.1": 19,
         "anthropic/claude-haiku-5.5": 19,
+        "anthropic/claude-opus-4.6": 17,
+        "anthropic/claude-opus-4.7": 24,
+        "anthropic/claude-opus-4.8": 19,
         "anthropic/claude-opus-5": 17,
         "anthropic/claude-opus-5.5": 19,
         "anthropic/claude-sonnet-4.6": 17,
-        "anthropic/claude-opus-4.8": 19,
         "anthropic/claude-sonnet-5": 19,
         "anthropic/claude-sonnet-5.5": 19
+      }
+    },
+    {
+      "name": "systemMessagesJoin",
+      "kind": "exact",
+      "messages": [
+        { "role": "system", "content": "Be " },
+        { "role": "system", "content": "brief." },
+        { "role": "user", "content": "Hello there." }
+      ],
+      "api": {
+        "anthropic/claude-sonnet-4.5": 13,
+        "anthropic/claude-fable-5": 17,
+        "anthropic/claude-opus-4.5": 13,
+        "anthropic/claude-haiku-4.5": 13,
+        "anthropic/claude-opus-4.6": 14,
+        "anthropic/claude-fable-5.1": 19,
+        "anthropic/claude-haiku-5.5": 19,
+        "anthropic/claude-opus-4.7": 22,
+        "anthropic/claude-sonnet-4.6": 14,
+        "anthropic/claude-opus-4.8": 17,
+        "anthropic/claude-opus-5.5": 19,
+        "anthropic/claude-opus-5": 17,
+        "anthropic/claude-sonnet-5": 17,
+        "anthropic/claude-sonnet-5.5": 19
+      }
+    },
+    {
+      "name": "assistantMessagesJoin",
+      "kind": "exact",
+      "messages": [
+        { "role": "user", "content": "a" },
+        { "role": "assistant", "content": "Mixed " },
+        { "role": "assistant", "content": "café 日本語" },
+        { "role": "user", "content": "b" }
+      ],
+      "api": {
+        "anthropic/claude-opus-4.5": 21,
+        "anthropic/claude-haiku-4.5": 21,
+        "anthropic/claude-sonnet-4.5": 21,
+        "anthropic/claude-fable-5": 21,
+        "anthropic/claude-fable-5.1": 23,
+        "anthropic/claude-opus-4.6": 21,
+        "anthropic/claude-opus-4.7": 32,
+        "anthropic/claude-haiku-5.5": 23,
+        "anthropic/claude-opus-5": 21,
+        "anthropic/claude-opus-4.8": 21,
+        "anthropic/claude-opus-5.5": 23,
+        "anthropic/claude-sonnet-4.6": 21,
+        "anthropic/claude-sonnet-5": 21,
+        "anthropic/claude-sonnet-5.5": 23
       }
     },
     {
@@ -60,9 +111,9 @@
         "anthropic/claude-haiku-4.5": 28,
         "anthropic/claude-fable-5": 28,
         "anthropic/claude-opus-4.6": 28,
-        "anthropic/claude-haiku-5.5": 29,
         "anthropic/claude-opus-4.7": 39,
         "anthropic/claude-fable-5.1": 29,
+        "anthropic/claude-haiku-5.5": 29,
         "anthropic/claude-opus-4.8": 28,
         "anthropic/claude-opus-5": 27,
         "anthropic/claude-opus-5.5": 29,
@@ -85,17 +136,17 @@
       ],
       "api": {
         "anthropic/claude-haiku-4.5": 9,
-        "anthropic/claude-fable-5": 8,
         "anthropic/claude-sonnet-4.5": 9,
         "anthropic/claude-opus-4.5": 9,
+        "anthropic/claude-fable-5": 8,
         "anthropic/claude-opus-4.6": 9,
+        "anthropic/claude-fable-5.1": 10,
         "anthropic/claude-haiku-5.5": 10,
         "anthropic/claude-opus-4.7": 13,
-        "anthropic/claude-fable-5.1": 10,
         "anthropic/claude-opus-4.8": 8,
         "anthropic/claude-opus-5": 8,
-        "anthropic/claude-sonnet-4.6": 9,
         "anthropic/claude-opus-5.5": 10,
+        "anthropic/claude-sonnet-4.6": 9,
         "anthropic/claude-sonnet-5": 8,
         "anthropic/claude-sonnet-5.5": 10
       }
@@ -210,14 +261,14 @@
         }
       },
       "api": {
-        "anthropic/claude-opus-4.5": 886,
-        "anthropic/claude-haiku-4.5": 886,
         "anthropic/claude-sonnet-4.5": 886,
+        "anthropic/claude-opus-4.5": 886,
         "anthropic/claude-fable-5": 657,
+        "anthropic/claude-haiku-4.5": 886,
         "anthropic/claude-fable-5.1": 658,
-        "anthropic/claude-opus-4.6": 887,
         "anthropic/claude-haiku-5.5": 658,
         "anthropic/claude-opus-4.7": 1156,
+        "anthropic/claude-opus-4.6": 887,
         "anthropic/claude-opus-4.8": 657,
         "anthropic/claude-opus-5": 652,
         "anthropic/claude-sonnet-4.6": 887,
@@ -234,18 +285,18 @@
         { "role": "assistant", "content": "Hi there  " }
       ],
       "api": {
-        "anthropic/claude-haiku-4.5": 11,
-        "anthropic/claude-fable-5": 14,
-        "anthropic/claude-sonnet-4.5": 11,
         "anthropic/claude-opus-4.5": 11,
-        "anthropic/claude-opus-4.6": 11,
-        "anthropic/claude-opus-4.7": 19,
+        "anthropic/claude-sonnet-4.5": 11,
+        "anthropic/claude-fable-5": 14,
+        "anthropic/claude-haiku-4.5": 11,
         "anthropic/claude-fable-5.1": 16,
         "anthropic/claude-haiku-5.5": 16,
-        "anthropic/claude-opus-4.8": 14,
+        "anthropic/claude-opus-4.6": 11,
+        "anthropic/claude-opus-4.7": 19,
         "anthropic/claude-opus-5": 14,
-        "anthropic/claude-sonnet-4.6": 11,
+        "anthropic/claude-opus-4.8": 14,
         "anthropic/claude-opus-5.5": 16,
+        "anthropic/claude-sonnet-4.6": 11,
         "anthropic/claude-sonnet-5": 14,
         "anthropic/claude-sonnet-5.5": 16
       }
@@ -294,19 +345,19 @@
       },
       "api": {
         "anthropic/claude-sonnet-4.5": 666,
-        "anthropic/claude-haiku-4.5": 666,
         "anthropic/claude-opus-4.5": 666,
+        "anthropic/claude-haiku-4.5": 666,
         "anthropic/claude-fable-5": 474,
         "anthropic/claude-fable-5.1": 472,
-        "anthropic/claude-haiku-5.5": 472,
         "anthropic/claude-opus-4.6": 667,
+        "anthropic/claude-haiku-5.5": 472,
         "anthropic/claude-opus-4.7": 888,
+        "anthropic/claude-opus-4.8": 474,
         "anthropic/claude-opus-5": 470,
-        "anthropic/claude-sonnet-4.6": 667,
         "anthropic/claude-opus-5.5": 472,
         "anthropic/claude-sonnet-5": 538,
         "anthropic/claude-sonnet-5.5": 472,
-        "anthropic/claude-opus-4.8": 474
+        "anthropic/claude-sonnet-4.6": 667
       }
     },
     {
@@ -375,20 +426,20 @@
         }
       },
       "api": {
+        "anthropic/claude-sonnet-4.5": 857,
         "anthropic/claude-opus-4.5": 857,
         "anthropic/claude-haiku-4.5": 857,
         "anthropic/claude-fable-5": 789,
-        "anthropic/claude-sonnet-4.5": 857,
-        "anthropic/claude-opus-4.6": 858,
-        "anthropic/claude-haiku-5.5": 787,
-        "anthropic/claude-opus-4.7": 1179,
         "anthropic/claude-fable-5.1": 787,
-        "anthropic/claude-opus-5": 785,
+        "anthropic/claude-haiku-5.5": 787,
+        "anthropic/claude-opus-4.6": 858,
+        "anthropic/claude-opus-4.7": 1179,
         "anthropic/claude-opus-4.8": 789,
-        "anthropic/claude-sonnet-4.6": 858,
         "anthropic/claude-opus-5.5": 787,
+        "anthropic/claude-opus-5": 785,
         "anthropic/claude-sonnet-5": 853,
-        "anthropic/claude-sonnet-5.5": 787
+        "anthropic/claude-sonnet-5.5": 787,
+        "anthropic/claude-sonnet-4.6": 858
       }
     },
     {
@@ -809,14 +860,14 @@
         "anthropic/claude-haiku-4.5": 4524,
         "anthropic/claude-sonnet-4.5": 4524,
         "anthropic/claude-fable-5": 5310,
+        "anthropic/claude-fable-5.1": 5312,
+        "anthropic/claude-opus-4.6": 4525,
         "anthropic/claude-haiku-5.5": 5312,
         "anthropic/claude-opus-4.7": 5925,
-        "anthropic/claude-opus-4.6": 4525,
-        "anthropic/claude-fable-5.1": 5312,
         "anthropic/claude-opus-4.8": 5310,
         "anthropic/claude-opus-5": 5306,
-        "anthropic/claude-opus-5.5": 5312,
         "anthropic/claude-sonnet-4.6": 4525,
+        "anthropic/claude-opus-5.5": 5312,
         "anthropic/claude-sonnet-5": 5374,
         "anthropic/claude-sonnet-5.5": 5312
       }

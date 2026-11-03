@@ -220,6 +220,21 @@ export const checkConversations: Record<string, MessageProbe> = {
       user("Hello there.  "),
     ],
   },
+  systemMessagesJoin: {
+    messages: [
+      { role: "system", content: "Be " },
+      { role: "system", content: "brief." },
+      user("Hello there."),
+    ],
+  },
+  assistantMessagesJoin: {
+    messages: [
+      user("a"),
+      assistant("Mixed "),
+      assistant("café 日本語"),
+      user("b"),
+    ],
+  },
   joinedUserBlocks: {
     messages: [
       user("a"),

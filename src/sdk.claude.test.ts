@@ -128,6 +128,15 @@ describe("messages", () => {
     );
   });
 
+  test("text after a tool result: the parts still add up to the joined text, the extra is the message's", () => {
+    const tools = { f: { inputSchema: z.object({}) } } as unknown as ToolSet;
+    const messages = [user("a"), call({}), text("b"), blocks("hel", "lo")];
+    const counted = count({ tokenizer: v48, model, messages, tools });
+    const parts = counted.messages[3]!.content.map((part) => part.total);
+    expect(parts.reduce((sum, total) => sum + total, 0)).toBe(n("hello"));
+    expect(counted.messages[3]!.total).toBe(n("hello") + 5);
+  });
+
   test("an unknown part counts nothing", () => {
     const reasoning = {
       role: "assistant",
