@@ -357,3 +357,25 @@ describe("ai-sdk", () => {
     expect(result.total).toBeGreaterThan(40000);
   });
 });
+
+describe("special-token text", () => {
+  const text = "What does <|endoftext|> mean?";
+
+  test("Tokenizer.count counts it as ordinary text", () => {
+    const tokenizer = new Tokenizer(o200k);
+    expect(tokenizer.count(text)).toBe(tokenizer.encode(text, [], []).length);
+  });
+
+  test("count() counts a message that contains it", () => {
+    const model = models["openai/gpt-5"] as Model;
+    const tokenizer = new Tokenizer(o200k);
+    const result = count({
+      tokenizer,
+      model,
+      messages: [{ role: "user", content: text }],
+    });
+    expect(result.messages[0]!.content).toEqual([
+      { type: "text", total: tokenizer.encode(text, [], []).length },
+    ]);
+  });
+});

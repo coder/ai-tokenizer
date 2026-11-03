@@ -350,10 +350,11 @@ export default class Tokenizer {
   }
 
   /**
-   * Count tokens in text
+   * Count tokens in text. Special-token text such as "<|endoftext|>" counts
+   * as ordinary text, the way chat APIs count it in message content.
    */
   count(input: string): number {
-    return this.encode(input).length;
+    return this.encode(input, [], []).length;
   }
 }
 
