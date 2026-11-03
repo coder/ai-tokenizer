@@ -3,13 +3,15 @@ import Tokenizer from "./tokenizer";
 import * as encoding from "./encoding";
 import * as claude_v3 from "./encoding/claude_v3";
 import * as claude_v4_7 from "./encoding/claude_v4_7";
+import * as claude_v4_8 from "./encoding/claude_v4_8";
+import * as claude_v5 from "./encoding/claude_v5";
 import fixture from "./fixtures/claude-count-tokens.json";
 
-const tokenizers = {
-  claude_v3: new Tokenizer(claude_v3),
-  claude_v4_7: new Tokenizer(claude_v4_7),
-};
-const names = Object.keys(tokenizers) as Array<keyof typeof tokenizers>;
+const modules = { claude_v3, claude_v4_7, claude_v4_8, claude_v5 };
+const names = Object.keys(modules) as Array<keyof typeof modules>;
+const tokenizers = Object.fromEntries(
+  names.map((name) => [name, new Tokenizer(modules[name])])
+) as Record<keyof typeof modules, Tokenizer>;
 
 describe("count_tokens parity", () => {
   let exact = 0;
@@ -63,9 +65,8 @@ describe.each(names)("%s", (name) => {
   });
 
   test("extended special tokens are rejected", () => {
-    const encodingModule = name === "claude_v3" ? claude_v3 : claude_v4_7;
-    expect(() => new Tokenizer(encodingModule, { "<|x|>": 1 })).toThrow();
-    expect(new Tokenizer(encodingModule, {}).count("a")).toBe(1);
+    expect(() => new Tokenizer(modules[name], { "<|x|>": 1 })).toThrow();
+    expect(new Tokenizer(modules[name], {}).count("a")).toBe(1);
   });
 });
 

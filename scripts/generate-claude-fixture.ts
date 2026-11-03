@@ -9,9 +9,10 @@
  *
  * count_tokens prices one user message as a fixed frame plus the content.
  * The frame is measured as count_tokens("a") - 1, because "a" is a single
- * word piece in both vocabularies. The script checks that the measured frame
- * equals the one ctok publishes, so the fixture and ctok agree on where the
- * frame ends and the content begins.
+ * word piece in both vocabularies. The script checks the measured frame
+ * against the expected one: ctok publishes 7 (Opus 4.6), 11 (Opus 4.7) and
+ * 6 (Opus 4.8), and Opus 5.5 measures 8. So the fixture and ctok agree on
+ * where the frame ends and the content begins.
  */
 import { readFileSync, writeFileSync } from "node:fs";
 
@@ -22,7 +23,9 @@ const FIXTURE = new URL(
 
 const encodings = {
   claude_v3: { model: "claude-opus-4-6", frame: 7 },
-  claude_v4_7: { model: "claude-opus-4-8", frame: 6 },
+  claude_v4_7: { model: "claude-opus-4-7", frame: 11 },
+  claude_v4_8: { model: "claude-opus-4-8", frame: 6 },
+  claude_v5: { model: "claude-opus-5-5", frame: 8 },
 } as const;
 type EncodingName = keyof typeof encodings;
 

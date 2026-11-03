@@ -26,7 +26,7 @@ export const unescapeLiteral = (cp: number) =>
 
 export interface StreamRules {
   readonly foldQuotes: boolean;
-  /** Shortest all-caps word that takes CAPS. null: never (claude_v4_7). */
+  /** Shortest all-caps word that takes CAPS. null: never (ctok v4.7 and later). */
   readonly allcapsMin: number | null;
   /** The frame ends in a BOW that absorbs one raw leading space. */
   readonly frameBow: boolean;

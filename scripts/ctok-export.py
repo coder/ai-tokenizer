@@ -9,7 +9,7 @@ document on stdout:
   escape   codepoints in the pieces that the generator writes as \\u escapes
   families one entry per requested ctok version (pieces, byte prefixes, scalars)
 
-  python scripts/ctok-export.py --commit <sha> 3.0 4.8
+  python scripts/ctok-export.py --commit <sha> 3.0 4.7 4.8
 """
 
 import argparse
@@ -21,7 +21,7 @@ import unicodedata
 
 from ctok.constants import BOW_G, CAPS_G, EOW_G, MARKER_GLYPHS, SHIFT_G
 from ctok.engine import min_tile
-from ctok.main import _family, _model, _vocabulary
+from ctok.main import FAMILIES, _family, _model, _vocabulary
 
 # The module. ctok/__init__.py exports a function with the same name.
 norm = importlib.import_module("ctok.normalize")
@@ -169,6 +169,8 @@ for version in args.versions:
     escape.update(c for p in pieces for c in p if escaped(c))
     families[version] = {
         "family": key,
+        # Families that read the same ctok file share one vocabulary module.
+        "vocabulary": FAMILIES[key].pieces.removeprefix("pieces_").removesuffix(".json"),
         "foldQuotes": model.fold_quotes,
         "allcapsMin": model.allcaps_min,
         "frameBow": model.frame_bow,

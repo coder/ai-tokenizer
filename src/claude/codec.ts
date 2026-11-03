@@ -1,5 +1,5 @@
 /**
- * The Claude count model behind claude_v3 and claude_v4_7: the token catalog,
+ * The Claude count model behind the claude_v* encodings: the token catalog,
  * the min-cost tiling and the frame tail. Port of ctok's engine.py and
  * TokenizerModel in main.py.
  *
@@ -27,6 +27,8 @@ export interface ClaudeFamily extends StreamRules {
   readonly name: string;
   /** Newlines the frame adds to a content-final newline run before tiling. */
   readonly tailNewlines: number;
+  /** The API drops trailing ASCII whitespace from the text before counting. */
+  readonly trimTrailingWhitespace: boolean;
   /** Hex UTF-8 prefixes that cost one token on the byte floor. */
   readonly bytePrefixes: readonly string[];
   /** The cost-1 vocabulary in marker-glyph form, sorted by codepoints. */
@@ -55,18 +57,38 @@ function assert(ok: boolean, message: string): asserts ok {
   if (!ok) throw new Error(`claude codec: ${message}`);
 }
 
+// One model per vocabulary, built on first use and shared by every encoding
+// and Tokenizer that reads it.
+const models = new WeakMap<readonly string[], Model>();
+
 export function createClaudeCodec(family: ClaudeFamily): Codec {
-  // Built on first use and shared by every Tokenizer of this encoding.
-  let model: Model | null = null;
   const get = () => {
-    if (model === null) model = buildModel(family);
+    let model = models.get(family.pieces);
+    if (model === undefined) {
+      model = buildModel(family);
+      models.set(family.pieces, model);
+    }
     return model;
   };
   return {
-    // The API rejects empty content, so it has no count. Empty adds nothing.
-    encode: (text) => (text === "" ? [] : encode(get(), family, text)),
+    encode: (text) => {
+      if (family.trimTrailingWhitespace) text = trimTrailingWhitespace(text);
+      // The API rejects empty content, so it has no count. Empty adds nothing.
+      return text === "" ? [] : encode(get(), family, text);
+    },
     decode: (tokens) => decode(get(), family, tokens),
   };
+}
+
+/** Python's str.rstrip(" \t\n\r\v\f"), with no regex to backtrack. */
+function trimTrailingWhitespace(text: string): string {
+  let end = text.length;
+  while (end > 0) {
+    const c = text.charCodeAt(end - 1);
+    if (c !== 0x20 && (c < 0x09 || c > 0x0d)) break;
+    end--;
+  }
+  return text.slice(0, end);
 }
 
 function buildModel(family: ClaudeFamily): Model {

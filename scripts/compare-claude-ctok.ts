@@ -7,7 +7,8 @@
  *
  * The corpus is seeded synthetic text plus this repo's source files. With
  * --ctok, it adds ctok's recorded corpora (UDHR, Rosetta Code, MultiPL-E) and
- * also compares claude_v3 with their recorded count_tokens values.
+ * also compares claude_v3, claude_v4_7 and claude_v5 with their recorded
+ * count_tokens values (Opus 4.5, Opus 4.7 and Opus 5).
  */
 import { mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -16,6 +17,8 @@ import { parseArgs } from "node:util";
 import Tokenizer from "../src/tokenizer";
 import * as claude_v3 from "../src/encoding/claude_v3";
 import * as claude_v4_7 from "../src/encoding/claude_v4_7";
+import * as claude_v4_8 from "../src/encoding/claude_v4_8";
+import * as claude_v5 from "../src/encoding/claude_v5";
 import { CTOK_COMMIT, CTOK_REGEX, CTOK_REPO } from "./ctok";
 
 const { values: args } = parseArgs({
@@ -25,7 +28,8 @@ const { values: args } = parseArgs({
 interface Doc {
   id: string;
   text: string;
-  recordedV3?: number;
+  /** ctok's recorded count_tokens content counts, by encoding. */
+  recorded?: Partial<Record<Name, number>>;
 }
 
 function mulberry32(seed: number) {
@@ -199,6 +203,20 @@ function repoChunks(): Doc[] {
   return docs;
 }
 
+type Name = "claude_v3" | "claude_v4_7" | "claude_v4_8" | "claude_v5";
+
+/** ctok's recorded families, the model each was measured on, and its frame. */
+const RECORDED = [
+  { family: "v3", model: "claude-opus-4-5", frame: 7, encoding: "claude_v3" },
+  {
+    family: "v4.7",
+    model: "claude-opus-4-7",
+    frame: 11,
+    encoding: "claude_v4_7",
+  },
+  { family: "v5", model: "claude-opus-5", frame: 6, encoding: "claude_v5" },
+] as const;
+
 function ctokCorpora(root: string): Doc[] {
   const docs: Doc[] = [];
   const corpora = {
@@ -214,20 +232,24 @@ function ctokCorpora(root: string): Doc[] {
       .split("\n")
       .filter((l) => l.trim())
       .map((l) => JSON.parse(l) as Record<string, string>);
-    const recorded = JSON.parse(
+    const counts = JSON.parse(
       readFileSync(join(dir, `${name}_counts.json`), "utf8")
-    ).v3;
-    if (recorded.model !== "claude-opus-4-5") {
-      throw new Error(`${name}: v3 counts were recorded on ${recorded.model}`);
+    );
+    for (const r of RECORDED) {
+      if (counts[r.family].model !== r.model) {
+        throw new Error(
+          `${name}: ${r.family} was recorded on ${counts[r.family].model}`
+        );
+      }
     }
     for (const row of rows) {
       const id = row[key]!;
-      // ctok's recorded counts include its 7-token v3 frame.
-      docs.push({
-        id: `${name}:${id}`,
-        text: row.text!,
-        recordedV3: recorded.counts[id] - 7,
-      });
+      // ctok's recorded counts include the message frame.
+      const recorded: Partial<Record<Name, number>> = {};
+      for (const r of RECORDED) {
+        recorded[r.encoding] = counts[r.family].counts[id] - r.frame;
+      }
+      docs.push({ id: `${name}:${id}`, text: row.text!, recorded });
     }
   }
   return docs;
@@ -253,8 +275,9 @@ import json, sys
 import ctok.engine as engine
 from ctok.main import _family, _model, token_count
 
-# The documented divergence: on the 4.8+ frame a content-final run of n
-# newlines tiles as n newlines, not n + 2 (see claude_v4_7's frame tail).
+# The documented divergences. On the Opus 4.8 frame a content-final run of n
+# newlines tiles as n newlines, not n + 2. Opus 5 and later also drop trailing
+# ASCII whitespace from the text first.
 ctok_frame_tail = engine.frame_tail
 v48 = _model("v4.8")
 def frame_tail(n, model):
@@ -266,12 +289,19 @@ def frame_tail(n, model):
 
 def counts(text):
     engine.frame_tail = ctok_frame_tail
-    row = {"3.0": token_count(text, "3.0") - 7, "4.8-ctok": token_count(text, "4.8") - 6}
+    row = {
+        "claude_v3": token_count(text, "3.0") - 7,
+        "claude_v4_7": token_count(text, "4.7") - 11,
+        "4.8-ctok": token_count(text, "4.8") - 6,
+    }
     engine.frame_tail = frame_tail
-    row["4.8"] = token_count(text, "4.8") - 6
+    row["claude_v4_8"] = token_count(text, "4.8") - 6
+    trimmed = text.rstrip(" \\t\\n\\r\\v\\f")
+    row["claude_v5"] = token_count(trimmed, "4.8") - 6 if trimmed else 0
     return row
 
 assert _model("v3").message_overhead == 7 and v48.message_overhead == 6
+assert _model("v4.7").message_overhead == 11
 with open(sys.argv[1], encoding="utf-8") as f, open(sys.argv[2], "w", encoding="utf-8") as out:
     for line in f:
         r = json.loads(line)
@@ -299,28 +329,28 @@ const proc = Bun.spawnSync(
 );
 if (proc.exitCode !== 0) throw new Error(`ctok exited with ${proc.exitCode}`);
 
-const expected = new Map<string, Record<"3.0" | "4.8" | "4.8-ctok", number>>();
+const expected = new Map<string, Record<Name | "4.8-ctok", number>>();
 for (const line of readFileSync(output, "utf8").split("\n")) {
   if (!line) continue;
   const r = JSON.parse(line);
   expected.set(r.id, r);
 }
 
-const tokenizers = [
-  { name: "claude_v3", version: "3.0", tokenizer: new Tokenizer(claude_v3) },
-  {
-    name: "claude_v4_7",
-    version: "4.8",
-    tokenizer: new Tokenizer(claude_v4_7),
-  },
-] as const;
+const tokenizers: Record<Name, Tokenizer> = {
+  claude_v3: new Tokenizer(claude_v3),
+  claude_v4_7: new Tokenizer(claude_v4_7),
+  claude_v4_8: new Tokenizer(claude_v4_8),
+  claude_v5: new Tokenizer(claude_v5),
+};
 const preview = (s: string) =>
   JSON.stringify(s.length > 60 ? s.slice(0, 60) + "…" : s);
 
-for (const { name, version, tokenizer } of tokenizers) {
+for (const [name, tokenizer] of Object.entries(tokenizers) as Array<
+  [Name, Tokenizer]
+>) {
   let exact = 0;
   for (const doc of docs) {
-    const want = expected.get(doc.id)![version];
+    const want = expected.get(doc.id)![name];
     const got = tokenizer.count(doc.text);
     if (got === want) exact++;
     else
@@ -328,27 +358,26 @@ for (const { name, version, tokenizer } of tokenizers) {
         `MISMATCH ${name} ${doc.id} ts=${got} ctok=${want} ${preview(doc.text)}`
       );
   }
-  console.log(`${name} vs ctok ${version}: ${exact}/${docs.length} exact`);
+  console.log(`${name} vs ctok: ${exact}/${docs.length} exact`);
 }
 const retiled = docs.filter(
-  (d) => expected.get(d.id)!["4.8"] !== expected.get(d.id)!["4.8-ctok"]
+  (d) => expected.get(d.id)!.claude_v4_8 !== expected.get(d.id)!["4.8-ctok"]
 );
 console.log(
   `documents where the 4.8 newline-tail fix changes ctok's count: ${retiled.length}/${docs.length}`
 );
 
-const recorded = docs.filter((d) => d.recordedV3 !== undefined);
-if (recorded.length > 0) {
+for (const r of RECORDED) {
+  const recorded = docs.filter((d) => d.recorded?.[r.encoding] !== undefined);
+  if (recorded.length === 0) continue;
   let exact = 0;
   for (const doc of recorded) {
-    const got = tokenizers[0].tokenizer.count(doc.text);
-    if (got === doc.recordedV3) exact++;
-    else
-      console.log(
-        `MISMATCH claude_v3 ${doc.id} ts=${got} api=${doc.recordedV3}`
-      );
+    const want = doc.recorded![r.encoding];
+    const got = tokenizers[r.encoding].count(doc.text);
+    if (got === want) exact++;
+    else console.log(`MISMATCH ${r.encoding} ${doc.id} ts=${got} api=${want}`);
   }
   console.log(
-    `claude_v3 vs recorded count_tokens (claude-opus-4-5): ${exact}/${recorded.length} exact`
+    `${r.encoding} vs recorded count_tokens (${r.model}): ${exact}/${recorded.length} exact`
   );
 }
