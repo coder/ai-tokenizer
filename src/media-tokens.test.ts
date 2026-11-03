@@ -105,7 +105,7 @@ describe("images without a size", () => {
     (c) => c.width === 1024 && c.height === 1024
   )!;
 
-  test.each([
+  const unsized: Array<[string, unknown]> = [
     ["a URL", { type: "image", image: new URL("https://example.com/a.png") }],
     [
       "an https string",
@@ -127,7 +127,9 @@ describe("images without a size", () => {
       "bytes of an unknown format",
       { type: "image", image: new Uint8Array([1, 2, 3, 4]) },
     ],
-  ])("%s costs a 1024x1024 image", (_name, part) => {
+  ];
+
+  test.each(unsized)("%s costs a 1024x1024 image", (_name, part) => {
     expect(imageTokens(opus46, part)).toBe(
       (at1024 as { tokens: number }).tokens
     );
