@@ -69,13 +69,31 @@ const result = count({
 //         description: 10,
 //         inputSchema: 15
 //       }
-//     }
+//     },
+//     unresolved: []
 //   }
 // }
 
 // No API calls are performed; no keys.
 
 const costUSD = result.total * model.pricing.input;
+```
+
+`ai-tokenizer/sdk` works with AI SDK v5, v6 and v7 and needs `ai` installed
+(v7 needs Node 22 or newer). Messages in any of those versions' shapes are
+counted, and tool input schemas are read with the AI SDK's own `asSchema()`, so
+zod 3, zod 4, `jsonSchema()` and (v6 and v7) Standard Schema tools all count.
+
+`count()` is synchronous. It cannot wait for a tool whose `jsonSchema` is a
+Promise (or a function that returns one), and it cannot read a schema the AI SDK
+fails to convert. It counts that part as 0 tokens, does not throw, and lists it
+in `result.tools.unresolved`:
+
+```ts
+for (const { tool, part, reason } of result.tools.unresolved) {
+  console.warn(`${tool} ${part} not counted (${reason})`);
+}
+// Fix: resolve the schema first, e.g. jsonSchema(await loadSchema()).
 ```
 
 Estimate tokens using an encoding:
