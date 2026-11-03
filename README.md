@@ -96,6 +96,13 @@ for (const { tool, part, reason } of result.tools.unresolved) {
 // Fix: resolve the schema first, e.g. jsonSchema(await loadSchema()).
 ```
 
+Tool schemas are counted for properties, descriptions, enums, nested objects and
+arrays of objects. Local `$ref`s (`#`, `#/definitions/X`, `#/$defs/X`) are
+followed, and a definition inside a recursive schema counts once. These are not
+walked: unions with two or more non-null variants (`anyOf`, `oneOf`), `allOf`,
+`$ref`s that point outside the schema or use an anchor (`#name`), and `$ref`
+alias chains longer than one hop.
+
 Estimate tokens using an encoding:
 
 ```ts

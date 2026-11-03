@@ -269,6 +269,10 @@ function readInputSchema(inputSchema: unknown): InputSchemaRead {
       }
       return { status: "async" };
     }
+    if (!isRecord(jsonSchema)) {
+      // For example an arktype schema on ai v5, which converts only zod.
+      throw new TypeError("asSchema() returned no JSON Schema object");
+    }
     return { status: "ok", jsonSchema };
   } catch (error) {
     return { status: "error", error };
@@ -321,9 +325,8 @@ function resolveRef(
   if (!isRecord(target)) {
     return schema;
   }
-  return schema.description === undefined
-    ? target
-    : { ...target, description: schema.description };
+  const { $ref: _ref, ...siblings } = schema;
+  return { ...target, ...siblings };
 }
 
 /**
@@ -358,12 +361,12 @@ interface SchemaWalk {
   /** `properties` objects being walked, so a recursive schema ends. */
   ancestors: Set<unknown>;
   /**
-   * Tokens of each `properties` object already walked. A schema whose
-   * definitions share definitions would otherwise be walked once per path.
+   * Tokens of each `properties` object already walked. Every definition is
+   * walked once per tool, which bounds the walk by the size of the schema.
+   * Without it, definitions that share definitions would be walked once per
+   * path, and recursive ones once per cycle.
    */
   counted: Map<unknown, number>;
-  /** Times a recursive branch was skipped, to tell a complete count. */
-  cycleCuts: number;
 }
 
 /** The schema a property stands for once `$ref` and `null` wrappers are read through. */
@@ -385,7 +388,6 @@ function countToolSchema(
     root: jsonSchema,
     ancestors: new Set(),
     counted: new Map(),
-    cycleCuts: 0,
   };
   return countSchemaProperties(resolveRef(jsonSchema, jsonSchema), walk);
 }
@@ -405,11 +407,9 @@ function countSchemaProperties(schema: unknown, walk: SchemaWalk): number {
     return counted;
   }
   if (ancestors.has(properties)) {
-    walk.cycleCuts++;
     return 0;
   }
   ancestors.add(properties);
-  const cycleCutsBefore = walk.cycleCuts;
 
   let tokens = 0;
   let isFirstProp = true;
@@ -456,10 +456,9 @@ function countSchemaProperties(schema: unknown, walk: SchemaWalk): number {
   }
 
   ancestors.delete(properties);
-  // A count that skipped a recursive branch depends on where the walk entered.
-  if (walk.cycleCuts === cycleCutsBefore) {
-    walk.counted.set(properties, tokens);
-  }
+  // A definition inside a cycle is counted with its back edge cut where the
+  // walk first reached it, and that count is reused wherever it is referenced.
+  walk.counted.set(properties, tokens);
   return tokens;
 }
 

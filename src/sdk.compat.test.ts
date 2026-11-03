@@ -407,6 +407,16 @@ describe("tool schemas", () => {
       }
     });
 
+    test("a schema the AI SDK converts to nothing (arktype on ai v5)", () => {
+      const tools = countTools({
+        t: { inputSchema: jsonSchema(undefined as never) },
+      });
+      expect(tools.definitions.t!.inputSchema).toBe(0);
+      expect(tools.unresolved).toMatchObject([
+        { tool: "t", part: "inputSchema", reason: "error" },
+      ]);
+    });
+
     test("a thenable whose then() throws", () => {
       const thenable = {
         then() {
@@ -524,7 +534,7 @@ describe("tool schemas", () => {
       );
     });
 
-    test("definitions that reference each other count from where the walk enters", () => {
+    test("a definition in a cycle counts once, with its back edge cut", () => {
       const first = tokens.perFirstProp + tokens.perNestedObject;
       const next = tokens.perAdditionalProp + tokens.perNestedObject;
       const mutual = {
@@ -535,12 +545,60 @@ describe("tool schemas", () => {
           B: { type: "object", properties: { a: { $ref: "#/$defs/A" } } },
         },
       };
-      // Each branch stops where it meets a definition it is already inside.
-      const viaA = enc("b") + first + (enc("a") + first);
-      const viaB = enc("a") + first + (enc("b") + first);
+      // A is walked first and reaches B, whose edge back to A is cut. The
+      // root's own `b` reuses that count of B.
+      const b = enc("a") + first;
+      const a = enc("b") + first + b;
       expect(inline(jsonSchema(mutual as never))).toBe(
-        enc("a") + first + viaA + (enc("b") + next + viaB)
+        enc("a") + first + a + (enc("b") + next + b)
       );
+    });
+
+    test("definitions that all reference each other are bounded", () => {
+      const size = 10;
+      const $defs: Record<string, unknown> = {};
+      for (let i = 0; i < size; i++) {
+        const properties: Record<string, unknown> = { v: { type: "string" } };
+        for (let j = 0; j < size; j++) {
+          if (j !== i) properties[`k${j}`] = { $ref: `#/$defs/N${j}` };
+        }
+        $defs[`N${i}`] = { type: "object", properties };
+      }
+      const clique = {
+        type: "object",
+        properties: { n: { $ref: "#/$defs/N0" } },
+        $defs,
+      };
+
+      const start = performance.now();
+      expect(inline(jsonSchema(clique as never))).toBeGreaterThan(0);
+      expect(performance.now() - start).toBeLessThan(500);
+    });
+
+    test("definitions that share definitions below a cycle are bounded", () => {
+      const depth = 20;
+      const $defs: Record<string, unknown> = {
+        [`D${depth}`]: {
+          type: "object",
+          properties: { x: { type: "string" }, back: { $ref: "#" } },
+        },
+      };
+      for (let level = depth - 1; level >= 0; level--) {
+        const next = { $ref: `#/$defs/D${level + 1}` };
+        $defs[`D${level}`] = {
+          type: "object",
+          properties: { l: next, r: next },
+        };
+      }
+      const diamond = {
+        type: "object",
+        properties: { a: { $ref: "#/$defs/D0" } },
+        $defs,
+      };
+
+      const start = performance.now();
+      expect(inline(jsonSchema(diamond as never))).toBeGreaterThan(0);
+      expect(performance.now() - start).toBeLessThan(500);
     });
 
     test("definitions that share definitions are walked once, not once per path", () => {
@@ -574,6 +632,26 @@ describe("tool schemas", () => {
       const counted = inline(jsonSchema(dag as never));
       expect(performance.now() - start).toBeLessThan(500);
       expect(counted).toBe(expected);
+    });
+
+    test("keywords next to a $ref count with the target's", () => {
+      const defs = { U: { type: "string" } };
+      const withSiblings = {
+        type: "object",
+        properties: {
+          u: { $ref: "#/$defs/U", enum: ["a", "b"], description: "Unit" },
+        },
+        $defs: defs,
+      };
+      const flat = {
+        type: "object",
+        properties: {
+          u: { type: "string", enum: ["a", "b"], description: "Unit" },
+        },
+      };
+      expect(inline(jsonSchema(withSiblings as never))).toBe(
+        inline(jsonSchema(flat as never))
+      );
     });
 
     test("a $ref to somewhere else counts nothing", () => {
