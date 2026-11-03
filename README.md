@@ -114,7 +114,7 @@ tokenizer.count("hello, world"); // 4
 
 - `count()` counts the content of one user message. `count_tokens` also charges a fixed message frame, shown in the table above. The frame comes from the model config, not from the encoding.
 - The content count includes what the frame does to the content. On `claude_v3` and `claude_v4_7` the frame absorbs one leading space. On every encoding, newlines at the end of the content join the frame's own newline token, so a short run of them is free.
-- `claude_v5` drops trailing ASCII whitespace (space, tab, CR, LF, VT, FF), as these models do for each user text block. The API does not drop it from assistant messages.
+- `claude_v5` drops trailing ASCII whitespace (space, tab, CR, LF, VT, FF) from the text it counts. These models drop it at the end of each user message and at the end of the system prompt, not in assistant messages. The API joins the text blocks of a message with no separator and trims only the last block, so trailing whitespace in earlier blocks still counts. A last block that holds only whitespace is not trimmed: `["a", "   "]` costs what `"a   "` costs on `claude_v4_8`. To count a user message with several text blocks, count the joined text with `claude_v5`, or with `claude_v4_8` when the last block is only whitespace.
 - `count("")` is 0. The API rejects empty content.
 - Token ids are synthetic, because Anthropic does not publish its ids. They are stable for one version of this package only.
 - `decode()` returns the normalized text, so it is lossy. Plain ASCII prose comes back unchanged. Unicode normalization, folded quotes and spaces, removed control characters, the absorbed leading space, some case changes and trailing whitespace do not.

@@ -40,7 +40,8 @@ const ENCODINGS = [
     ctok: "4.8",
     models: "Claude Opus 5, Opus 5.5, Sonnet 5.5, Haiku 5.5 and Fable 5.1",
     tailNewlines: 0,
-    // Measured: these models drop trailing ASCII whitespace from user text.
+    // Measured: these models drop trailing ASCII whitespace at the end of a
+    // user message (the end of its last text block).
     trimTrailingWhitespace: true,
   },
 ] as const;
