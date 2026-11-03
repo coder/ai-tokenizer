@@ -4,7 +4,7 @@ import type * as encodings from "./encoding";
 
 export default Tokenizer;
 export { Tokenizer };
-export type { Encoding } from "./tokenizer";
+export type { Codec, CodecEncoding, Encoding } from "./tokenizer";
 
 export type ModelName = keyof typeof modelsJson;
 
