@@ -27,7 +27,11 @@ export interface Encoding {
 
 /** An encoding that is not regex plus BPE brings its own algorithm. */
 export interface Codec {
-  encode(text: string): number[];
+  encode(
+    text: string,
+    allowedSpecial?: Array<string> | "all",
+    disallowedSpecial?: Array<string> | "all"
+  ): number[];
   decode(tokens: number[]): string;
 }
 
@@ -203,7 +207,9 @@ export default class Tokenizer {
     allowedSpecial: Array<string> | "all" = [],
     disallowedSpecial: Array<string> | "all" = "all"
   ): number[] {
-    if (this.codec !== null) return this.codec.encode(text);
+    if (this.codec !== null) {
+      return this.codec.encode(text, allowedSpecial, disallowedSpecial);
+    }
     // Fast path: no special tokens to handle
     if (!this.hasSpecialTokens) {
       return this.encodeOrdinary(text);
