@@ -17,9 +17,6 @@
 
     // Best practices
     "strict": true,
-    // Tokenizer's constructor returns another engine for a `kind` encoding,
-    // before it assigns its own fields.
-    "strictPropertyInitialization": false,
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,

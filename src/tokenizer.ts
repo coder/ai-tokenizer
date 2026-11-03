@@ -33,29 +33,29 @@ export interface Encoding {
  * Ultra-optimized tokenizer for BPE encodings
  */
 export default class Tokenizer {
-  private readonly name: string;
-  private readonly patternRegex: RegExp;
-  private readonly specialTokensRegex: RegExp | null;
-  private readonly specialTokens: Record<string, number>;
-  private readonly inverseSpecialTokens: Record<number, Uint8Array>;
+  private readonly name!: string;
+  private readonly patternRegex!: RegExp;
+  private readonly specialTokensRegex!: RegExp | null;
+  private readonly specialTokens!: Record<string, number>;
+  private readonly inverseSpecialTokens!: Record<number, Uint8Array>;
 
   // Optimized dual storage (pre-built at generation time)
-  private readonly stringRankEncoder: Record<string, number>;
-  private readonly binaryRankEncoder: Array<[Uint8Array, number]>;
-  private readonly decoder: Record<number, string | Uint8Array>;
-  private readonly binaryFirstByteIndex: Array<Array<
+  private readonly stringRankEncoder!: Record<string, number>;
+  private readonly binaryRankEncoder!: Array<[Uint8Array, number]>;
+  private readonly decoder!: Record<number, string | Uint8Array>;
+  private readonly binaryFirstByteIndex!: Array<Array<
     [Uint8Array, number]
   > | null>;
 
-  private readonly specialTokenKeys: readonly string[];
-  private readonly hasSpecialTokens: boolean;
+  private readonly specialTokenKeys!: readonly string[];
+  private readonly hasSpecialTokens!: boolean;
 
   // Simple piece-level cache
-  private readonly mergeCache: Map<string, number[]>;
-  private readonly mergeCacheSize: number;
+  private readonly mergeCache!: Map<string, number[]>;
+  private readonly mergeCacheSize!: number;
   // Insertion-ordered ring of cached keys for O(1) FIFO eviction.
   // Map#keys().next() is O(holes) in V8 once entries have been deleted.
-  private readonly mergeCacheKeys: string[];
+  private readonly mergeCacheKeys!: string[];
   private mergeCacheHead = 0;
 
   constructor(
@@ -64,7 +64,8 @@ export default class Tokenizer {
     mergeCacheSize: number = 100000
   ) {
     // An encoding with a `kind` is not regex BPE. Its engine has the same
-    // public methods, so the caller never sees the difference.
+    // public methods, so the caller never sees the difference. This return
+    // skips the field assignments below, so the fields carry `!`.
     if ("kind" in data) {
       return new SentencePieceTokenizer(
         data,
