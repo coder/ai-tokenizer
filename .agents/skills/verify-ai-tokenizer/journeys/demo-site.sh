@@ -63,28 +63,28 @@ default_text="$(ab get value '#input-text')"
 want="$(oracle o200k_base "$default_text")"
 got="$(stat_text token-count | digits)"
 evidence load
-record load "open $URL (default GPT-5 and example text)" "tokens=$want (tiktoken o200k_base)" "tokens=$got encoding=$(stat_text encoding-name)" "$([[ "$got" == "$want" ]] && echo 1 || echo 0)"
+record load "open $URL (default GPT-5 and example text)" "tokens=$want (tiktoken o200k_base)" "tokens=$got encoding=$(stat_text encoding-name)" "$([[ -n "$want" && "$got" == "$want" ]] && echo 1 || echo 0)"
 
 # 2. Type text.
 text="Hello, world! Tokenizers split text into tokens."
 act ab fill '#input-text' "$text" >/dev/null; wait_tokenized
 want="$(oracle o200k_base "$text")"; got="$(stat_text token-count | digits)"; chars="$(stat_text char-count | digits)"
 evidence type-text
-record type-text "fill #input-text \"$text\"" "tokens=$want chars=${#text}" "tokens=$got chars=$chars" "$([[ "$got" == "$want" && "$chars" == "${#text}" ]] && echo 1 || echo 0)"
+record type-text "fill #input-text \"$text\"" "tokens=$want chars=${#text}" "tokens=$got chars=$chars" "$([[ -n "$want" && "$got" == "$want" && "$chars" == "${#text}" ]] && echo 1 || echo 0)"
 
 # 3. Popular model chip switches encoding.
 act ab click 'button.model-chip[data-model="anthropic/claude-opus-4.5"]' >/dev/null
 ab wait --fn "document.getElementById('encoding-name').textContent === 'claude'" >/dev/null; wait_tokenized
 want="$(oracle claude "$text")"; got="$(stat_text token-count | digits)"
 evidence chip-claude
-record chip-claude "click chip \"Claude Opus 4.5\"" "encoding=claude tokens=$want (ai-tokenizer claude, no external oracle)" "encoding=$(stat_text encoding-name) tokens=$got" "$([[ "$got" == "$want" && "$(stat_text encoding-name)" == claude ]] && echo 1 || echo 0)"
+record chip-claude "click chip \"Claude Opus 4.5\"" "encoding=claude tokens=$want (ai-tokenizer claude, no external oracle)" "encoding=$(stat_text encoding-name) tokens=$got" "$([[ -n "$want" && "$got" == "$want" && "$(stat_text encoding-name)" == claude ]] && echo 1 || echo 0)"
 
 # 4. All-models dropdown loads another encoding.
 act ab select '#model-select' 'openai/gpt-4-turbo' >/dev/null
 ab wait --fn "document.getElementById('encoding-name').textContent === 'cl100k_base'" >/dev/null; wait_tokenized
 want="$(oracle cl100k_base "$text")"; got="$(stat_text token-count | digits)"
 evidence select-gpt4-turbo
-record select-gpt4-turbo "select #model-select openai/gpt-4-turbo" "encoding=cl100k_base tokens=$want (tiktoken)" "encoding=$(stat_text encoding-name) tokens=$got" "$([[ "$got" == "$want" && "$(stat_text encoding-name)" == cl100k_base ]] && echo 1 || echo 0)"
+record select-gpt4-turbo "select #model-select openai/gpt-4-turbo" "encoding=cl100k_base tokens=$want (tiktoken)" "encoding=$(stat_text encoding-name) tokens=$got" "$([[ -n "$want" && "$got" == "$want" && "$(stat_text encoding-name)" == cl100k_base ]] && echo 1 || echo 0)"
 
 # 5. Text that mentions a special token. A user expects a plain-text count, as tiktoken encode_ordinary gives.
 act ab click 'button.model-chip[data-model="openai/gpt-5"]' >/dev/null
@@ -94,19 +94,19 @@ act ab fill '#input-text' "$stext" >/dev/null; wait_tokenized
 want="$(oracle o200k_base "$stext")"; got="$(stat_text token-count | digits)"
 alerts="$(ab console | grep -c 'Tokenization error')"
 evidence special-token
-record special-token "fill #input-text \"$stext\" (GPT-5)" "tokens=$want, no error alert" "tokens=$got, error alerts=$alerts" "$([[ "$got" == "$want" && "$alerts" == 0 ]] && echo 1 || echo 0)"
+record special-token "fill #input-text \"$stext\" (GPT-5)" "tokens=$want, no error alert" "tokens=$got, error alerts=$alerts" "$([[ -n "$want" && "$got" == "$want" && "$alerts" == 0 ]] && echo 1 || echo 0)"
 
 # 6. Keep typing after the special token: every edit tokenizes again.
 act ab type '#input-text' " again" >/dev/null; wait_tokenized
 want="$(oracle o200k_base "$stext again")"; got="$(stat_text token-count | digits)"; alerts="$(ab console | grep -c 'Tokenization error')"
 evidence special-token-keep-typing
-record special-token-keep-typing "type \" again\" after the special token" "tokens=$want, no new alert" "tokens=$got, new error alerts=$alerts" "$([[ "$got" == "$want" && "$alerts" == 0 ]] && echo 1 || echo 0)"
+record special-token-keep-typing "type \" again\" after the special token" "tokens=$want, no new alert" "tokens=$got, new error alerts=$alerts" "$([[ -n "$want" && "$got" == "$want" && "$alerts" == 0 ]] && echo 1 || echo 0)"
 
 # 7. Remove the special token: the page recovers.
 act ab fill '#input-text' "hello world" >/dev/null; wait_tokenized
 want="$(oracle o200k_base "hello world")"; got="$(stat_text token-count | digits)"
 evidence recover
-record recover "fill #input-text \"hello world\"" "tokens=$want" "tokens=$got" "$([[ "$got" == "$want" ]] && echo 1 || echo 0)"
+record recover "fill #input-text \"hello world\"" "tokens=$want" "tokens=$got" "$([[ -n "$want" && "$got" == "$want" ]] && echo 1 || echo 0)"
 
 # 8. Clear.
 ab click '#clear-btn' >/dev/null
