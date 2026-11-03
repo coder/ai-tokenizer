@@ -25,10 +25,24 @@ export interface Encoding {
   decoder: Record<number, string | Uint8Array>;
 }
 
+/** An encoding that is not regex plus BPE brings its own algorithm. */
+export interface Codec {
+  encode(text: string): number[];
+  decode(tokens: number[]): string;
+}
+
+/** An encoding module with a `kind` brings its own codec. A BPE `Encoding` has none. */
+export interface CodecEncoding {
+  kind: string;
+  name: string;
+  codec: Codec;
+}
+
 /**
  * Ultra-optimized tokenizer for BPE encodings
  */
 export default class Tokenizer {
+  private readonly codec: Codec | null;
   private readonly name: string;
   private readonly patternRegex: RegExp;
   private readonly specialTokensRegex: RegExp | null;
@@ -55,12 +69,27 @@ export default class Tokenizer {
   private mergeCacheHead = 0;
 
   constructor(
-    data: Encoding,
+    data: Encoding | CodecEncoding,
     extendedSpecialTokens?: Record<string, number>,
     mergeCacheSize: number = 100000
   ) {
     if (!(mergeCacheSize >= 0)) {
       throw new RangeError(`Invalid mergeCacheSize: ${mergeCacheSize}`);
+    }
+    this.codec = "kind" in data ? data.codec : null;
+    if ("kind" in data) {
+      if (Object.keys(extendedSpecialTokens ?? {}).length > 0) {
+        throw new Error(`${data.name} does not support special tokens`);
+      }
+      // An inert BPE table, so the rest of the constructor stays as it is.
+      data = {
+        name: data.name,
+        pat_str: "(?!)",
+        special_tokens: {},
+        stringEncoder: {},
+        binaryEncoder: [],
+        decoder: {},
+      };
     }
     this.name = data.name;
     this.mergeCacheSize = mergeCacheSize;
@@ -174,6 +203,7 @@ export default class Tokenizer {
     allowedSpecial: Array<string> | "all" = [],
     disallowedSpecial: Array<string> | "all" = "all"
   ): number[] {
+    if (this.codec !== null) return this.codec.encode(text);
     // Fast path: no special tokens to handle
     if (!this.hasSpecialTokens) {
       return this.encodeOrdinary(text);
@@ -313,6 +343,7 @@ export default class Tokenizer {
    * Decode tokens to text (optimized - handles strings directly)
    */
   decode(tokens: number[]): string {
+    if (this.codec !== null) return this.codec.decode(tokens);
     let result = "";
     let byteBuffer: Uint8Array | null = null;
     let bufferSize = 0;

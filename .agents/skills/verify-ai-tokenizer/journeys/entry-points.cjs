@@ -3,7 +3,7 @@ const results = [];
 const check = (id, action, expected, observed, pass) => results.push({ id, pass: Boolean(pass), action, expected, observed });
 const outcome = (fn) => { try { return { value: fn() }; } catch (e) { return { threw: String(e && e.message ? e.message : e) }; } };
 
-const names = ["cl100k_base", "o200k_base", "p50k_base", "claude"];
+const names = ["cl100k_base", "o200k_base", "p50k_base", "claude", "claude_v3", "claude_v4_7", "claude_v4_8", "claude_v5"];
 const specs = ["ai-tokenizer", "ai-tokenizer/sdk", "ai-tokenizer/encoding", ...names.map((n) => `ai-tokenizer/encoding/${n}`)];
 for (const s of specs) {
   const r = outcome(() => require.resolve(s));

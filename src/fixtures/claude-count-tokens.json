@@ -1,0 +1,1002 @@
+{
+  "encodings": {
+    "claude_v3": {
+      "model": "claude-opus-4-6",
+      "frame": 7
+    },
+    "claude_v4_7": {
+      "model": "claude-opus-4-7",
+      "frame": 11
+    },
+    "claude_v4_8": {
+      "model": "claude-opus-4-8",
+      "frame": 6
+    },
+    "claude_v5": {
+      "model": "claude-opus-5-5",
+      "frame": 8
+    }
+  },
+  "cases": [
+    {
+      "name": "single char",
+      "text": "a",
+      "input_tokens": {
+        "claude_v3": 8,
+        "claude_v4_7": 12,
+        "claude_v4_8": 7,
+        "claude_v5": 9
+      }
+    },
+    {
+      "name": "single capital",
+      "text": "A",
+      "input_tokens": {
+        "claude_v3": 8,
+        "claude_v4_7": 12,
+        "claude_v4_8": 7,
+        "claude_v5": 9
+      }
+    },
+    {
+      "name": "single digit",
+      "text": "7",
+      "input_tokens": {
+        "claude_v3": 9,
+        "claude_v4_7": 13,
+        "claude_v4_8": 7,
+        "claude_v5": 9
+      }
+    },
+    {
+      "name": "single punctuation",
+      "text": "!",
+      "input_tokens": {
+        "claude_v3": 8,
+        "claude_v4_7": 12,
+        "claude_v4_8": 7,
+        "claude_v5": 9
+      }
+    },
+    {
+      "name": "hello world",
+      "text": "hello, world",
+      "input_tokens": {
+        "claude_v3": 10,
+        "claude_v4_7": 15,
+        "claude_v4_8": 10,
+        "claude_v5": 12
+      }
+    },
+    {
+      "name": "sentence",
+      "text": "The quick brown fox jumps over the lazy dog.",
+      "input_tokens": {
+        "claude_v3": 18,
+        "claude_v4_7": 29,
+        "claude_v4_8": 24,
+        "claude_v5": 26
+      }
+    },
+    {
+      "name": "all caps acronym",
+      "text": "NASA",
+      "input_tokens": {
+        "claude_v3": 8,
+        "claude_v4_7": 14,
+        "claude_v4_8": 9,
+        "claude_v5": 11
+      }
+    },
+    {
+      "name": "all caps three letters",
+      "text": "USA is big",
+      "input_tokens": {
+        "claude_v3": 10,
+        "claude_v4_7": 15,
+        "claude_v4_8": 10,
+        "claude_v5": 12
+      }
+    },
+    {
+      "name": "all caps sentence",
+      "text": "THIS IS AN ALL CAPS SENTENCE WITH SOME LONGER WORDS LIKE INTERNATIONAL.",
+      "input_tokens": {
+        "claude_v3": 27,
+        "claude_v4_7": 59,
+        "claude_v4_8": 54,
+        "claude_v5": 56
+      }
+    },
+    {
+      "name": "all caps inside prose",
+      "text": "The HTTP API returns JSON, not XML.",
+      "input_tokens": {
+        "claude_v3": 16,
+        "claude_v4_7": 27,
+        "claude_v4_8": 22,
+        "claude_v5": 24
+      }
+    },
+    {
+      "name": "title case",
+      "text": "Hello World From Claude",
+      "input_tokens": {
+        "claude_v3": 11,
+        "claude_v4_7": 19,
+        "claude_v4_8": 14,
+        "claude_v5": 16
+      }
+    },
+    {
+      "name": "camel case",
+      "text": "getElementsByTagName and XMLHttpRequest and iPhone",
+      "input_tokens": {
+        "claude_v3": 16,
+        "claude_v4_7": 34,
+        "claude_v4_8": 29,
+        "claude_v5": 31
+      }
+    },
+    {
+      "name": "contractions",
+      "text": "I'm sure it's fine, they're here, we've done it, you'll see, he'd go, don't stop.",
+      "input_tokens": {
+        "claude_v3": 35,
+        "claude_v4_7": 45,
+        "claude_v4_8": 40,
+        "claude_v5": 42
+      }
+    },
+    {
+      "name": "contractions upper case",
+      "text": "IT'S DON'T I'LL",
+      "input_tokens": {
+        "claude_v3": 18,
+        "claude_v4_7": 23,
+        "claude_v4_8": 18,
+        "claude_v5": 20
+      }
+    },
+    {
+      "name": "apostrophe edge cases",
+      "text": "x'llo rock'n'roll o'clock 'quoted' ''double''",
+      "input_tokens": {
+        "claude_v3": 26,
+        "claude_v4_7": 36,
+        "claude_v4_8": 31,
+        "claude_v5": 33
+      }
+    },
+    {
+      "name": "whitespace runs",
+      "text": "a  b   c    d\t\te\n\n\nf",
+      "input_tokens": {
+        "claude_v3": 18,
+        "claude_v4_7": 22,
+        "claude_v4_8": 17,
+        "claude_v5": 19
+      }
+    },
+    {
+      "name": "leading space",
+      "text": " leading space",
+      "input_tokens": {
+        "claude_v3": 9,
+        "claude_v4_7": 14,
+        "claude_v4_8": 10,
+        "claude_v5": 12
+      }
+    },
+    {
+      "name": "leading spaces",
+      "text": "   three leading spaces",
+      "input_tokens": {
+        "claude_v3": 11,
+        "claude_v4_7": 18,
+        "claude_v4_8": 13,
+        "claude_v5": 15
+      }
+    },
+    {
+      "name": "trailing space",
+      "text": "trailing space ",
+      "input_tokens": {
+        "claude_v3": 10,
+        "claude_v4_7": 16,
+        "claude_v4_8": 11,
+        "claude_v5": 12
+      }
+    },
+    {
+      "name": "trailing spaces",
+      "text": "trailing spaces   ",
+      "input_tokens": {
+        "claude_v3": 10,
+        "claude_v4_7": 18,
+        "claude_v4_8": 13,
+        "claude_v5": 14
+      }
+    },
+    {
+      "name": "space then vertical tab",
+      "text": "abc \u000b",
+      "input_tokens": {
+        "claude_v3": 9,
+        "claude_v4_7": 14,
+        "claude_v4_8": 9,
+        "claude_v5": 10
+      }
+    },
+    {
+      "name": "space then form feed",
+      "text": "abc \f",
+      "input_tokens": {
+        "claude_v3": 9,
+        "claude_v4_7": 14,
+        "claude_v4_8": 9,
+        "claude_v5": 10
+      }
+    },
+    {
+      "name": "form feed then space",
+      "text": "abc\f ",
+      "input_tokens": {
+        "claude_v3": 9,
+        "claude_v4_7": 14,
+        "claude_v4_8": 9,
+        "claude_v5": 10
+      }
+    },
+    {
+      "name": "mixed trailing ASCII whitespace",
+      "text": "abc\t\n \r\n\u000b\f ",
+      "input_tokens": {
+        "claude_v3": 13,
+        "claude_v4_7": 18,
+        "claude_v4_8": 13,
+        "claude_v5": 10
+      }
+    },
+    {
+      "name": "trailing control character after a space",
+      "text": "abc \u0001",
+      "input_tokens": {
+        "claude_v3": 9,
+        "claude_v4_7": 14,
+        "claude_v4_8": 9,
+        "claude_v5": 11
+      }
+    },
+    {
+      "name": "trailing newline",
+      "text": "line\n",
+      "input_tokens": {
+        "claude_v3": 8,
+        "claude_v4_7": 12,
+        "claude_v4_8": 7,
+        "claude_v5": 9
+      }
+    },
+    {
+      "name": "trailing newlines",
+      "text": "line\n\n\n",
+      "input_tokens": {
+        "claude_v3": 8,
+        "claude_v4_7": 12,
+        "claude_v4_8": 7,
+        "claude_v5": 9
+      }
+    },
+    {
+      "name": "thirty trailing newlines",
+      "text": "end\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+      "input_tokens": {
+        "claude_v3": 8,
+        "claude_v4_7": 12,
+        "claude_v4_8": 8,
+        "claude_v5": 9
+      }
+    },
+    {
+      "name": "leading newline",
+      "text": "\nstarts with newline",
+      "input_tokens": {
+        "claude_v3": 13,
+        "claude_v4_7": 18,
+        "claude_v4_8": 12,
+        "claude_v5": 14
+      }
+    },
+    {
+      "name": "space runs of two to eight",
+      "text": "a  b   c    d     e      f       g        h",
+      "input_tokens": {
+        "claude_v3": 22,
+        "claude_v4_7": 26,
+        "claude_v4_8": 21,
+        "claude_v5": 23
+      }
+    },
+    {
+      "name": "newlines around a word",
+      "text": "\n\n\n\nx\n\n\n\n",
+      "input_tokens": {
+        "claude_v3": 10,
+        "claude_v4_7": 14,
+        "claude_v4_8": 8,
+        "claude_v5": 10
+      }
+    },
+    {
+      "name": "crlf line endings",
+      "text": "line one\r\nline two\r\n",
+      "input_tokens": {
+        "claude_v3": 12,
+        "claude_v4_7": 16,
+        "claude_v4_8": 11,
+        "claude_v5": 13
+      }
+    },
+    {
+      "name": "leading tabs",
+      "text": "\t\t\tx",
+      "input_tokens": {
+        "claude_v3": 10,
+        "claude_v4_7": 14,
+        "claude_v4_8": 8,
+        "claude_v5": 10
+      }
+    },
+    {
+      "name": "mixed scripts",
+      "text": "English, Русский, Ελληνικά, 中文, 日本語, 한국어 and עברית in one line.",
+      "input_tokens": {
+        "claude_v3": 43,
+        "claude_v4_7": 47,
+        "claude_v4_8": 42,
+        "claude_v5": 44
+      }
+    },
+    {
+      "name": "chinese",
+      "text": "人工智能正在改变软件开发的方式。",
+      "input_tokens": {
+        "claude_v3": 24,
+        "claude_v4_7": 28,
+        "claude_v4_8": 22,
+        "claude_v5": 24
+      }
+    },
+    {
+      "name": "japanese",
+      "text": "大規模言語モデルはテキストをトークンに分割して処理します。",
+      "input_tokens": {
+        "claude_v3": 32,
+        "claude_v4_7": 36,
+        "claude_v4_8": 30,
+        "claude_v5": 32
+      }
+    },
+    {
+      "name": "korean",
+      "text": "토큰화는 언어 모델이 텍스트를 처리하는 첫 번째 단계입니다.",
+      "input_tokens": {
+        "claude_v3": 44,
+        "claude_v4_7": 48,
+        "claude_v4_8": 42,
+        "claude_v5": 44
+      }
+    },
+    {
+      "name": "devanagari",
+      "text": "नमस्ते दुनिया, यह एक परीक्षण वाक्य है।",
+      "input_tokens": {
+        "claude_v3": 36,
+        "claude_v4_7": 40,
+        "claude_v4_8": 35,
+        "claude_v5": 37
+      }
+    },
+    {
+      "name": "arabic",
+      "text": "مرحبا بالعالم، هذه جملة اختبار. ١٢٣ ٤٥٦",
+      "input_tokens": {
+        "claude_v3": 43,
+        "claude_v4_7": 47,
+        "claude_v4_8": 42,
+        "claude_v5": 44
+      }
+    },
+    {
+      "name": "hebrew",
+      "text": "שלום עולם, זה משפט בדיקה.",
+      "input_tokens": {
+        "claude_v3": 25,
+        "claude_v4_7": 29,
+        "claude_v4_8": 24,
+        "claude_v5": 26
+      }
+    },
+    {
+      "name": "thai",
+      "text": "สวัสดีชาวโลก นี่คือประโยคทดสอบ",
+      "input_tokens": {
+        "claude_v3": 34,
+        "claude_v4_7": 38,
+        "claude_v4_8": 33,
+        "claude_v5": 35
+      }
+    },
+    {
+      "name": "greek capitals",
+      "text": "ΟΔΥΣΣΕΥΣ ΚΑΙ ΠΗΝΕΛΟΠΗ",
+      "input_tokens": {
+        "claude_v3": 32,
+        "claude_v4_7": 55,
+        "claude_v4_8": 50,
+        "claude_v5": 52
+      }
+    },
+    {
+      "name": "greek sigma",
+      "text": "ΣΊΣΥΦΟΣ σοφός",
+      "input_tokens": {
+        "claude_v3": 20,
+        "claude_v4_7": 31,
+        "claude_v4_8": 26,
+        "claude_v5": 28
+      }
+    },
+    {
+      "name": "cyrillic",
+      "text": "Привет, мир! Это тестовое предложение.",
+      "input_tokens": {
+        "claude_v3": 24,
+        "claude_v4_7": 28,
+        "claude_v4_8": 23,
+        "claude_v5": 25
+      }
+    },
+    {
+      "name": "turkish dotted i",
+      "text": "İstanbul'da ılık bir gün, IĞDIR ŞEHRİ",
+      "input_tokens": {
+        "claude_v3": 31,
+        "claude_v4_7": 40,
+        "claude_v4_8": 35,
+        "claude_v5": 37
+      }
+    },
+    {
+      "name": "german sharp s",
+      "text": "Straße STRASSE ẞ",
+      "input_tokens": {
+        "claude_v3": 17,
+        "claude_v4_7": 23,
+        "claude_v4_8": 18,
+        "claude_v5": 20
+      }
+    },
+    {
+      "name": "precomposed accents",
+      "text": "café naïve résumé",
+      "input_tokens": {
+        "claude_v3": 14,
+        "claude_v4_7": 18,
+        "claude_v4_8": 13,
+        "claude_v5": 15
+      }
+    },
+    {
+      "name": "decomposed accents",
+      "text": "café naïve résumé",
+      "input_tokens": {
+        "claude_v3": 14,
+        "claude_v4_7": 18,
+        "claude_v4_8": 13,
+        "claude_v5": 15
+      }
+    },
+    {
+      "name": "stacked combining marks",
+      "text": "Z͑a͒l͓g͔o",
+      "input_tokens": {
+        "claude_v3": 20,
+        "claude_v4_7": 25,
+        "claude_v4_8": 20,
+        "claude_v5": 22
+      }
+    },
+    {
+      "name": "emoji",
+      "text": "🚀 🎉 🔥 💯 ⭐ ✨",
+      "input_tokens": {
+        "claude_v3": 31,
+        "claude_v4_7": 35,
+        "claude_v4_8": 29,
+        "claude_v5": 31
+      }
+    },
+    {
+      "name": "emoji zwj sequences",
+      "text": "👩‍💻 👨‍👩‍👧‍👦 🏳️‍🌈",
+      "input_tokens": {
+        "claude_v3": 39,
+        "claude_v4_7": 43,
+        "claude_v4_8": 37,
+        "claude_v5": 39
+      }
+    },
+    {
+      "name": "emoji flags and skin tones",
+      "text": "🇺🇸 🇯🇵 👍🏽 ✌️",
+      "input_tokens": {
+        "claude_v3": 32,
+        "claude_v4_7": 36,
+        "claude_v4_8": 30,
+        "claude_v5": 32
+      }
+    },
+    {
+      "name": "emoji in prose",
+      "text": "Ship it 🚀! Done ✅.",
+      "input_tokens": {
+        "claude_v3": 19,
+        "claude_v4_7": 26,
+        "claude_v4_8": 21,
+        "claude_v5": 23
+      }
+    },
+    {
+      "name": "variation selectors",
+      "text": "❤️ ❤︎ ☺️ ⚖️",
+      "input_tokens": {
+        "claude_v3": 28,
+        "claude_v4_7": 32,
+        "claude_v4_8": 26,
+        "claude_v5": 28
+      }
+    },
+    {
+      "name": "math and currency symbols",
+      "text": "→ ⇒ ≈ ≠ ≤ ≥ ± ∞ ∑ √ ∫ • ° © ® ™ € £ ¥",
+      "input_tokens": {
+        "claude_v3": 60,
+        "claude_v4_7": 64,
+        "claude_v4_8": 60,
+        "claude_v5": 62
+      }
+    },
+    {
+      "name": "curly quotes",
+      "text": "“Smart quotes” and ‘single’ ones — and „low-9“",
+      "input_tokens": {
+        "claude_v3": 24,
+        "claude_v4_7": 35,
+        "claude_v4_8": 30,
+        "claude_v5": 32
+      }
+    },
+    {
+      "name": "python with tabs",
+      "text": "def f(x):\n\tif x:\n\t\treturn x * 2\n\treturn None\n",
+      "input_tokens": {
+        "claude_v3": 28,
+        "claude_v4_7": 32,
+        "claude_v4_8": 27,
+        "claude_v5": 29
+      }
+    },
+    {
+      "name": "go with tabs",
+      "text": "func main() {\n\tfmt.Println(\"hello\")\n}\n",
+      "input_tokens": {
+        "claude_v3": 22,
+        "claude_v4_7": 29,
+        "claude_v4_8": 24,
+        "claude_v5": 26
+      }
+    },
+    {
+      "name": "typescript",
+      "text": "const x: Record<string, number> = { a: 1, b: 2 };\nexport function add(a: number, b: number): number {\n  return a + b;\n}\n",
+      "input_tokens": {
+        "claude_v3": 53,
+        "claude_v4_7": 58,
+        "claude_v4_8": 53,
+        "claude_v5": 55
+      }
+    },
+    {
+      "name": "json compact",
+      "text": "{\"id\":123,\"name\":\"Widget\",\"tags\":[\"a\",\"b\"],\"price\":9.99,\"active\":true,\"meta\":null,\"nested\":{\"list\":[1,2,3],\"ok\":false}}",
+      "input_tokens": {
+        "claude_v3": 55,
+        "claude_v4_7": 74,
+        "claude_v4_8": 69,
+        "claude_v5": 71
+      }
+    },
+    {
+      "name": "json pretty",
+      "text": "{\n  \"id\": 123,\n  \"name\": \"Widget\",\n  \"tags\": [\n    \"a\",\n    \"b\"\n  ],\n  \"price\": 9.99,\n  \"active\": true,\n  \"meta\": null,\n  \"nested\": {\n    \"list\": [\n      1,\n      2,\n      3\n    ],\n    \"ok\": false\n  }\n}",
+      "input_tokens": {
+        "claude_v3": 104,
+        "claude_v4_7": 116,
+        "claude_v4_8": 111,
+        "claude_v5": 113
+      }
+    },
+    {
+      "name": "numbers",
+      "text": "0 1 12 123 1234 12345 123456 1234567 3.14159 -42 1e10 0x1F 1,000,000",
+      "input_tokens": {
+        "claude_v3": 51,
+        "claude_v4_7": 55,
+        "claude_v4_8": 49,
+        "claude_v5": 51
+      }
+    },
+    {
+      "name": "dates and ids",
+      "text": "Call 555-0123 on 2026-11-03 at 10:30:00Z, order #A1B2C3.",
+      "input_tokens": {
+        "claude_v3": 41,
+        "claude_v4_7": 47,
+        "claude_v4_8": 42,
+        "claude_v5": 44
+      }
+    },
+    {
+      "name": "uuid",
+      "text": "550e8400-e29b-41d4-a716-446655440000",
+      "input_tokens": {
+        "claude_v3": 28,
+        "claude_v4_7": 32,
+        "claude_v4_8": 26,
+        "claude_v5": 28
+      }
+    },
+    {
+      "name": "urls",
+      "text": "https://github.com/coder/ai-tokenizer/pull/12?tab=files#diff-1 and http://example.com/a_b-c.html",
+      "input_tokens": {
+        "claude_v3": 47,
+        "claude_v4_7": 58,
+        "claude_v4_8": 53,
+        "claude_v5": 55
+      }
+    },
+    {
+      "name": "emails",
+      "text": "contact: kyle@coder.com, support+ai@example.org",
+      "input_tokens": {
+        "claude_v3": 23,
+        "claude_v4_7": 31,
+        "claude_v4_8": 26,
+        "claude_v5": 28
+      }
+    },
+    {
+      "name": "markdown",
+      "text": "# Title\n\n- item one\n- **bold** and _italic_\n\n```ts\nconst a = 1;\n```\n",
+      "input_tokens": {
+        "claude_v3": 34,
+        "claude_v4_7": 42,
+        "claude_v4_8": 37,
+        "claude_v5": 39
+      }
+    },
+    {
+      "name": "html",
+      "text": "<div class=\"card\"><a href=\"/x\">Link</a></div>",
+      "input_tokens": {
+        "claude_v3": 24,
+        "claude_v4_7": 31,
+        "claude_v4_8": 26,
+        "claude_v5": 28
+      }
+    },
+    {
+      "name": "sql",
+      "text": "SELECT id, name FROM users WHERE created_at > NOW() - INTERVAL '7 days';",
+      "input_tokens": {
+        "claude_v3": 28,
+        "claude_v4_7": 46,
+        "claude_v4_8": 41,
+        "claude_v5": 43
+      }
+    },
+    {
+      "name": "regex",
+      "text": "^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+)@\\w+\\.com$",
+      "input_tokens": {
+        "claude_v3": 43,
+        "claude_v4_7": 53,
+        "claude_v4_8": 47,
+        "claude_v5": 49
+      }
+    },
+    {
+      "name": "punctuation runs",
+      "text": "Wait... what?!?! (really) [yes] {no} <<maybe>> --- *** ___",
+      "input_tokens": {
+        "claude_v3": 31,
+        "claude_v4_7": 43,
+        "claude_v4_8": 38,
+        "claude_v5": 40
+      }
+    },
+    {
+      "name": "repeated letter",
+      "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "input_tokens": {
+        "claude_v3": 75,
+        "claude_v4_7": 211,
+        "claude_v4_8": 206,
+        "claude_v5": 208
+      }
+    },
+    {
+      "name": "long space run",
+      "text": "                                                                                                    x",
+      "input_tokens": {
+        "claude_v3": 15,
+        "claude_v4_7": 19,
+        "claude_v4_8": 14,
+        "claude_v5": 16
+      }
+    },
+    {
+      "name": "long words",
+      "text": "Pneumonoultramicroscopicsilicovolcanoconiosis supercalifragilisticexpialidocious",
+      "input_tokens": {
+        "claude_v3": 37,
+        "claude_v4_7": 50,
+        "claude_v4_8": 45,
+        "claude_v5": 47
+      }
+    },
+    {
+      "name": "exotic spaces",
+      "text": "a b c　d",
+      "input_tokens": {
+        "claude_v3": 12,
+        "claude_v4_7": 16,
+        "claude_v4_8": 11,
+        "claude_v5": 13
+      }
+    },
+    {
+      "name": "control characters",
+      "text": "a\u0001b\u0007cd",
+      "input_tokens": {
+        "claude_v3": 9,
+        "claude_v4_7": 14,
+        "claude_v4_8": 9,
+        "claude_v5": 11
+      }
+    },
+    {
+      "name": "strips to empty",
+      "text": "\u0001",
+      "input_tokens": {
+        "claude_v3": 8,
+        "claude_v4_7": 12,
+        "claude_v4_8": 6,
+        "claude_v5": 8
+      }
+    },
+    {
+      "name": "zero width characters",
+      "text": "zero​width‍joiner﻿bom",
+      "input_tokens": {
+        "claude_v3": 19,
+        "claude_v4_7": 25,
+        "claude_v4_8": 20,
+        "claude_v5": 22
+      }
+    },
+    {
+      "name": "private use character",
+      "text": "ab",
+      "input_tokens": {
+        "claude_v3": 8,
+        "claude_v4_7": 13,
+        "claude_v4_8": 8,
+        "claude_v5": 10
+      }
+    },
+    {
+      "name": "astral letters and digits",
+      "text": "𠀀𠀁 𝔘𝔫𝔦𝔠𝔬𝔡𝔢 𝟙𝟚𝟛",
+      "input_tokens": {
+        "claude_v3": 58,
+        "claude_v4_7": 62,
+        "claude_v4_8": 56,
+        "claude_v5": 58
+      }
+    },
+    {
+      "name": "fullwidth forms",
+      "text": "ＡＢＣ１２３！？",
+      "input_tokens": {
+        "claude_v3": 23,
+        "claude_v4_7": 24,
+        "claude_v4_8": 19,
+        "claude_v5": 21
+      }
+    },
+    {
+      "name": "roman numerals",
+      "text": "Ⅻ ⅲ Chapter Ⅳ",
+      "input_tokens": {
+        "claude_v3": 25,
+        "claude_v4_7": 32,
+        "claude_v4_8": 27,
+        "claude_v5": 29
+      }
+    },
+    {
+      "name": "digits in several scripts",
+      "text": "١٢٣ ۴۵۶ १२३ 123",
+      "input_tokens": {
+        "claude_v3": 28,
+        "claude_v4_7": 32,
+        "claude_v4_8": 26,
+        "claude_v5": 28
+      }
+    },
+    {
+      "name": "ideographic punctuation",
+      "text": "日本語、テスト。「引用」1。？ 1",
+      "input_tokens": {
+        "claude_v3": 26,
+        "claude_v4_7": 30,
+        "claude_v4_8": 24,
+        "claude_v5": 26
+      }
+    },
+    {
+      "name": "html entities",
+      "text": "&amp; &lt;tag&gt; &#x27;",
+      "input_tokens": {
+        "claude_v3": 22,
+        "claude_v4_7": 30,
+        "claude_v4_8": 25,
+        "claude_v5": 27
+      }
+    },
+    {
+      "name": "base64",
+      "text": "aGVsbG8gd29ybGQ=VGhpcyBpcyBhIHRlc3Q=",
+      "input_tokens": {
+        "claude_v3": 39,
+        "claude_v4_7": 48,
+        "claude_v4_8": 43,
+        "claude_v5": 45
+      }
+    },
+    {
+      "name": "windows path",
+      "text": "C:\\Users\\coder\\AppData\\Local\\Temp\\file.txt",
+      "input_tokens": {
+        "claude_v3": 25,
+        "claude_v4_7": 35,
+        "claude_v4_8": 30,
+        "claude_v5": 32
+      }
+    },
+    {
+      "name": "shell command",
+      "text": "$ bun run build --dts=false && echo \"done\" | tee log.txt",
+      "input_tokens": {
+        "claude_v3": 28,
+        "claude_v4_7": 35,
+        "claude_v4_8": 30,
+        "claude_v5": 32
+      }
+    },
+    {
+      "name": "units",
+      "text": "5kg 10MB 3GHz 4K 1080p",
+      "input_tokens": {
+        "claude_v3": 24,
+        "claude_v4_7": 31,
+        "claude_v4_8": 25,
+        "claude_v5": 27
+      }
+    },
+    {
+      "name": "sample english_license",
+      "text": "The MIT License\n\nCopyright (c) 2025 Coder Technologies Inc.\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of\nthis software and associated documentation files (the \"Software\"), to deal in\nthe Software without restriction, including without limitation the rights to\nuse, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of\nthe Software, and to permit persons to whom the Software is furnished to do so,\nsubject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS\nFOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR\nCOPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER\nIN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN\nCONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
+      "input_tokens": {
+        "claude_v3": 238,
+        "claude_v4_7": 522,
+        "claude_v4_8": 517,
+        "claude_v5": 519
+      }
+    },
+    {
+      "name": "sample english_prose",
+      "text": "The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. In computer science, a binary search tree is a node-based binary tree data structure that maintains sorted order. Each node contains a key and associated values. Machine learning models require large amounts of training data to generalize well. The quality of the data is often more important than the quantity. Data preprocessing and feature engineering are critical steps in the pipeline. In computer science, a binary search tree is a node-based binary tree data structure that maintains sorted order. Each node contains a key and associated values. Machine learning models require large amounts of training data to generalize well. The quality of the data is often more important than the quantity. Data preprocessing and feature engineering are critical steps in the pipeline. In computer science, a binary search tree is a node-based binary tree data structure that maintains sorted order. Each node contains a key and associated values. Machine learning models require large amounts of training data to generalize well. The quality of the data is often more important than the quantity. Data preprocessing and feature engineering are critical steps in the pipeline. In computer science, a binary search tree is a node-based binary tree data structure that maintains sorted order. Each node contains a key and associated values. Machine learning models require large amounts of training data to generalize well. The quality of the data is often more important than the quantity. Data preprocessing and feature engineering are critical steps in the pipeline. In computer science, a binary search tree is a node-based binary tree data structure that maintains sorted order. Each node contains a key and associated values. Machine learning models require large amounts of training data to generalize well. The quality of the data is often more important than the quantity. Data preprocessing and feature engineering are critical steps in the pipeline. In computer science, a binary search tree is a node-based binary tree data structure that maintains sorted order. Each node contains a key and associated values. Machine learning models require large amounts of training data to generalize well. The quality of the data is often more important than the quantity. Data preprocessing and feature engineering are critical steps in the pipeline. In computer science, a binary search tree is a node-based binary tree data structure that maintains sorted order. Each node contains a key and associated values. Machine learning models require large amounts of training data to generalize well. The quality of the data is often more important than the quantity. Data preprocessing and feature engineering are critical steps in the pipeline. In computer science, a binary search tree is a node-based binary tree data structure that maintains sorted order. Each node contains a key and associated values. Machine learning models require large amounts of training data to generalize well. The quality of the data is often more important than the quantity. Data preprocessing and feature engineering are critical steps in the pipeline. ",
+      "input_tokens": {
+        "claude_v3": 623,
+        "claude_v4_7": 942,
+        "claude_v4_8": 937,
+        "claude_v5": 938
+      }
+    },
+    {
+      "name": "sample markdown_readme",
+      "text": "# ai-tokenizer\n\n[![CI](https://github.com/coder/ai-tokenizer/actions/workflows/ci.yml/badge.svg)](https://github.com/coder/ai-tokenizer/actions/workflows/ci.yml)\n[![npm version](https://img.shields.io/npm/v/ai-tokenizer)](https://www.npmjs.com/package/ai-tokenizer)\n[![npm downloads](https://img.shields.io/npm/dm/ai-tokenizer)](https://www.npmjs.com/package/ai-tokenizer)\n\nA faster than tiktoken tokenizer with first-class support for Vercel's AI SDK.\n\n- Supports the [AI SDK](https://github.com/vercel/ai) tool and message schema\n- No WASM; highly portable; [5-7x faster](#performance) than tiktoken WASM\n- \\>=97% [accuracy](#accuracy) for top models (GPT-5, Claude Sonnet, Gemini):\n\n<!-- POPULAR_MODELS_TABLE_START -->\n| Model | ~500 tokens | ~5k tokens | ~50k tokens |\n|-------|-------------|------------|-------------|\n| openai/gpt-5 | 99.16% | 99.43% | 99.47% |\n| anthropic/claude-opus-4.5 | 98.48% | 98.56% | 99.79% |\n| google/gemini-3-pro-preview | 98.70% | 98.77% | 98.91% |\n\n<!-- POPULAR_MODELS_TABLE_END -->\n\n[Try it on the website:](https://coder.github.io/ai-tokenizer/)\n\n[![Demo](https://raw.githubusercontent.com/coder/ai-tokenizer/main/demo.png)](https://coder.github.io/ai-tokenizer/)\n\n## Usage\n\nInstall:\n\n```sh\nbun install ai-tokenizer\n```\n\nEstimate tokens with the AI SDK:\n\n```ts\nimport Tokenizer, { models } from \"ai-tokenizer\";\nimport { count } from \"ai-tokenizer/sdk\";\nimport * as encoding from \"ai-tokenizer/encoding\";\n\n// Find the respective model.\nconst model = models[\"openai/gpt-5\"];\nconst tokenizer = new Tokenizer(encoding[model.encoding]);\nconst result = count({\n  tokenizer,\n  model,\n  // Every message is counted separately\n  messages,\n  // Tool descriptions and input schemas are counted\n  tools,\n})\n\n// {\n//   total: 150,\n//   messages: [\n//     {\n//       total: 120,\n//       content: [\n//         { type: \"text\", total: 100 },\n//         { type: \"tool-call\", total: 20, input: 15 }\n//       ]\n//     }\n//   ],\n//   tools: {\n//     total: 30,\n//     definitions: {\n//       myTool: {\n//         name: 5,\n//         description: 10,\n//         inputSchema: 15\n//       }\n//     }\n//   }\n// }\n\n// No API calls are performed; no keys.\n\nconst costUSD = result.total * model.pricing.input;\n```\n\nEstimate tokens using an encoding:\n\n```ts\nimport { Tokenizer } from \"ai-tokenizer\"\nimport * as o200k_base from \"ai-tokenizer/encoding/o200k_base\"\n\nconst tokenizer = new Tokenizer(o200k_base);\nconst total = tokenizer.count(\"some text input\");\n```\n\n> [!WARNING]\n> Import encodings selectively based on what you need. Each encoding is 2-8MB uncompressed.\n\n## Accuracy\n\nValidated against actual API responses with pseudo-random messages:\n\n<!-- ACCURACY_TABLE_START -->\n| Model | ~500 tokens | ~5k tokens | ~50k tokens |\n|-------|-------------|------------|-------------|\n| alibaba/qwen-3-14b | 96.45% | 96.45% | N/A |\n| alibaba/qwen-3-235b | 98.26% | 96.38% | N/A |\n| alibaba/qwen-3-30b | 96.45% | 96.27% | N/A |\n| alibaba/qwen-3-32b | 95.64% | 95.70% | N/A |\n| alibaba/qwen3-235b-a22b-thinking | 96.06% | 96.34% | 95.98% |\n| alibaba/qwen3-coder | 94.55% | 96.70% | 94.57% |\n| alibaba/qwen3-coder-plus | 94.84% | 96.76% | 94.54% |\n| alibaba/qwen3-max | 98.51% | 95.59% | 94.33% |\n| alibaba/qwen3-next-80b-a3b-instruct | 95.66% | 96.71% | 95.81% |\n| alibaba/qwen3-next-80b-a3b-thinking | 96.02% | 95.70% | 95.09% |\n| alibaba/qwen3-vl-instruct | 95.08% | 96.73% | 96.04% |\n| amazon/nova-lite | 98.10% | 92.67% | 90.17% |\n| amazon/nova-micro | 98.10% | 92.10% | 89.20% |\n| amazon/nova-pro | 98.10% | 92.82% | 90.16% |\n| anthropic/claude-3-haiku | 97.61% | 99.32% | 99.77% |\n| anthropic/claude-3-opus | 98.66% | 98.68% | 99.70% |\n| anthropic/claude-3.5-haiku | 97.61% | 99.80% | 99.86% |\n| anthropic/claude-3.5-sonnet | 97.93% | 99.26% | 99.67% |\n| anthropic/claude-3.5-sonnet-20240620 | 98.01% | 99.98% | 99.86% |\n| anthropic/claude-3.7-sonnet | 98.07% | 99.59% | 99.74% |\n| anthropic/claude-haiku-4.5 | 98.48% | 98.67% | 99.62% |\n| anthropic/claude-opus-4 | 98.07% | 99.39% | 99.74% |\n| anthropic/claude-opus-4.1 | 97.78% | 99.83% | 99.80% |\n| anthropic/claude-opus-4.5 | 98.48% | 98.56% | 99.79% |\n| anthropic/claude-sonnet-4 | 98.22% | 99.89% | 99.83% |\n| anthropic/claude-sonnet-4.5 | 98.48% | 98.91% | 99.70% |\n| deepseek/deepseek-r1 | 96.24% | 98.67% | 98.10% |\n| deepseek/deepseek-r1-distill-llama-70b | 98.20% | 99.08% | N/A |\n| deepseek/deepseek-v3 | 95.30% | 95.37% | 95.19% |\n| deepseek/deepseek-v3.1 | 97.40% | 95.85% | 96.46% |\n| deepseek/deepseek-v3.1-terminus | 96.20% | 97.57% | 97.55% |\n| deepseek/deepseek-v3.2-exp | 95.77% | 97.62% | 97.45% |\n| deepseek/deepseek-v3.2-exp-thinking | 95.98% | 97.55% | 97.56% |\n| google/gemini-2.0-flash | 97.97% | 99.69% | 99.95% |\n| google/gemini-2.0-flash-lite | 98.18% | 99.65% | 99.77% |\n| google/gemini-2.5-flash | 98.78% | 99.60% | 99.85% |\n| google/gemini-2.5-flash-lite | 99.19% | 99.33% | 99.84% |\n| google/gemini-2.5-flash-lite-preview-09-2025 | 92.74% | 99.63% | 99.74% |\n| google/gemini-2.5-flash-preview-09-2025 | 92.53% | 99.69% | 99.74% |\n| google/gemini-2.5-pro | 98.37% | 99.42% | 99.82% |\n| google/gemini-3-pro-preview | 98.70% | 98.77% | 98.91% |\n| meituan/longcat-flash-chat | 70.65% | 99.15% | 96.13% |\n| meta/llama-3.1-8b | 98.69% | 90.67% | 89.69% |\n| meta/llama-3.3-70b | 100.00% | 70.03% | 67.23% |\n| meta/llama-4-scout | 0.00% | 56.65% | 66.03% |\n| minimax/minimax-m2 | 94.13% | 74.53% | 72.83% |\n| mistral/codestral | 93.78% | 91.86% | 91.89% |\n| mistral/devstral-small | 98.77% | 94.09% | 93.72% |\n| mistral/magistral-medium | 98.24% | 94.23% | 93.71% |\n| mistral/magistral-small | 97.89% | 94.32% | 93.65% |\n| mistral/mistral-large | 98.23% | 94.09% | N/A |\n| mistral/mistral-medium | 98.06% | 93.96% | 93.79% |\n| mistral/mistral-small | 96.73% | 92.78% | N/A |\n| mistral/pixtral-large | 98.94% | 94.25% | 94.27% |\n| moonshotai/kimi-k2 | 89.51% | NaN% | 82.80% |\n| moonshotai/kimi-k2-0905 | 85.58% | 81.01% | 80.56% |\n| moonshotai/kimi-k2-thinking | 95.02% | 92.80% | 91.96% |\n| moonshotai/kimi-k2-thinking-turbo | 95.03% | 92.38% | 91.91% |\n| moonshotai/kimi-k2-turbo | 94.51% | 92.36% | 91.83% |\n| openai/gpt-4-turbo | 99.79% | 99.89% | 99.86% |\n| openai/gpt-4.1 | 100.00% | 99.93% | 99.92% |\n| openai/gpt-4.1-mini | 100.00% | 99.93% | 99.92% |\n| openai/gpt-4o | 100.00% | 99.93% | 99.92% |\n| openai/gpt-4o-mini | 100.00% | 99.93% | 99.92% |\n| openai/gpt-5 | 99.16% | 99.43% | 99.47% |\n| openai/gpt-5-chat | 100.00% | 99.93% | 99.92% |\n| openai/gpt-5-codex | 99.17% | 99.43% | 99.47% |\n| openai/gpt-5-mini | 99.16% | 99.43% | 99.47% |\n| openai/gpt-5-nano | 99.16% | 99.43% | 99.46% |\n| openai/gpt-5-pro | 99.17% | 99.43% | 99.47% |\n| openai/gpt-5.1-codex | 79.84% | 98.72% | 99.65% |\n| openai/gpt-5.1-codex-mini | 99.17% | 99.43% | 99.47% |\n| openai/gpt-5.1-instant | 79.84% | 98.72% | 99.65% |\n| openai/gpt-5.1-thinking | 79.84% | 98.72% | 99.64% |\n| openai/gpt-oss-120b | 80.77% | 69.64% | 69.62% |\n| openai/gpt-oss-20b | 68.55% | 60.79% | 60.98% |\n| openai/gpt-oss-safeguard-20b | 75.60% | 64.08% | 63.67% |\n| openai/o1 | 94.77% | 99.30% | 99.86% |\n| openai/o3 | 99.16% | 99.43% | 99.46% |\n| openai/o3-mini | 100.00% | NaN% | 99.92% |\n| openai/o4-mini | 99.16% | 99.43% | 99.47% |\n| prime-intellect/intellect-3 | 93.08% | 95.64% | 97.12% |\n| stealth/sonoma-dusk-alpha | 99.47% | 71.65% | 66.69% |\n| stealth/sonoma-sky-alpha | 99.46% | 69.52% | 66.49% |\n| vercel/v0-1.0-md | 98.99% | 53.45% | 92.42% |\n| vercel/v0-1.5-md | 98.96% | 53.55% | 92.39% |\n| xai/grok-2 | 95.43% | 96.09% | 95.28% |\n| xai/grok-2-vision | 94.44% | 95.68% | N/A |\n| xai/grok-3 | 99.57% | 98.67% | 99.23% |\n| xai/grok-3-fast | 99.57% | 98.59% | 99.13% |\n| xai/grok-3-mini | 99.59% | 98.76% | 99.18% |\n| xai/grok-3-mini-fast | 99.59% | 98.59% | 99.13% |\n| xai/grok-4 | 99.72% | 73.95% | 67.43% |\n| xai/grok-4-fast-non-reasoning | 90.02% | -22.27% | -52.27% |\n| xai/grok-4-fast-reasoning | 99.29% | 71.17% | 66.72% |\n| xai/grok-4.1-fast-non-reasoning | 99.65% | 71.70% | 66.76% |\n| xai/grok-4.1-fast-reasoning | 99.28% | 71.50% | 66.62% |\n| xai/grok-code-fast-1 | 80.14% | -13.63% | -51.13% |\n| zai/glm-4.5 | 94.55% | 96.26% | 96.16% |\n| zai/glm-4.5-air | 96.73% | 96.45% | 96.70% |\n| zai/glm-4.5v | 95.17% | 95.56% | 95.36% |\n\n<!-- ACCURACY_TABLE_END -->\n\n*Accuracy shows percentage within actual token count.*\n\n> [!WARNING]\n> Not every tool/token scenario is tested for accuracy. There will be edge-cases where this is more/less accurate. If you find this inaccurate for your scenario, please open an issue.\n\nRun `bun run scripts/generate-accuracy.ts` to update this table. Refer to [accuracy.json](./accuracy.json) for greater detail.\n\n## Performance\n\nai-tokenizer is **5-7x faster than tiktoken** for counting tokens. It is on par with gpt-tokenizer.\n\n```bash\n$ bun bench/versus\n\nclk: ~3.96 GHz\ncpu: AMD Ryzen AI 9 HX 370 w/ Radeon 890M\nruntime: bun 1.2.19 (x64-linux)\n\nbenchmark                   avg (min … max) p75 / p99    (min … top 1%)\n------------------------------------------- -------------------------------\n• initialization\n------------------------------------------- -------------------------------\nai-tokenizer                  13.99 µs/iter  14.14 µs  █                   \n                      (13.44 µs … 15.50 µs)  14.85 µs  █                   \n                    (  0.00  b …   1.24 kb) 308.13  b ██▁█▁█▁▁▁▁█▁▁▁▁▁▁▁▁▁█\n\ntiktoken                      85.05 ms/iter  85.68 ms         █      █     \n                      (81.61 ms … 89.19 ms)  86.55 ms ▅       █  ▅ ▅▅█▅▅  ▅\n                    (  0.00  b …   1.39 mb) 385.33 kb █▁▁▁▁▁▁▁█▁▁█▁█████▁▁█\n\n• encode: small text (~13 chars)\n------------------------------------------- -------------------------------\nai-tokenizer                   1.33 µs/iter   1.34 µs         ▇█           \n                        (1.11 µs … 1.90 µs)   1.60 µs         ██           \n                    (  0.00  b …   2.06 kb)   1.60 kb ▆▃▁▁▁▁▁▂███▃▄▂▃▂▃▂▁▁▂\n\ngpt-tokenizer                  1.05 µs/iter   1.13 µs █                    \n                      (926.82 ns … 1.65 µs)   1.53 µs ██    ▆              \n                    (  0.00  b … 864.00  b) 352.86  b ██▂▁▁▁██▆▃▂▂▁▁▁▁▁▁▁▁▁\n\ntiktoken                      32.23 µs/iter  30.19 µs  █                   \n                     (27.83 µs … 468.68 µs)  66.56 µs  █                   \n                    (  0.00  b …   1.13 mb)   5.27 kb ██▃▂▂▁▁▁▃▁▁▁▁▁▁▁▁▁▁▁▁\n\n• encode: medium text (~4.5KB)\n------------------------------------------- -------------------------------\nai-tokenizer                  89.81 µs/iter  92.53 µs    █                 \n                     (66.07 µs … 372.65 µs) 208.17 µs  █ █▇                \n                    (  0.00  b …   1.13 mb)  98.84 kb ▄█▃██▃▂▂▂▂▁▁▁▁▁▁▁▁▁▁▁\n\ngpt-tokenizer                 76.97 µs/iter  80.01 µs  █   ▆               \n                     (66.79 µs … 279.16 µs) 115.17 µs  █   █▅              \n                    (  0.00  b … 384.00 kb)   5.44 kb ▆█▅█▆██▃▂▁▂▂▁▂▂▁▁▁▁▁▁\n\ntiktoken                     651.22 µs/iter 649.48 µs  ▄█                  \n                    (632.83 µs … 874.11 µs) 782.25 µs  ██                  \n                    (  0.00  b … 192.00 kb)   4.31 kb ▄██▆▂▁▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁\n\n• encode: large text (~500KB)\n------------------------------------------- -------------------------------\nai-tokenizer                  19.07 ms/iter  20.23 ms                  ▅█  \n                      (15.19 ms … 20.67 ms)  20.66 ms       ▃         ▃██▃▃\n                    (  0.00  b …  26.44 mb)  19.22 mb ▄▁▄▄█▁█▁▁▁▄▁▁▁▄▄█████\n\ngpt-tokenizer                 18.19 ms/iter  18.62 ms     █                \n                      (15.35 ms … 23.68 ms)  22.91 ms     █ ▃              \n                    (  0.00  b …  31.50 mb)   6.44 mb ▅▃▅▁█▁█▃▃▃▁▁█▁▁▁▁▅▁▁▅\n\ntiktoken                     135.38 ms/iter 135.35 ms █     █ █            \n                    (134.51 ms … 138.22 ms) 136.61 ms █▅ ▅ ▅█ █▅          ▅\n                    (  0.00  b … 768.00 kb) 648.00 kb ██▁█▁██▁██▁▁▁▁▁▁▁▁▁▁█\n\n• encode: unicode text\n------------------------------------------- -------------------------------\nai-tokenizer                 118.76 µs/iter 118.95 µs     █                \n                     (84.61 µs … 500.48 µs) 234.66 µs    ██                \n                    (  0.00  b … 768.00 kb) 129.37 kb ▃▄▂██▇▄▄▂▂▂▂▁▁▁▁▁▁▁▁▁\n\ngpt-tokenizer                231.35 µs/iter 256.95 µs   █▅▇█               \n                      (139.24 µs … 2.08 ms) 489.02 µs   ████  █            \n                    (  0.00  b …   2.41 mb) 260.61 kb ▃▅████▇▆█▆▃▂▂▂▁▁▁▂▁▁▁\n\ntiktoken                     836.84 µs/iter 819.36 µs █                    \n                      (799.44 µs … 1.97 ms)   1.39 ms █▅                   \n                    (  0.00  b … 192.00 kb)   5.87 kb ██▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁\n\n• encode: code\n------------------------------------------- -------------------------------\nai-tokenizer                 357.64 µs/iter 372.83 µs      █▄              \n                      (278.58 µs … 1.04 ms) 591.56 µs  ▃   ██              \n                    (  0.00  b …   1.31 mb) 364.10 kb ██▂▁▂██▅▃▂▂▁▂▂▁▁▁▁▁▁▁\n\ngpt-tokenizer                316.39 µs/iter 316.25 µs  █▅                  \n                    (279.98 µs … 919.92 µs) 622.31 µs  ██                  \n                    (  0.00  b … 192.00 kb)  54.12 kb ▄██▅▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁\n\ntiktoken                       3.12 ms/iter   3.12 ms  ▆█                  \n                        (3.05 ms … 3.72 ms)   3.52 ms  ██▃                 \n                    (  0.00  b … 192.00 kb)  20.06 kb ▆███▅▃▁▁▁▁▂▂▂▂▁▁▂▁▁▁▂\n\n• encode: mixed content\n------------------------------------------- -------------------------------\nai-tokenizer                   2.44 ms/iter   2.48 ms         ▇█▄          \n                        (2.06 ms … 2.89 ms)   2.81 ms        ▂████▃        \n                    (  0.00  b …   3.56 mb)   2.36 mb ▁▂▂▁▁▁▁██████▄▃▆▄▂▂▁▂\n\ngpt-tokenizer                  2.62 ms/iter   2.60 ms   █                  \n                        (2.38 ms … 4.34 ms)   3.96 ms  ▅█                  \n                    (576.00 kb …   4.88 mb)   1.34 mb ▄███▄▂▂▁▁▁▁▂▁▁▂▁▁▁▁▁▁\n\ntiktoken                      15.35 ms/iter  15.37 ms ▂█ ▂                 \n                      (15.17 ms … 16.35 ms)  15.80 ms ██▇█▂                \n                    (  0.00  b … 192.00 kb)  93.54 kb █████▇▄▁▄▄▄▁▄▄▄▁▁▇▄▁▄\n\n• decode: large token array\n------------------------------------------- -------------------------------\nai-tokenizer                   1.57 ms/iter   1.93 ms █                    \n                        (1.14 ms … 4.02 ms)   3.53 ms ██                   \n                    (  0.00  b …   6.94 mb)   1.44 mb ██▄▃▁▁▁▁▁▂▃▄▄▃▂▁▁▁▁▁▁\n\ngpt-tokenizer                876.67 µs/iter 857.62 µs  █                   \n                      (628.32 µs … 3.95 ms)   2.34 ms  █                   \n                    (  0.00  b …   6.00 mb)  27.15 kb ▁██▃▄▃▂▂▂▂▁▁▁▁▁▁▁▁▁▁▁\n\ntiktoken                       1.64 ms/iter   1.67 ms  ▄  █                \n                        (1.47 ms … 2.49 ms)   2.33 ms ▆█ ██▃               \n                    (  0.00  b …   1.31 mb)   1.14 mb ██████▅▆▂▃▁▁▂▁▂▂▁▁▂▁▁\n\n• count: large text (~500KB)\n------------------------------------------- -------------------------------\nai-tokenizer                  18.33 ms/iter  19.52 ms                   █  \n                      (14.94 ms … 20.09 ms)  20.05 ms ▃▆              ▆██▃ \n                    (  0.00  b …  25.33 mb)  18.64 mb ██▁▁▁▄▁▁▁▁▁▁▄▄▄█████▄\n\ngpt-tokenizer                 16.65 ms/iter  18.26 ms  █               █   \n                      (14.63 ms … 19.14 ms)  19.01 ms  ███          ▅  █   \n                    (  0.00  b …   7.50 mb)   1.15 mb ▅████▁▅▅▁▁█▅▁▅██▁██▁█\n\ntiktoken                     131.95 ms/iter 131.85 ms        █             \n                    (130.24 ms … 138.35 ms) 133.42 ms      █ █             \n                    (576.00 kb … 768.00 kb) 720.00 kb █▁██▁█▁█▁▁█▁█▁▁▁▁▁▁▁█\n```\n\nRun this yourself with `bun bench/versus`.\n\n## License\n\n[MIT](./LICENSE)\n",
+      "input_tokens": {
+        "claude_v3": 7561,
+        "claude_v4_7": 8636,
+        "claude_v4_8": 8631,
+        "claude_v5": 8633
+      }
+    },
+    {
+      "name": "sample code_typescript",
+      "text": "import Tokenizer from \"./tokenizer\";\nimport type { ModelMessage, ToolSet } from \"ai\";\nimport type { Model, ModelTokens } from \".\";\n\nexport interface CountOptions<TOOLS extends ToolSet = ToolSet> {\n  /**\n   * The tokenizer instance to use for encoding.\n   */\n  tokenizer: Tokenizer;\n\n  /**\n   * Messages from the AI SDK.\n   */\n  messages: ModelMessage[];\n\n  /**\n   * Tools that you'd pass to `streamText` or `generateText`.\n   */\n  tools?: TOOLS;\n\n  /**\n   * The model you wish to use.\n   */\n  model: Model;\n}\n\nexport type CountResultMessageContent =\n  | {\n      type: \"text\";\n      total: number;\n    }\n  | {\n      type: \"tool-call\";\n      total: number;\n      input: number;\n    }\n  | {\n      type: \"tool-result\";\n      total: number;\n      output: number;\n    };\n\nexport interface CountResultMessage {\n  total: number;\n  content: Array<CountResultMessageContent>;\n}\n\nexport interface CountResultTools<TOOLS extends ToolSet = ToolSet> {\n  total: number;\n  definitions: Record<\n    keyof TOOLS,\n    {\n      name: number;\n      description: number;\n      inputSchema: number;\n    }\n  >;\n}\n\nexport interface CountResult<TOOLS extends ToolSet = ToolSet> {\n  total: number;\n  messages: Array<CountResultMessage>;\n  tools: CountResultTools<TOOLS>;\n}\n\n/**\n * count returns a token estimation for a model given messages and tools.\n *\n * It returns a detailed breakdown per-message and per-tool.\n * Users can filter out messages based on large tool results, for example.\n */\nexport function count<TOOLS extends ToolSet = ToolSet>(\n  options: CountOptions<TOOLS>\n): CountResult<TOOLS> {\n  const config = options.model.tokens;\n\n  let total = config.baseOverhead;\n\n  // Count messages with detailed breakdown\n  const messages: CountResultMessage[] = [];\n  for (const message of options.messages) {\n    const messageResult = countMessageTokensDetailed(\n      options.tokenizer,\n      message,\n      config\n    );\n    messages.push(messageResult);\n    total += messageResult.total;\n  }\n\n  // Count tools with detailed breakdown\n  const toolsResult = countToolsTokensDetailed(\n    options.tokenizer,\n    options.tools,\n    config\n  );\n  total += toolsResult.total;\n\n  return {\n    total,\n    messages,\n    tools: toolsResult as CountResultTools<TOOLS>,\n  };\n}\n\n/**\n * Count tokens for tools with detailed breakdown\n */\nfunction countToolsTokensDetailed<TOOLS extends ToolSet = ToolSet>(\n  tokenizer: Tokenizer,\n  tools?: TOOLS,\n  config?: ModelTokens\n): CountResultTools<TOOLS> {\n  if (!config) {\n    throw new Error(\"config is required\");\n  }\n\n  const definitions: Record<\n    keyof TOOLS,\n    {\n      name: number;\n      description: number;\n      inputSchema: number;\n    }\n  > = {} as Record<\n    keyof TOOLS,\n    {\n      name: number;\n      description: number;\n      inputSchema: number;\n    }\n  >;\n  let total = 0;\n\n  if (tools && Object.keys(tools).length > 0) {\n    total += config.toolsExist;\n\n    const toolEntries = Object.entries(tools);\n    for (let i = 0; i < toolEntries.length; i++) {\n      const [toolName, tool] = toolEntries[i]!;\n\n      // Count name tokens\n      const nameTokens = tokenizer.encode(toolName).length;\n\n      // Count description tokens\n      let descriptionTokens = 0;\n      if (tool.description) {\n        descriptionTokens =\n          config.perDesc + tokenizer.encode(tool.description).length;\n      }\n\n      // Count inputSchema tokens\n      let inputSchemaTokens = 0;\n      if (tool.inputSchema) {\n        const result = countZodSchemaProperties(\n          tool.inputSchema,\n          tokenizer,\n          config\n        );\n        inputSchemaTokens = result.tokens;\n      }\n\n      definitions[toolName as keyof TOOLS] = {\n        name: nameTokens,\n        description: descriptionTokens,\n        inputSchema: inputSchemaTokens,\n      };\n\n      total += nameTokens + descriptionTokens + inputSchemaTokens;\n\n      // Add perTool overhead for additional tools (beyond first)\n      if (i > 0) {\n        total += config.perTool;\n      }\n    }\n  }\n\n  return { total, definitions };\n}\n\n/**\n * Count tokens for a single message with detailed breakdown\n */\nfunction countMessageTokensDetailed(\n  tokenizer: Tokenizer,\n  message: ModelMessage,\n  config: ModelTokens\n): CountResultMessage {\n  let total = config.perMessage;\n  const content: CountResultMessageContent[] = [];\n\n  // Count role\n  total += tokenizer.encode(message.role).length;\n\n  // Count content with detailed breakdown\n  if (message.content) {\n    const contentResult = countMessageContentTokensDetailed(\n      tokenizer,\n      message.content,\n      config\n    );\n    content.push(...contentResult);\n    total += contentResult.reduce((sum, c) => sum + c.total, 0);\n  }\n\n  return { total, content };\n}\n\n/**\n * Count tokens for message content with detailed breakdown\n */\nfunction countMessageContentTokensDetailed(\n  tokenizer: Tokenizer,\n  content: ModelMessage[\"content\"],\n  config: ModelTokens\n): CountResultMessageContent[] {\n  const multiplier = config.contentMultiplier;\n  const results: CountResultMessageContent[] = [];\n\n  if (typeof content === \"string\") {\n    const tokens = tokenizer.encode(content).length;\n    const total = Math.round(tokens * multiplier);\n    results.push({ type: \"text\", total });\n    return results;\n  }\n\n  if (Array.isArray(content)) {\n    for (const part of content) {\n      if (part.type === \"text\") {\n        const tokens = tokenizer.encode(part.text).length;\n        const total = Math.round(tokens * multiplier);\n        results.push({ type: \"text\", total });\n      } else if (part.type === \"tool-call\") {\n        let toolCallTokens = 0;\n        let inputTokens = 0;\n\n        if (part.toolName) {\n          toolCallTokens += tokenizer.encode(part.toolName).length;\n        }\n        if (part.input) {\n          inputTokens = tokenizer.encode(JSON.stringify(part.input)).length;\n          toolCallTokens += inputTokens;\n        }\n\n        const total = Math.round(toolCallTokens * multiplier);\n        results.push({\n          type: \"tool-call\",\n          total,\n          input: Math.round(inputTokens * multiplier),\n        });\n      } else if (part.type === \"tool-result\") {\n        let toolResultTokens = 0;\n        let outputTokens = 0;\n\n        if (part.toolCallId) {\n          toolResultTokens += tokenizer.encode(part.toolCallId).length;\n        }\n        if (part.output) {\n          if (typeof part.output === \"string\") {\n            outputTokens = tokenizer.encode(part.output).length;\n          } else {\n            outputTokens = tokenizer.encode(JSON.stringify(part.output)).length;\n          }\n          toolResultTokens += outputTokens;\n        }\n\n        const total = Math.round(toolResultTokens * multiplier);\n        results.push({\n          type: \"tool-result\",\n          total,\n          output: Math.round(outputTokens * multiplier),\n        });\n      } else if (part.type === \"image\") {\n        // Images have a fixed token count (approximate for GPT-4o)\n        results.push({ type: \"text\", total: 85 });\n      } else if (part.type === \"file\") {\n        // Files are treated similarly to text\n        // This is an approximation - actual token count may vary\n        results.push({ type: \"text\", total: 100 });\n      }\n    }\n  }\n\n  return results;\n}\n\n/**\n * Count properties in a Zod schema by walking its structure\n */\nfunction countZodSchemaProperties(\n  schema: any,\n  tokenizer: Tokenizer,\n  config: ModelTokens\n): { tokens: number; propCount: number } {\n  let tokens = 0;\n  let propCount = 0;\n\n  if (!schema || !schema._def) {\n    return { tokens, propCount };\n  }\n\n  const def = schema._def;\n\n  // Handle object schemas\n  if (def.type === \"object\") {\n    const shape = typeof def.shape === \"function\" ? def.shape() : def.shape;\n\n    if (!shape) {\n      return { tokens, propCount };\n    }\n\n    for (const [key, value] of Object.entries(shape)) {\n      const isFirstProp = propCount === 0;\n      propCount++;\n      const propSchema = value as any;\n\n      // Count property name tokens\n      tokens += tokenizer.encode(key).length;\n\n      // Add property overhead (first vs additional)\n      tokens += isFirstProp ? config.perFirstProp : config.perAdditionalProp;\n\n      // Count property description if present\n      if (propSchema.description) {\n        tokens += config.perPropDesc;\n        tokens += tokenizer.encode(propSchema.description).length;\n      }\n\n      // Handle enums - count each enum value + overhead\n      if (propSchema._def && propSchema._def.type === \"enum\") {\n        const enumDef = propSchema._def;\n        const enumValues =\n          enumDef.values || Object.values(enumDef.entries || {});\n        tokens += config.perEnum; // Enum overhead\n        for (const enumValue of enumValues) {\n          tokens += tokenizer.encode(String(enumValue)).length;\n        }\n      }\n\n      // Handle nested objects\n      if (propSchema._def) {\n        const innerDef = propSchema._def;\n        if (innerDef.type === \"object\") {\n          // Add overhead for nested object if configured\n          tokens += config.perNestedObject || 0;\n          const nested = countZodSchemaProperties(\n            propSchema,\n            tokenizer,\n            config\n          );\n          tokens += nested.tokens;\n          // Don't accumulate propCount across nesting levels - each level is independent\n        } else if (innerDef.type === \"array\" && innerDef.element) {\n          // Handle arrays with object/complex items\n          const elementDef = innerDef.element._def;\n          if (elementDef && elementDef.type === \"object\") {\n            // Add overhead for array of objects if configured\n            tokens += config.perArrayOfObjects || 0;\n          }\n          const nested = countZodSchemaProperties(\n            innerDef.element,\n            tokenizer,\n            config\n          );\n          tokens += nested.tokens;\n          // Don't accumulate propCount across nesting levels\n        }\n      }\n    }\n  }\n\n  return { tokens, propCount };\n}\n",
+      "input_tokens": {
+        "claude_v3": 2838,
+        "claude_v4_7": 3743,
+        "claude_v4_8": 3738,
+        "claude_v5": 3740
+      }
+    },
+    {
+      "name": "sample code_python",
+      "text": "import asyncio\nfrom dataclasses import dataclass, field\nfrom typing import Optional\n\n@dataclass\nclass Job:\n    id: str\n    retries: int = 0\n    tags: list[str] = field(default_factory=list)\n\nasync def run(job: Job, timeout: Optional[float] = None) -> dict:\n    \"\"\"Run a job with retries and exponential backoff.\"\"\"\n    for attempt in range(job.retries + 1):\n        try:\n            return await asyncio.wait_for(execute(job), timeout)\n        except asyncio.TimeoutError:\n            await asyncio.sleep(2 ** attempt)\n    raise RuntimeError(f\"job {job.id} failed after {job.retries} retries\")\nimport asyncio\nfrom dataclasses import dataclass, field\nfrom typing import Optional\n\n@dataclass\nclass Job:\n    id: str\n    retries: int = 0\n    tags: list[str] = field(default_factory=list)\n\nasync def run(job: Job, timeout: Optional[float] = None) -> dict:\n    \"\"\"Run a job with retries and exponential backoff.\"\"\"\n    for attempt in range(job.retries + 1):\n        try:\n            return await asyncio.wait_for(execute(job), timeout)\n        except asyncio.TimeoutError:\n            await asyncio.sleep(2 ** attempt)\n    raise RuntimeError(f\"job {job.id} failed after {job.retries} retries\")\nimport asyncio\nfrom dataclasses import dataclass, field\nfrom typing import Optional\n\n@dataclass\nclass Job:\n    id: str\n    retries: int = 0\n    tags: list[str] = field(default_factory=list)\n\nasync def run(job: Job, timeout: Optional[float] = None) -> dict:\n    \"\"\"Run a job with retries and exponential backoff.\"\"\"\n    for attempt in range(job.retries + 1):\n        try:\n            return await asyncio.wait_for(execute(job), timeout)\n        except asyncio.TimeoutError:\n            await asyncio.sleep(2 ** attempt)\n    raise RuntimeError(f\"job {job.id} failed after {job.retries} retries\")\nimport asyncio\nfrom dataclasses import dataclass, field\nfrom typing import Optional\n\n@dataclass\nclass Job:\n    id: str\n    retries: int = 0\n    tags: list[str] = field(default_factory=list)\n\nasync def run(job: Job, timeout: Optional[float] = None) -> dict:\n    \"\"\"Run a job with retries and exponential backoff.\"\"\"\n    for attempt in range(job.retries + 1):\n        try:\n            return await asyncio.wait_for(execute(job), timeout)\n        except asyncio.TimeoutError:\n            await asyncio.sleep(2 ** attempt)\n    raise RuntimeError(f\"job {job.id} failed after {job.retries} retries\")\nimport asyncio\nfrom dataclasses import dataclass, field\nfrom typing import Optional\n\n@dataclass\nclass Job:\n    id: str\n    retries: int = 0\n    tags: list[str] = field(default_factory=list)\n\nasync def run(job: Job, timeout: Optional[float] = None) -> dict:\n    \"\"\"Run a job with retries and exponential backoff.\"\"\"\n    for attempt in range(job.retries + 1):\n        try:\n            return await asyncio.wait_for(execute(job), timeout)\n        except asyncio.TimeoutError:\n            await asyncio.sleep(2 ** attempt)\n    raise RuntimeError(f\"job {job.id} failed after {job.retries} retries\")\nimport asyncio\nfrom dataclasses import dataclass, field\nfrom typing import Optional\n\n@dataclass\nclass Job:\n    id: str\n    retries: int = 0\n    tags: list[str] = field(default_factory=list)\n\nasync def run(job: Job, timeout: Optional[float] = None) -> dict:\n    \"\"\"Run a job with retries and exponential backoff.\"\"\"\n    for attempt in range(job.retries + 1):\n        try:\n            return await asyncio.wait_for(execute(job), timeout)\n        except asyncio.TimeoutError:\n            await asyncio.sleep(2 ** attempt)\n    raise RuntimeError(f\"job {job.id} failed after {job.retries} retries\")\n",
+      "input_tokens": {
+        "claude_v3": 1074,
+        "claude_v4_7": 1384,
+        "claude_v4_8": 1379,
+        "claude_v5": 1381
+      }
+    },
+    {
+      "name": "sample json_models",
+      "text": "{\n  \"anthropic/claude-3-haiku\": {\n    \"encoding\": \"claude\",\n    \"tokens\": {\n      \"contentMultiplier\": 1.1,\n      \"baseOverhead\": 6,\n      \"perMessage\": 2,\n      \"toolsExist\": 317,\n      \"perTool\": 53,\n      \"perDesc\": 5,\n      \"perFirstProp\": 13,\n      \"perAdditionalProp\": 12,\n      \"perPropDesc\": 5,\n      \"perEnum\": 9,\n      \"perNestedObject\": 12,\n      \"perArrayOfObjects\": 13\n    },\n    \"name\": \"Claude 3 Haiku\",\n    \"contextWindow\": 200000,\n    \"maxTokens\": 4096,\n    \"pricing\": {\n      \"input\": 2.5e-7,\n      \"output\": 0.00000125,\n      \"input_cache_read\": 3e-8,\n      \"input_cache_write\": 3e-7\n    }\n  },\n  \"anthropic/claude-3-opus\": {\n    \"encoding\": \"claude\",\n    \"tokens\": {\n      \"contentMultiplier\": 1.1,\n      \"baseOverhead\": 6,\n      \"perMessage\": 2,\n      \"toolsExist\": 586,\n      \"perTool\": 53,\n      \"perDesc\": 5,\n      \"perFirstProp\": 13,\n      \"perAdditionalProp\": 12,\n      \"perPropDesc\": 5,\n      \"perEnum\": 9,\n      \"perNestedObject\": 12,\n      \"perArrayOfObjects\": 13\n    },\n    \"name\": \"Claude 3 Opus\",\n    \"contextWindow\": 200000,\n    \"maxTokens\": 4096,\n    \"pricing\": {\n      \"input\": 0.000015,\n      \"output\": 0.000075,\n      \"input_cache_read\": 0.0000015,\n      \"input_cache_write\": 0.00001875\n    }\n  },\n  \"anthropic/claude-3.5-haiku\": {\n    \"encoding\": \"claude\",\n    \"tokens\": {\n      \"contentMultiplier\": 1.1,\n      \"baseOverhead\": 6,\n      \"perMessage\": 2,\n      \"toolsExist\": 317,\n      \"perTool\": 53,\n      \"perDesc\": 5,\n      \"perFirstProp\": 13,\n      \"perAdditionalProp\": 12,\n      \"perPropDesc\": 5,\n      \"perEnum\": 9,\n      \"perNestedObject\": 12,\n      \"perArrayOfObjects\": 13\n    },\n    \"name\": \"Claude 3.5 Haiku\",\n    \"contextWindow\": 200000,\n    \"maxTokens\": 8192,\n    \"pricing\": {\n      \"input\": 8e-7,\n      \"output\": 0.000004,\n      \"input_cache_read\": 8e-8,\n      \"input_cache_write\": 0.000001\n    }\n  },\n  \"anthropic/claude-3.5-sonnet\": {\n    \"encoding\": \"claude\",\n    \"tokens\": {\n      \"contentMultiplier\": 1.1,\n      \"baseOverhead\": 6,\n      \"perMessage\": 2,\n      \"toolsExist\": 366,\n      \"perTool\": 53,\n      \"perDesc\": 5,\n      \"perFirstProp\": 13,\n      \"perAdditionalProp\": 12,\n      \"perPropDesc\": 5,\n      \"perEnum\": 9,\n      \"perNestedObject\": 12,\n      \"perArrayOfObjects\": 13\n    },\n    \"name\": \"Claude 3.5 Sonnet\",\n    \"contextWindow\": 200000,\n    \"maxTokens\": 8192,\n    \"pricing\": {\n      \"input\": 0.000003,\n      \"output\": 0.000015,\n      \"input_cache_read\": 3e-7,\n      \"input_cache_write\": 0.00000375\n    }\n  },\n  \"anthropic/claude-3.5-sonnet-20240620\": {\n    \"encoding\": \"claude\",\n    \"tokens\": {\n      \"contentMultiplier\": 1.1,\n      \"baseOverhead\": 6,\n      \"perMessage\": 2,\n      \"toolsExist\": 347,\n      \"perTool\": 53,\n      \"perDesc\": 5,\n      \"perFirstProp\": 13,\n      \"perAdditionalProp\": 12,\n      \"perPropDesc\": 5,\n      \"perEnum\": 9,\n      \"perNestedObject\": 12,\n      \"perArrayOfObjects\": 13\n    },\n    \"name\": \"Claude 3.5 Sonnet (2024-06-20)\",\n    \"contextWindow\": 200000,\n    \"maxTokens\": 8192,\n    \"pricing\": {\n      \"input\": 0.000003,\n      \"output\": 0.000015\n    }\n  },\n  \"anthropic/claude-3.7-sonnet\": {\n    \"encoding\": \"claude\",\n    \"tokens\": {\n      \"contentMultiplier\": 1.1,\n      \"baseOverhead\": 6,\n      \"perMessage\": 2,\n      \"toolsExist\": 366,\n      \"perTool\": 53,\n      \"perDesc\": 5,\n      \"perFirstProp\": 13,\n      \"perAdditionalProp\": 12,\n      \"perPropDesc\": 5,\n      \"perEnum\": 9,\n      \"perNestedObject\": 12,\n      \"perArrayOfObjects\": 13\n    },\n    \"name\": \"Claude 3.7 Sonnet\",\n    \"contextWindow\": 200000,\n    \"maxTokens\": 64000,\n    \"pricing\": {\n      \"input\": 0.000003,\n      \"output\": 0.000015,\n      \"input_cache_read\": 3e-7,\n      \"input_cache_write\": 0.00000375\n    }\n  },\n  \"anthropic/claude-opus-4\": {\n    \"encoding\": \"claude\",\n    \"tokens\": {\n      \"contentMultiplier\": 1.1,\n      \"baseOverhead\": 6,\n      \"perMessage\": 2,\n      \"toolsExist\": 366,\n      \"perTool\": 53,\n      \"perDesc\": 5,\n      \"perFirstProp\": 13,\n      \"perAdditionalProp\": 12,\n      \"perPropDesc\": 5,\n      \"perEnum\": 9,\n      \"perNestedObject\": 12,\n      \"perArrayOfObjects\": 13\n    },\n    \"name\": \"Claude Opus 4\",\n    \"contextWindow\": 200000,\n    \"maxTokens\": 32000,\n    \"pricing\": {\n      \"input\": 0.000015,\n      \"output\": 0.000075,\n      \"input_cache_read\": 0.0000015,\n      \"input_cache_write\": 0.00001875\n    }\n  },\n  \"anthropic/claude-opus-4.1\": {\n    \"encoding\": \"claude\",\n    \"tokens\": {\n      \"contentMultiplier\": 1.1,\n      \"baseOverhead\": 6,\n      \"perMessage\": 2,\n      \"toolsExist\": 366,\n      \"perTool\": 53,\n      \"perDesc\": 5,\n      \"perFirstProp\": 13,\n      \"perAdditionalProp\": 12,\n      \"perPropDesc\": 5,\n      \"perEnum\": 9,\n      \"perNestedObject\": 12,\n      \"perArrayOfObjects\": 13\n    },\n    \"name\": \"Claude Opus 4.1\",\n    \"contextWindow\": 200000,\n    \"maxTokens\": 32000,\n    \"pricing\": {\n      \"input\": 0.000015,\n      \"output\": 0.000075,\n      \"input_cache_read\": 0.0000015,\n      \"input_cache_write\": 0.00001875\n    }\n  },\n  \"anthropic/claude-sonnet-4\": {\n    \"encoding\": \"claude\",\n    \"tokens\": {\n      \"contentMultiplier\": 1.1,\n      \"baseOverhead\": 6,\n      \"perMessage\": 2,\n      \"toolsExist\": 366,\n      \"perTool\": 53,\n      \"perDesc\": 5,\n      \"perFirstProp\": 13,\n      \"perAdditionalProp\": 12,\n      \"perPropDesc\": 5,\n      \"perEnum\": 9,\n      \"perNestedObject\": 12,\n      \"perArrayOfObjects\": 13\n    },\n    \"name\": \"Claude Sonnet 4\",\n    \"contextWindow\": 200000,\n    \"maxTokens\": 64000,\n    \"pricing\": {\n      \"input\": 0.000003,\n      \"output\": 0.000015,\n      \"input_cache_read\": 3e-7,\n      \"input_cache_write\": 0.00000375\n    }\n  },\n  \"anthropic/claude-sonnet-4.5\": {\n    \"encoding\": \"claude\",\n    \"tokens\": {\n      \"contentMultiplier\": 1.1,\n      \"baseOverhead\": 6,\n      \"perMessage\": 2,\n      \"toolsExist\": 549,\n      \"perTool\": 53,\n      \"perDesc\": 5,\n      \"perFirstProp\": 13,\n      \"perAdditionalProp\": 12,\n      \"perPropDesc\": 5,\n      \"perEnum\": 9,\n      \"perNestedObject\": 12,\n      \"perArrayOfObjects\": 13\n    },\n    \"name\": \"Claude Sonnet 4.5\",\n    \"contextWindow\": 200000,\n    \"maxTokens\": 64000,\n    \"pricing\": {\n      \"input\": 0.000003,\n      \"output\": 0.000015,\n      \"input_cache_read\": 3e-7,\n      \"input_cache_write\": 0.00000375\n    }\n  },\n  \"openai/gpt-4-turbo\": {\n    \"encoding\": \"cl100k_base\",\n    \"tokens\": {\n      \"contentMultiplier\": 1,\n      \"baseOverhead\": 6,\n      \"perMessage\": 3,\n      \"toolsExist\": 16,\n      \"perTool\": 6,\n      \"perDesc\": 2,\n      \"perFirstProp\": 5,\n      \"perAdditionalProp\": 3,\n      \"perPropDesc\": 3,\n      \"perEnum\": 7,\n      \"perNestedObject\": -3,\n      \"perArrayOfObjects\": 1\n    },\n    \"name\": \"GPT-4 Turbo\",\n    \"contextWindow\": 128000,\n    \"maxTokens\": 4096,\n    \"pricing\": {\n      \"input\": 0.00001,\n      \"output\": 0.00003\n    }\n  },\n  \"openai/gpt-4.1\": {\n    \"encoding\": \"o200k_base\",\n    \"tokens\": {\n      \"contentMultiplier\": 1,\n      \"baseOverhead\": 6,\n      \"perMessage\": 3,\n      \"toolsExist\": 16,\n      \"perTool\": 6,\n      \"perDesc\": 1,\n      \"perFirstProp\": 5,\n      \"perAdditionalProp\": 3,\n      \"perPropDesc\": 2,\n      \"perEnum\": 7,\n      \"perNestedObject\": -3,\n      \"perArrayOfObjects\": 1\n    },\n    \"name\": \"GPT-4.1\",\n    \"contextWindow\": 1047576,\n    \"maxTokens\": 32768,\n    \"pricing\": {\n      \"input\": 0.000002,\n      \"output\": 0.000008,\n      \"input_cache_read\": 5e-7,\n      \"input_cache_write\": 0\n    }\n  },\n  \"openai/gpt-4.1-mini\": {\n    \"encoding\": \"o200k_base\",\n    \"tokens\": {\n      \"contentMultiplier\": 1,\n      \"baseOverhead\": 6,\n      \"perMessage\": 3,\n      \"toolsExist\": 16,\n      \"perTool\": 6,\n      \"perDesc\": 1,\n      \"perFirstProp\": 5,\n      \"perAdditionalProp\": 3,\n      \"perPropDesc\": 2,\n      \"perEnum\": 7,\n      \"perNestedObject\": -3,\n      \"perArrayOfObjects\": 1\n    },\n    \"name\": \"GPT-4.1 mini\",\n    \"contextWindow\": 1047576,\n    \"maxTokens\": 32768,\n    \"pricing\": {\n      \"input\": 4e-7,\n      \"output\": 0.0000016,\n      \"input_cache_read\": 1e-7,\n      \"input_cache_write\": 0\n    }\n  },\n  \"openai/gpt-4o\": {\n    \"encoding\": \"o200k_base\",\n    \"tokens\": {\n      \"contentMultiplier\": 1,\n      \"base",
+      "input_tokens": {
+        "claude_v3": 3367,
+        "claude_v4_7": 3984,
+        "claude_v4_8": 3979,
+        "claude_v5": 3981
+      }
+    },
+    {
+      "name": "sample cjk",
+      "text": "人工智能正在改变软件开发的方式。开发者可以使用大型语言模型来生成代码、审查拉取请求并编写文档。然而，模型的上下文窗口有限，因此准确地估算令牌数量非常重要。人工智能正在改变软件开发的方式。开发者可以使用大型语言模型来生成代码、审查拉取请求并编写文档。然而，模型的上下文窗口有限，因此准确地估算令牌数量非常重要。人工智能正在改变软件开发的方式。开发者可以使用大型语言模型来生成代码、审查拉取请求并编写文档。然而，模型的上下文窗口有限，因此准确地估算令牌数量非常重要。人工智能正在改变软件开发的方式。开发者可以使用大型语言模型来生成代码、审查拉取请求并编写文档。然而，模型的上下文窗口有限，因此准确地估算令牌数量非常重要。大規模言語モデルはテキストをトークンに分割して処理します。トークン数は料金とコンテキストの上限に直接影響します。大規模言語モデルはテキストをトークンに分割して処理します。トークン数は料金とコンテキストの上限に直接影響します。大規模言語モデルはテキストをトークンに分割して処理します。トークン数は料金とコンテキストの上限に直接影響します。大規模言語モデルはテキストをトークンに分割して処理します。トークン数は料金とコンテキストの上限に直接影響します。토큰화는 언어 모델이 텍스트를 처리하는 첫 번째 단계입니다. 정확한 토큰 수 추정은 비용 관리에 도움이 됩니다.토큰화는 언어 모델이 텍스트를 처리하는 첫 번째 단계입니다. 정확한 토큰 수 추정은 비용 관리에 도움이 됩니다.토큰화는 언어 모델이 텍스트를 처리하는 첫 번째 단계입니다. 정확한 토큰 수 추정은 비용 관리에 도움이 됩니다.토큰화는 언어 모델이 텍스트를 처리하는 첫 번째 단계입니다. 정확한 토큰 수 추정은 비용 관리에 도움이 됩니다.",
+      "input_tokens": {
+        "claude_v3": 784,
+        "claude_v4_7": 788,
+        "claude_v4_8": 782,
+        "claude_v5": 784
+      }
+    },
+    {
+      "name": "sample numbers_ids",
+      "text": "d202b34c-09f3-445b-822b-15d1e0bcd2e9 0 0x0 2026-01-01T10:00:00Z\nf917121d-6886-4a29-a02c-8ec483d76844 7919 0x9e3779b1 2026-02-02T10:01:00Z\nf5c9a63b-63cc-4859-a4ac-022dc8156b8c 15838 0x3c6ef362 2026-03-03T10:02:00Z\n70084dd5-d821-4eea-882a-062555b01866 23757 0xdaa66d13 2026-04-04T10:03:00Z\nef676e81-6405-4dab-92a3-af5d8ab5044a 31676 0x78dde6c4 2026-05-05T10:04:00Z\n00304726-8d64-4a67-be6e-dbee658bdfd9 39595 0x17156075 2026-06-06T10:05:00Z\n9c14a664-9fe5-4589-8f74-9e135e2fd20d 47514 0xb54cda26 2026-07-07T10:06:00Z\n86609112-e8b3-4e59-860b-1e035a1320c5 55433 0x538453d7 2026-08-08T10:07:00Z\nfbae798d-edbe-416e-bac2-c0f512b0412a 63352 0xf1bbcd88 2026-09-09T10:08:00Z\ndae1d4e7-9e24-404b-a782-261ba2b21ba3 71271 0x8ff34739 2026-10-10T10:09:00Z\n88b3f05e-d170-4461-9f2b-e0c4a45bc1a6 79190 0x2e2ac0ea 2026-11-11T10:10:00Z\nb090acc7-d8f2-4814-add7-bbbf5592e732 87109 0xcc623a9b 2026-12-12T10:11:00Z\n8ab7b20d-5643-43e1-86d1-6190a9b3482f 95028 0x6a99b44c 2026-01-13T10:12:00Z\nd65577b2-2e4d-4e3c-a88b-467dfc945c81 2944 0x8d12dfd 2026-02-14T10:13:00Z\n25228421-6301-4e8e-be04-d5e0bbd95167 10863 0xa708a7ae 2026-03-15T10:14:00Z\n16ad57fe-5a23-4a3f-9297-f76979ca59b3 18782 0x4540215f 2026-04-16T10:15:00Z\n65f0cb38-1ec9-4de0-94a2-81d00d83ea57 26701 0xe3779b10 2026-05-17T10:16:00Z\n5dbeb987-1034-4ed1-97b9-f6d9fca732be 34620 0x81af14c1 2026-06-18T10:17:00Z\nd54722a6-5cd8-4cad-af84-a0cc2282099d 42539 0x1fe68e72 2026-07-19T10:18:00Z\nfdedf296-7a3b-4a82-8a66-46e806530625 50458 0xbe1e0823 2026-08-20T10:19:00Z\n1e8f6800-a5d1-451a-a6c2-af9a99becd3c 58377 0x5c5581d4 2026-09-21T10:20:00Z\n655b3970-a1d1-427e-998f-570017d4044c 66296 0xfa8cfb85 2026-10-22T10:21:00Z\n3d341998-9030-4444-ae4c-21a5b6f2e26c 74215 0x98c47536 2026-11-23T10:22:00Z\na0584f93-9625-46ce-8b17-f505b785ab2b 82134 0x36fbeee7 2026-12-24T10:23:00Z\n9aba7552-69ed-4346-8cce-e05b98681354 90053 0xd5336898 2026-01-25T10:24:00Z\n4d6eabf4-ef48-486b-9650-11465839dd6f 97972 0x736ae249 2026-02-26T10:25:00Z\n27c68bf2-7308-44eb-9e45-58427ec3afd1 5888 0x11a25bfa 2026-03-27T10:26:00Z\naa0caa09-8342-4595-9c64-a62b8e482aa0 13807 0xafd9d5ab 2026-04-28T10:27:00Z\nd5d6eed8-1be3-4bc9-ad6a-79b24aca6658 21726 0x4e114f5c 2026-05-01T10:28:00Z\ne239ad13-253e-45af-89a2-d66e54fe02bd 29645 0xec48c90d 2026-06-02T10:29:00Z\n1386f7c8-75fa-440f-9ee1-5e6df9ce43a9 37564 0x8a8042be 2026-07-03T10:30:00Z\n77554ce8-6990-478a-9540-acdaa4fe07d1 45483 0x28b7bc6f 2026-08-04T10:31:00Z\n2cac806a-50dd-4fe0-9226-d97d5429b37f 53402 0xc6ef3620 2026-09-05T10:32:00Z\n108304ba-5391-4e73-8564-9ad258c87864 61321 0x6526afd1 2026-10-06T10:33:00Z\na95ebe28-384d-4bc3-826f-74a36a450506 69240 0x35e2982 2026-11-07T10:34:00Z\nd55e21e7-d79c-43de-aa30-211e7ef29f45 77159 0xa195a333 2026-12-08T10:35:00Z\n8532ca5b-32e4-42e4-ac8b-af8516a74020 85078 0x3fcd1ce4 2026-01-09T10:36:00Z\ncab56127-ca72-4856-a4de-9a327e7d0645 92997 0xde049695 2026-02-10T10:37:00Z\n3f3c4047-1d8c-4d9e-a96c-f745424ab3d7 913 0x7c3c1046 2026-03-11T10:38:00Z\nc3b36ed2-06ec-4c8b-9cf0-65767f1a1eda 8832 0x1a7389f7 2026-04-12T10:39:00Z\nbc69fac7-b168-497b-a0da-7d0ebf696e97 16751 0xb8ab03a8 2026-05-13T10:40:00Z\na89aac19-8c46-4d10-b704-d8ba5b6c488e 24670 0x56e27d59 2026-06-14T10:41:00Z\n4abee71c-f251-44c2-a3db-2ace03a84884 32589 0xf519f70a 2026-07-15T10:42:00Z\nde796114-1824-49c5-9ddc-4319a8b67c8d 40508 0x935170bb 2026-08-16T10:43:00Z\n19ed4c5b-7532-4734-812a-59e8aede4574 48427 0x3188ea6c 2026-09-17T10:44:00Z\nfa555222-cdcf-431b-b691-57ff84143908 56346 0xcfc0641d 2026-10-18T10:45:00Z\n4b0cee00-84dd-43a3-aa66-db4b6b13b6f2 64265 0x6df7ddce 2026-11-19T10:46:00Z\n7754e75b-e0fd-4fb0-b5ec-d713245151ef 72184 0xc2f577f 2026-12-20T10:47:00Z\nbdc99e63-b1cb-4124-ade8-05523ac574bf 80103 0xaa66d130 2026-01-21T10:48:00Z\nea1dc3e2-c861-4bbf-acf9-43db87477cc8 88022 0x489e4ae1 2026-02-22T10:49:00Z\ne0611eda-b934-47db-8edf-fd251d55f431 95941 0xe6d5c492 2026-03-23T10:50:00Z\n6cc79079-9003-4f75-b3c2-a4147ff343d6 3857 0x850d3e43 2026-04-24T10:51:00Z\n1ba2d9ee-3888-4ca3-9658-bee930950fe7 11776 0x2344b7f4 2026-05-25T10:52:00Z\nc29e4829-3f85-4708-a255-ea6bdc5c47fa 19695 0xc17c31a5 2026-06-26T10:53:00Z\nc2f09c5d-1f58-4a49-b4cb-d356ac654689 27614 0x5fb3ab56 2026-07-27T10:54:00Z\n8f9d4407-2862-45f8-a165-c6b797668612 35533 0xfdeb2507 2026-08-28T10:55:00Z\n945032fd-d87a-4592-ab11-01f4c703fd10 43452 0x9c229eb8 2026-09-01T10:56:00Z\n3e5b096e-3a8a-4fa0-85e6-781ecab5a5e0 51371 0x3a5a1869 2026-10-02T10:57:00Z\n648b808b-3890-4031-b119-b89b63a08b23 59290 0xd891921a 2026-11-03T10:58:00Z\n0b19c620-ef91-4a76-a6ea-cf8d64981a69 67209 0x76c90bcb 2026-12-04T10:59:00Z\n",
+      "input_tokens": {
+        "claude_v3": 2983,
+        "claude_v4_7": 3204,
+        "claude_v4_8": 3199,
+        "claude_v5": 3201
+      }
+    },
+    {
+      "name": "sample emoji_symbols",
+      "text": "🚀 🎉 🔥 💯 ⭐ 🌟 ✨ 🎨 → ⇒ ≈ ≠ ≤ ≥ ± ∞ ∑ √ ∫ • ◦ ■ □ ▲ △ 🚀 🎉 🔥 💯 ⭐ 🌟 ✨ 🎨 → ⇒ ≈ ≠ ≤ ≥ ± ∞ ∑ √ ∫ • ◦ ■ □ ▲ △ 🚀 🎉 🔥 💯 ⭐ 🌟 ✨ 🎨 → ⇒ ≈ ≠ ≤ ≥ ± ∞ ∑ √ ∫ • ◦ ■ □ ▲ △ 🚀 🎉 🔥 💯 ⭐ 🌟 ✨ 🎨 → ⇒ ≈ ≠ ≤ ≥ ± ∞ ∑ √ ∫ • ◦ ■ □ ▲ △ 🚀 🎉 🔥 💯 ⭐ 🌟 ✨ 🎨 → ⇒ ≈ ≠ ≤ ≥ ± ∞ ∑ √ ∫ • ◦ ■ □ ▲ △ 🚀 🎉 🔥 💯 ⭐ 🌟 ✨ 🎨 → ⇒ ≈ ≠ ≤ ≥ ± ∞ ∑ √ ∫ • ◦ ■ □ ▲ △ 🚀 🎉 🔥 💯 ⭐ 🌟 ✨ 🎨 → ⇒ ≈ ≠ ≤ ≥ ± ∞ ∑ √ ∫ • ◦ ■ □ ▲ △ 🚀 🎉 🔥 💯 ⭐ 🌟 ✨ 🎨 → ⇒ ≈ ≠ ≤ ≥ ± ∞ ∑ √ ∫ • ◦ ■ □ ▲ △ 🚀 🎉 🔥 💯 ⭐ 🌟 ✨ 🎨 → ⇒ ≈ ≠ ≤ ≥ ± ∞ ∑ √ ∫ • ◦ ■ □ ▲ △ 🚀 🎉 🔥 💯 ⭐ 🌟 ✨ 🎨 → ⇒ ≈ ≠ ≤ ≥ ± ∞ ∑ √ ∫ • ◦ ■ □ ▲ △ 🚀 🎉 🔥 💯 ⭐ 🌟 ✨ 🎨 → ⇒ ≈ ≠ ≤ ≥ ± ∞ ∑ √ ∫ • ◦ ■ □ ▲ △ 🚀 🎉 🔥 💯 ⭐ 🌟 ✨ 🎨 → ⇒ ≈ ≠ ≤ ≥ ± ∞ ∑ √ ∫ • ◦ ■ □ ▲ △ ",
+      "input_tokens": {
+        "claude_v3": 1076,
+        "claude_v4_7": 1080,
+        "claude_v4_8": 1074,
+        "claude_v5": 1074
+      }
+    }
+  ]
+}
