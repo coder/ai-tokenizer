@@ -221,6 +221,17 @@ FUZZ_RANGES = [
     (0xF0000, 0xF00FF, 1),
 ]
 
+# Short strings over a tiny alphabet reach merge ties, contractions, space
+# marks and whitespace kinds far more often than random Unicode does. U+FEFF
+# is left out: the default engine mishandles it (PR #8), so "edge/" covers it.
+SMALL_ALPHABET = [
+    " ", " ", "\t", "\n", "\r\n", "\r", "a", "b", "B", "z", "1", "22", "_",
+    "'", "s", "ſ", "t", "re", "ve", "ll", "d", "\u0085", "\u00a0", "\u3000",
+    "日", "本", "e\u0301", "😀", "\u200d", "👨", ".", "/", "<", ">", "▁", "-",
+    "=", "<0x41>", "\ufffd", "é", "ß", "İ", "ǅ", "!", "0", "\u2028", "\u0000",
+    "\x7f", "한", "ก", "ا", "क्ष",
+]
+
 INVISIBLE = re.compile(
     "[\u007f-\u00a0\u00ad\u0600-\u0605\u061c\u06dd\u070f\u180e\u200b-\u200f"
     "\u2028-\u202f\u2060-\u206f\u3000\ufe00-\ufe0f\ufeff\ufff0-\uffff"
@@ -302,6 +313,14 @@ def build_fuzz(count: int) -> list[str]:
     return samples
 
 
+def build_small_alphabet_fuzz(count: int) -> list[str]:
+    rng = random.Random(20261104)
+    return [
+        "".join(rng.choice(SMALL_ALPHABET) for _ in range(rng.randint(1, 60)))
+        for _ in range(count)
+    ]
+
+
 def main() -> None:
     samples = []
     for lang, titles in WIKI_TITLES.items():
@@ -330,6 +349,8 @@ def main() -> None:
         samples.append({"name": f"edge/{edge.encode('unicode_escape').decode() or 'empty'}", "text": edge})
     for i, text in enumerate(build_fuzz(400)):
         samples.append({"name": f"fuzz/{i}", "text": text})
+    for i, text in enumerate(build_small_alphabet_fuzz(1000)):
+        samples.append({"name": f"fuzz-small/{i}", "text": text})
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     body = json.dumps(

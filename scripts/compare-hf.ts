@@ -3,11 +3,12 @@
  * reference, token id by token id.
  *
  * Usage:
- *   bun scripts/compare-hf.ts compare <llama4|gemma4> <file|dir>... [--slices N] [--max-chars N]
+ *   bun scripts/compare-hf.ts compare <llama4|gemma4> <file|dir|@list>... [--slices N] [--max-chars N]
  *   bun scripts/compare-hf.ts fixture
  *
  * `compare` reads every UTF-8 text file under the paths. Each file is one
- * sample, and `--slices` adds N random substrings per file. It prints one line
+ * sample, and `--slices` adds N random substrings per file. A `.jsonl` file
+ * holds one JSON string sample per line instead. It prints one line
  * per mismatch and ends with a count line. The exit code is 1 on a mismatch.
  *
  * `fixture` rewrites fixtures/hf-reference.json from fixtures/hf-corpus.json.
@@ -98,6 +99,13 @@ function* batches(texts: string[]): Generator<string[]> {
 }
 
 function walk(target: string, files: string[]): void {
+  if (target.startsWith("@")) {
+    // "@list.txt": one path per line.
+    for (const line of fs.readFileSync(target.slice(1), "utf-8").split("\n")) {
+      if (line !== "") walk(line, files);
+    }
+    return;
+  }
   const stat = fs.statSync(target);
   if (stat.isDirectory()) {
     for (const entry of fs.readdirSync(target).sort()) {
@@ -135,6 +143,15 @@ function readSamples(paths: string[], slices: number, maxChars: number) {
   const texts: string[] = [];
   const names: string[] = [];
   for (const file of files) {
+    if (file.endsWith(".jsonl")) {
+      const lines = fs.readFileSync(file, "utf-8").split("\n");
+      lines.forEach((line, i) => {
+        if (line === "") return;
+        texts.push(JSON.parse(line) as string);
+        names.push(`${file}:${i + 1}`);
+      });
+      continue;
+    }
     let text: string;
     try {
       text = decoder.decode(fs.readFileSync(file));
