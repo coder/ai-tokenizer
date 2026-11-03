@@ -32,6 +32,13 @@ describe("SentencePieceTokenizer with gemma4", () => {
     }
   });
 
+  test("decode keeps a BOM that arrives as byte tokens", () => {
+    const bytes = ["<0xEF>", "<0xBB>", "<0xBF>"].map((piece) =>
+      gemma4.vocab.indexOf(piece)
+    );
+    expect(tokenizer.decode(bytes)).toBe("\ufeff");
+  });
+
   test("a lone surrogate counts as U+FFFD", () => {
     expect(tokenizer.encode("a\ud800b")).toEqual(tokenizer.encode("a\ufffdb"));
     expect(tokenizer.encode("a\udc00")).toEqual(tokenizer.encode("a\ufffd"));

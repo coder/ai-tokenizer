@@ -30,14 +30,13 @@ export interface SentencePieceEncoding {
   merges: string;
 }
 
-const SPACE_MARK = "▁";
 const SPACE_MARK_CODE_POINT = 0x2581;
 const REPLACEMENT_CODE_POINT = 0xfffd;
 // Merge index and position share one heap key: rank * 2^32 + position.
 const KEY_RADIX = 4294967296;
 const BYTE_TOKEN = /^<0x([0-9A-F]{2})>$/;
 
-const textDecoder = new TextDecoder("utf-8");
+const textDecoder = new TextDecoder("utf-8", { ignoreBOM: true });
 
 function escapeRegex(str: string): string {
   return str.replace(/[\\^$*+?.()|[\]{}]/g, "\\$&");
@@ -425,5 +424,3 @@ export default class SentencePieceTokenizer {
     return Int32Array.from(symbols);
   }
 }
-
-export { SPACE_MARK };
