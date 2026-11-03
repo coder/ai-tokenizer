@@ -4,7 +4,8 @@ Runs inside `uv run --with "ctok @ git+<repo>@<commit>"`. Prints one JSON
 document on stdout:
 
   ctok     the installed ctok version and commit
-  unicode  per-codepoint answers of ctok's own predicates (Unicode 15.1)
+  unicode  per-codepoint answers of ctok's own predicates and the combining
+           classes (Unicode 15.1)
   escape   codepoints in the pieces that the generator writes as \\u escapes
   families one entry per requested ctok version (pieces, byte prefixes, scalars)
 
@@ -103,6 +104,21 @@ for cp in range(0x110001):
         start = None
 
 
+# normalize.ts sorts each run of marks by class before the engine's NFC, so the
+# engine need not reorder them one by one. The sort leaves the NFC output alone
+# only if decomposing a mark never changes its class.
+ccc = []  # inclusive [first, last, class, ...] of codepoints with a non-zero class
+for cp in range(0x110000):
+    n = unicodedata.combining(chr(cp))  # 0 for surrogates
+    if n == 0:
+        continue
+    assert all(unicodedata.combining(d) == n for d in unicodedata.normalize("NFD", chr(cp))), hex(cp)
+    if ccc and ccc[-2] == cp - 1 and ccc[-1] == n:
+        ccc[-2] = cp
+    else:
+        ccc += [cp, cp, n]
+
+
 def escaped(c: str) -> bool:
     """Invisible, line-breaking or marker codepoints, and U+FFFD, which reads as
     a broken file when written literally."""
@@ -171,6 +187,7 @@ json.dump(
             "facts": fact_runs,
             "lower": lower,
             "assigned": assigned,
+            "ccc": ccc,
         },
         "escape": sorted(ord(c) for c in escape),
         "families": families,

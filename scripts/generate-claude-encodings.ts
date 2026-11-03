@@ -46,6 +46,7 @@ interface Export {
     facts: number[];
     lower: number[];
     assigned: number[];
+    ccc: number[];
   };
   escape: number[];
   families: Record<string, Family>;
@@ -145,6 +146,12 @@ export const LOWER: readonly number[] = ${JSON.stringify(u.lower)};
 
 /** Codepoints assigned in Unicode ${u.version}: [first, last, ...], inclusive. */
 export const ASSIGNED: readonly number[] = ${JSON.stringify(u.assigned)};
+
+/**
+ * Canonical combining class of every codepoint with a non-zero one, as runs:
+ * [first, last, class, ...], inclusive.
+ */
+export const CCC: readonly number[] = ${JSON.stringify(u.ccc)};
 `
 );
 
