@@ -175,11 +175,33 @@ How close: `count()` equals `count_tokens` on all 14 Claude models for conversat
 - A tool schema is counted by its properties, as for every model. The API also writes the name of a required property into `required`, which costs `tokens - 1` more for a name of more than one token, and it writes `\n`, quotes and, on `claude_v3` models, non-ASCII characters in a description as JSON escapes. Optional properties cost less than required ones.
 - A tool call number or nested value, and JSON in a tool result, can be 1 or 2 tokens off, and so can a result with a trailing newline.
 - Tool calls in parallel (two or more in one assistant message) cost about 24 tokens more once. The Claude 4.x models charge 1 token more for the first tool call of a conversation.
-- Mid-conversation system messages join the system prompt, images and PDFs count as before, and extended thinking, citations, cache control and server tools are not read.
+- Mid-conversation system messages join the system prompt, and extended thinking, citations, cache control and server tools are not read. Images and PDFs are priced as [Images and PDFs](#images-and-pdfs) says.
 
 Retired Claude models (Claude 3, 3.5, 3.7, Opus 4, 4.1 and Sonnet 4) stay in `models` so that `ModelName` keeps its members. `count_tokens` does not take them any more, so they are on `claude_v3` with the measurements of Sonnet 4.5. That is a guess.
 
 The encodings are a TypeScript port of [ctok](https://github.com/sanderland/ctok) by Sander Land (MIT License), at commit [`8c43ffd`](https://github.com/sanderland/ctok/tree/8c43ffd3c7be467622a540f025516e49ef78d8b1). `scripts/generate-claude-encodings.ts` regenerates the data from that commit, and `scripts/compare-claude-ctok.ts` compares the port with ctok.
+
+## Images and PDFs
+
+`count()` prices an image from its size and a PDF from its pages, for the models whose price was measured against the provider's API. Every other model keeps the old flat numbers: 85 tokens for an image and 100 for a file. A `file` part with an `image/*` media type, or the media type `image`, is an image, as it is for the providers.
+
+The size comes from the file header, with no pixel decoded. `count()` reads PNG, JPEG, GIF and WebP from a base64 string, a `data:` URL, a `Uint8Array`, a `Buffer`, an `ArrayBuffer` or AI SDK v7 tagged data. An image that is a URL, a provider file id, or a format it cannot read costs what a 1024x1024 image costs on that model. This also applies to the images in a tool result.
+
+| Models | Image price | Measured on | Fitted to |
+| --- | --- | --- | --- |
+| Claude 4.5 and 4.6 (`claude_v3`) | 28 px patches + 3, long edge at most 1568 px and at most 1568 patches | `count_tokens` | 446 sizes, 6,244 cases, 14 models, all exact |
+| Claude 4.7 and later | the same, with 2576 px and 4784 patches | `count_tokens` | same cases, all exact |
+| `openai/gpt-5`, `openai/gpt-4o` | 512 px tiles after the image fits 2048 px and its short side 768 px: 70 + 140 per tile, or 85 + 170, and a flat 70 or 85 at `detail: low` | Responses API usage | 232 cases each, all exact |
+| `openai/gpt-4.1-mini` | 32 px patches, 1.62 per patch, at most 1536 patches | Responses API usage | 232 cases, all exact |
+| `google/gemini-2.5-flash` | tiles of 258 tokens: one for the image and one for each crop, at most 12, or 258 for a small image | AI Gateway (Vertex) | 132 sizes, all exact |
+
+- **Claude.** The recipes and the tool-result extras are in `models.json` for all 40 Claude models. An image costs the same in a user turn and as a `file` or `image` part. In a tool result it costs 10 tokens more, the result costs 1 more once, and each text block next to an image costs 7 more. The retired models use Sonnet 4.5's numbers, as for everything else. `count_tokens` does not enforce the API's 8,000 px and 20-image limits, and neither does `count()`. One token is not modeled: a text block that follows an image in a user turn can cost 1 more than `count()` says.
+- **OpenAI.** Set `providerOptions.openai.imageDetail` on a part to `low`, `high`, `auto` or `original`. A part without it is priced as `auto`, which is what the API does. `gpt-5.5` and `gpt-6.1-sol` were measured too (232 cases each, exact) but are not in `models.json`: they use 32 px patches at 1.2 per patch + 1, with limits that depend on `detail`, and the recipe is in `scripts/fit-media.ts`. Pass a model of your own with that recipe in `tokens.media` to count them.
+- **Gemini.** The AI Gateway sends Gemini 2.5 Flash to Vertex first, and this is what `google/gemini-2.5-flash` prices. Google AI Studio charges a flat 258 tokens per image at the default resolution. With more than one image in the request, each image costs 258 on both. `gemini-3.5-flash` was measured too (132 sizes, exact) and is not in `models.json`: its price depends on the aspect ratio only, at most 1120 tokens (`kind: "budget"`). `mediaResolution` is a request option and `count()` does not read it: it prices the default.
+- **PDFs, on Claude models.** Anthropic draws each page as an image with its long edge at 1568 px and reads the text layer. A PDF costs a fixed amount, plus for each page its image, a fixed amount, and its text counted with the model's tokenizer. `count()` reads the page tree, the visible box (the CropBox, not the MediaBox) and the text of the file itself (`src/pdf.ts`), as pdfium does. It matches `count_tokens` exactly on 29 of the 31 PDFs of `src/fixtures/pdf/` on every model. The other two are within 4.2%: it does not decrypt, so an encrypted file has no text, and a line just under the edge of a CropBox is clipped differently on Claude 4.7 and later. A PDF it cannot read, such as a URL or a file id, costs 1,707 tokens, the mean cost of a page of that corpus (1,756 on Claude 4.7 and later). A PDF in a tool result is priced the same: the extra framing of a document there was not measured.
+- Every other model, provider and file type keeps 85 and 100 tokens.
+
+`scripts/measure-media-*.ts` measure the providers and write `src/fixtures/media-*.json`. `scripts/fit-media.ts` checks each recipe against them, and `scripts/generate-media-configs.ts` writes the OpenAI and Gemini recipes to `models.json`. The Claude recipes come from `generate-model-configs.ts --provider anthropic`. `bun test` replays the fixtures without a key and prints how many costs it reproduced.
 
 ## Accuracy
 
