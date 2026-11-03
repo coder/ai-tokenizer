@@ -335,6 +335,29 @@ describe("tool schemas", () => {
     expect(reads).toBe(1);
   });
 
+  test("a schema is converted once per input schema object: edits to the JSON Schema are seen, a lazy schema is not read again", () => {
+    // A JSON Schema object is read as it is on every count.
+    const edited = structuredClone(sourceOfTruth);
+    const schema = jsonSchema(edited as never);
+    const before = schemaTokens(schema);
+    edited.properties.query.description = "A much longer search query";
+    expect(schemaTokens(schema)).toBeGreaterThan(before);
+
+    // What a thunk returned is remembered, so a later change of its source is
+    // not seen, until a new input schema object is passed.
+    let source: typeof sourceOfTruth = structuredClone(sourceOfTruth);
+    const lazy = jsonSchema((() => source) as never);
+    const first = schemaTokens(lazy);
+    source = {
+      ...source,
+      properties: { query: source.properties.query },
+    } as never;
+    expect(schemaTokens(lazy)).toBe(first);
+    expect(schemaTokens(jsonSchema((() => source) as never))).toBeLessThan(
+      first
+    );
+  });
+
   test("tools that are counted again are not converted again", () => {
     let conversions = 0;
     const lazy = () => {

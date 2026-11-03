@@ -80,9 +80,21 @@ const costUSD = result.total * model.pricing.input;
 ```
 
 `ai-tokenizer/sdk` works with AI SDK v5, v6 and v7 and needs `ai` installed
-(v7 needs Node 22 or newer). Messages in any of those versions' shapes are
-counted, and tool input schemas are read with the AI SDK's own `asSchema()`, so
-zod 3, zod 4, `jsonSchema()` and (v6 and v7) Standard Schema tools all count.
+(v7 needs Node 22 or newer). It imports `ai` when it loads. Without `ai`, the
+import fails with the module system's own error, which names the package
+(`Cannot find package 'ai' imported from .../ai-tokenizer/dist/sdk.js`, or
+`Cannot find module 'ai'` for CommonJS). The root `ai-tokenizer` entry does not
+need `ai`. Messages in any of those versions' shapes are counted, and tool input
+schemas are read with the AI SDK's own `asSchema()`, so zod 3, zod 4,
+`jsonSchema()` and (v6 and v7) Standard Schema tools all count.
+
+`count()` converts a tool's `inputSchema` to JSON Schema once per `inputSchema`
+object and remembers the result for as long as that object lives. It does not
+notice later changes to what was converted: a lazy `jsonSchema(() => ...)` runs
+once, and a zod schema you change after its first count is not converted again.
+Pass a new `inputSchema` object (for example a new `tool()`) to make `count()`
+read it again. A plain JSON Schema object that you edit in place is read as it
+is on every call.
 
 `count()` is synchronous. It cannot wait for a tool whose `jsonSchema` is a
 Promise (or a function that returns one), and it cannot read a schema the AI SDK
@@ -118,7 +130,7 @@ const total = tokenizer.count("some text input");
 
 ## Claude encodings
 
-Anthropic changed its tokenizer at Claude Opus 4.7. Four encodings count Claude tokens offline. Each one is named after the first model that counts that way. They match the `count_tokens` API exactly on all 93 texts in `src/fixtures/claude-count-tokens.json`, measured on Claude Opus 4.6, Opus 4.7, Opus 4.8 and Opus 5.5. The older `claude` encoding stays available unchanged.
+Anthropic changed its tokenizer at Claude Opus 4.7. Four encodings count Claude tokens offline. Each one is named after the first model that counts that way. They match the `count_tokens` API exactly on all 93 texts in `src/fixtures/claude-count-tokens.json`, measured on Claude Opus 4.6, Opus 4.7, Opus 4.8 and Opus 5.5. The older `claude` encoding stays available unchanged. Every Claude model in `models` uses one of the four, and `count()` counts a request to it the way `count_tokens` does (see [Counting a Claude request](#counting-a-claude-request)).
 
 | Encoding | Models | Frame |
 | --- | --- | --- |
@@ -146,6 +158,26 @@ tokenizer.count("hello, world"); // 4
 - Counts use Unicode 15.1 data, like the reference. A JavaScript engine with Unicode data older than 15.1 can count text with newer characters differently.
 - Some Latin letters added in Unicode 16 (for example U+A7CC, U+A7CD and U+A7DA) count a few tokens off. ctok has the same gap.
 - A single space at the end of the text, right after one of the ideographic tone marks U+302A to U+302F, counts 1 token too many on `claude_v3`, `claude_v4_7` and `claude_v4_8` (`"x \u302e "` is 5 on the API and 6 here). ctok has the same gap. `claude_v5` is right, because it trims that space.
+
+### Counting a Claude request
+
+`count()` in `ai-tokenizer/sdk` counts a request to one of these models by the rules Anthropic's `count_tokens` applies. Each model in `models.json` carries the numbers that `scripts/generate-model-configs.ts --provider anthropic` measured through `count_tokens` with the model's real API id (`tokens.anthropic`, with `baseOverhead` as the frame and `contentMultiplier` 1). A model without that block counts as before.
+
+- **Roles and ids are not tokens.** The frame, an extra for a user turn that follows an assistant turn, and an extra for the system prompt are fixed numbers per model. An assistant message costs its text only. Tool call ids and role names cost nothing.
+- **Turns.** A user message and the tool messages around it are one user turn, and consecutive assistant messages are one assistant turn, as the AI SDK's Anthropic provider sends them. The text blocks of a turn join with no separator.
+- **Trailing whitespace** is dropped on `claude_v5` models at the end of a user message and of the system prompt, and nowhere else (assistant text, tool results and tool call inputs keep it). `count()` asks the tokenizer for the untrimmed count (`tokenizer.countUntrimmed()`) wherever the API keeps it. A final assistant message is trimmed first, as the provider does, because the API rejects one that ends with whitespace.
+- **Tool calls and results.** A call costs its name and, for each top-level parameter, a fixed amount plus the key and the value: a string as it is, any other value as JSON with a space after each comma and colon. A result costs a fixed amount plus its payload: the `json` value as JSON, without the `{ type, value }` wrapper. An error result, an empty result (the API puts a placeholder there), text after a result and a user turn after the assistant answered a result each cost a measured extra on some models.
+- **Tool definitions** use the same fields as every other model. Enum values count as the JSON array the API reads, and an array property costs `perArray` on top of its items.
+- **`CountResult`.** `messages[i]` is the breakdown of `messages[i]`, and a text part's `total` is its share of the joined text of its turn, so a part can be 0 and the parts always add up to the count of the joined text. The turn and system overhead belongs to the first message of the turn.
+
+How close: `count()` equals `count_tokens` on all 14 Claude models for conversations of text, turns and trailing whitespace, and is within 2 tokens of it with tool calls (`src/sdk.api.test.ts` checks 112 recorded totals). A tool schema is within about 1.5%. What it does not model:
+
+- A tool schema is counted by its properties, as for every model. The API also writes the name of a required property into `required`, which costs `tokens - 1` more for a name of more than one token, and it writes `\n`, quotes and, on `claude_v3` models, non-ASCII characters in a description as JSON escapes. Optional properties cost less than required ones.
+- A tool call number or nested value, and JSON in a tool result, can be 1 or 2 tokens off, and so can a result with a trailing newline.
+- Tool calls in parallel (two or more in one assistant message) cost about 24 tokens more once. The Claude 4.x models charge 1 token more for the first tool call of a conversation.
+- Mid-conversation system messages join the system prompt, images and PDFs count as before, and extended thinking, citations, cache control and server tools are not read.
+
+Retired Claude models (Claude 3, 3.5, 3.7, Opus 4, 4.1 and Sonnet 4) stay in `models` so that `ModelName` keeps its members. `count_tokens` does not take them any more, so they are on `claude_v3` with the measurements of Sonnet 4.5. That is a guess.
 
 The encodings are a TypeScript port of [ctok](https://github.com/sanderland/ctok) by Sander Land (MIT License), at commit [`8c43ffd`](https://github.com/sanderland/ctok/tree/8c43ffd3c7be467622a540f025516e49ef78d8b1). `scripts/generate-claude-encodings.ts` regenerates the data from that commit, and `scripts/compare-claude-ctok.ts` compares the port with ctok.
 

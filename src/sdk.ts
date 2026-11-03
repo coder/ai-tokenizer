@@ -254,6 +254,12 @@ type InputSchemaRead =
  * JSON Schema read from each tool input schema, so repeated `count()` calls on
  * the same tools do not convert them again. Only complete reads are kept: the
  * conversion depends on nothing but the input schema.
+ *
+ * An entry lives as long as its input schema object and is never refreshed. A
+ * plain JSON Schema object that is edited in place is read as it is on every
+ * count, but a lazy schema (a `jsonSchema()` thunk, a zod schema built on
+ * demand) is converted once. To make `count()` read a changed schema, pass a
+ * new input schema object.
  */
 const convertedSchemas = new WeakMap<object, unknown>();
 
