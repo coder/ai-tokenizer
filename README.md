@@ -92,7 +92,7 @@ Gemini models use the Gemma 4 tokenizer, and Llama 4 has its own vocabulary. Bot
 
 - Gemini 2.5 (`flash`, `pro`, `flash-lite`): no difference on 14 probes.
 - Gemini 3 and newer (`3-flash`, `3.1-*`, `3.5-*`, `3.6-flash` to `3.8-flash`): the API drops every `\r` and every leading newline, and it counts a literal U+2581 as 3 byte tokens. `count` reads 1 token too many for each `\r` and 1 too many for a leading newline run. For a text with one U+2581 it reads 3 too few.
-- Llama 4 Scout: the API trims leading and trailing whitespace of the message content. `count` reads 1 token too many for a whitespace run at the start, and 1 for one at the end.
+- Llama 4 Scout: the API trims leading and trailing whitespace of the message content. `count` reads 1 token too many for a whitespace run at the start, and 1 for one at the end. The API also reads Llama special-token text such as `<|eot|>` as the special token, so `count` reads too many tokens for it. Use `encode(text, "all", []).length` to match. Gemini does not read `<bos>` or `<eos>` in the text as special tokens.
 
 Text without those characters matched the API on all 11 samples per model. Apply the cleanup yourself first if you need an exact count for such text.
 
