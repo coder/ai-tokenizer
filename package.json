@@ -34,7 +34,9 @@
       "encoding/cl100k_base": ["./dist/encoding/cl100k_base.d.ts"],
       "encoding/o200k_base": ["./dist/encoding/o200k_base.d.ts"],
       "encoding/p50k_base": ["./dist/encoding/p50k_base.d.ts"],
-      "encoding/claude": ["./dist/encoding/claude.d.ts"]
+      "encoding/claude": ["./dist/encoding/claude.d.ts"],
+      "encoding/gemma4": ["./dist/encoding/gemma4.d.ts"],
+      "encoding/llama4": ["./dist/encoding/llama4.d.ts"]
     }
   },
   "exports": {
@@ -106,6 +108,26 @@
       "require": {
         "types": "./dist/encoding/claude.d.cts",
         "default": "./dist/encoding/claude.cjs"
+      }
+    },
+    "./encoding/gemma4": {
+      "import": {
+        "types": "./dist/encoding/gemma4.d.ts",
+        "default": "./dist/encoding/gemma4.js"
+      },
+      "require": {
+        "types": "./dist/encoding/gemma4.d.cts",
+        "default": "./dist/encoding/gemma4.cjs"
+      }
+    },
+    "./encoding/llama4": {
+      "import": {
+        "types": "./dist/encoding/llama4.d.ts",
+        "default": "./dist/encoding/llama4.js"
+      },
+      "require": {
+        "types": "./dist/encoding/llama4.d.cts",
+        "default": "./dist/encoding/llama4.cjs"
       }
     }
   },
