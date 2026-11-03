@@ -135,9 +135,10 @@ const config = await prettier.resolveConfig(
 );
 
 /**
- * Prettier hangs on the 900 kB pieces literal in this process, though it
- * formats the same text in a fresh one in 0.2 s. So it never sees the literal:
- * the source carries a placeholder and `literals` fills it in afterwards.
+ * Prettier ran for over a minute on the 900 kB pieces literal here, though a
+ * separate process formatted the same text in 0.2 s. So it never sees the
+ * literal: the source carries a placeholder and `literals` fills it in
+ * afterwards.
  */
 async function write(
   path: string,

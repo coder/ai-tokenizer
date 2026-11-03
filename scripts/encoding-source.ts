@@ -1,9 +1,9 @@
 /**
- * Shared by the encoding generators: the JSON string an encoding module
- * embeds, and the source of a lazy BPE module.
+ * Shared by the encoding generators: the strings an encoding module embeds,
+ * and the source of a lazy BPE module.
  *
- * A generated module holds its tables as one JSON string and builds them on
- * first use (src/lazy.ts), so importing the module does no work.
+ * A generated module holds its tables as one string and builds them on first
+ * use (src/lazy.ts), so importing the module does no work.
  */
 
 import * as prettier from "prettier";

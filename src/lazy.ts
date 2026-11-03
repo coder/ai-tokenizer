@@ -4,10 +4,10 @@
  * An encoding module used to build its tables (an object with 200k keys, a
  * decoder with 200k entries) while it was imported, so importing the barrel
  * `ai-tokenizer/encoding` paid for every encoding. A module now embeds its
- * data as one JSON string and exports stand-ins for the tables. The stand-in
- * builds the real table on first use. A module namespace cannot hold a getter,
- * and the tables are public exports, so a stand-in is a Proxy that forwards to
- * the real table.
+ * data as one string and exports stand-ins for the tables. A stand-in builds
+ * the real table on first use. A module namespace cannot hold a getter, and
+ * the tables are public exports, so a stand-in is a Proxy that forwards to the
+ * real table.
  *
  * `Tokenizer` calls {@link resolve} to get the real table, so a lookup in its
  * hot loop never goes through the Proxy.
