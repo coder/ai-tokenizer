@@ -557,6 +557,15 @@ export function bytePairMerge(
     heapEnd[index] = end;
   };
 
+  // Typed arrays drop writes past their end, so check the bound here.
+  const push = (rank: number, pos: number, end: number): void => {
+    if (size >= capacity) throw new RangeError("bytePairMerge: heap is full");
+    heapRank[size] = rank;
+    heapPos[size] = pos;
+    heapEnd[size] = end;
+    siftUp(size++);
+  };
+
   const siftDown = (index: number): void => {
     const rank = heapRank[index]!;
     const pos = heapPos[index]!;
@@ -621,22 +630,12 @@ export function bytePairMerge(
       prev[end] = pos;
       const afterEnd = next[end]!;
       const rankWithNext = getRankForSlice(piece.subarray(pos, afterEnd));
-      if (rankWithNext < NO_RANK) {
-        heapRank[size] = rankWithNext;
-        heapPos[size] = pos;
-        heapEnd[size] = afterEnd;
-        siftUp(size++);
-      }
+      if (rankWithNext < NO_RANK) push(rankWithNext, pos, afterEnd);
     }
     const left = prev[pos]!;
     if (left >= 0) {
       const rankWithLeft = getRankForSlice(piece.subarray(left, end));
-      if (rankWithLeft < NO_RANK) {
-        heapRank[size] = rankWithLeft;
-        heapPos[size] = left;
-        heapEnd[size] = end;
-        siftUp(size++);
-      }
+      if (rankWithLeft < NO_RANK) push(rankWithLeft, left, end);
     }
   }
 
