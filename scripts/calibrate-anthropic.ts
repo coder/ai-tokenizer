@@ -17,11 +17,13 @@ import { z } from "zod";
 import Tokenizer from "../src/tokenizer";
 import * as encodings from "../src/encoding";
 import { count } from "../src/sdk";
-import type { AnthropicTokens, Model, ModelTokens } from "../src";
+import type { AnthropicTokens, Model, ModelTokens, PdfTokens } from "../src";
 import { imageTokens } from "../src/image-tokens";
 import { countMessagesTokens, mapLimit } from "./anthropic";
-import { greyPng } from "./media-samples";
-import { fitAnthropicImage, averagePdfPageTokens } from "./fit-media";
+import { greyPng, pdf } from "./media-samples";
+import { fitAnthropicImage, unreadablePdfTokens } from "./fit-media";
+import { readPdf } from "../src/pdf";
+import { pdfTokens } from "../src/pdf-tokens";
 import { toolProbes, type ToolProbeName } from "./probes";
 
 /**
@@ -139,9 +141,29 @@ const resultImage = () => ({
   mediaType: "image/png",
   data: { type: "data", data: probeImage() },
 });
+const userPdf = (...pages: Parameters<typeof pdf>[0]) =>
+  ({
+    role: "user",
+    content: [
+      { type: "text", text: "a" },
+      {
+        type: "file",
+        mediaType: "application/pdf",
+        data: pdf(pages).toString("base64"),
+      },
+    ],
+  }) as ModelMessage;
 const resultText = (text: string) => ({ type: "text", text });
 const toolContent = (...value: unknown[]): ModelMessage =>
   toolResult({ type: "content", value });
+
+/** A page is drawn with its long edge at 1568 px, on every Claude model. */
+const PDF_PAGE: PdfTokens["page"] = {
+  patch: 28,
+  edge: 1568,
+  maxPatches: 1568,
+  overhead: 3,
+};
 
 export interface MessageProbe {
   messages: ModelMessage[];
@@ -245,6 +267,9 @@ const messageProbes = {
     ],
     tools: { f },
   },
+  pdfBlank: { messages: [userPdf({})] },
+  pdfTwoBlank: { messages: [userPdf({}, {})] },
+  pdfText: { messages: [userPdf({ words: 30 })] },
   cycleThenText: {
     messages: [
       user("a"),
@@ -329,6 +354,15 @@ export const checkConversations: Record<string, MessageProbe> = {
   },
   finalAssistant: {
     messages: [user("Say hi"), assistant("Hi there  ")],
+  },
+  pdfPages: {
+    messages: [
+      userPdf(
+        { words: 120 },
+        { width: 595, height: 842 },
+        { width: 300, height: 200, words: 5 }
+      ),
+    ],
   },
   userImages: {
     messages: [
@@ -439,6 +473,26 @@ async function measure(
   const probeCost = imageTokens(media.image, PROBE_IMAGE);
   const imageAlone = m.cycleImage - m.cycle + n("b") - probeCost;
   const imageInToolResult = m.cycleTwoImages - m.cycleImage - probeCost;
+  // A PDF with every field 0 costs its page images and its text: what is
+  // measured beyond that is the block's own overhead.
+  const bare = {
+    base: 0,
+    perPage: 0,
+    textDiscount: 0,
+    page: PDF_PAGE,
+    unreadable: 0,
+  };
+  const pdfBare = (...pages: Parameters<typeof pdf>[0]) =>
+    pdfTokens(bare, tokenizer, readPdf(pdf(pages)));
+  const perPage = m.pdfTwoBlank - m.pdfBlank - (pdfBare({}, {}) - pdfBare({}));
+  const pdfRecipe: PdfTokens = {
+    base: m.pdfBlank - m.user - pdfBare({}) - perPage,
+    perPage,
+    textDiscount:
+      pdfBare({ words: 30 }) - pdfBare({}) - (m.pdfText - m.pdfBlank),
+    page: PDF_PAGE,
+    unreadable: unreadablePdfTokens(encoding),
+  };
   const anthropic: AnthropicTokens = {
     userTurn,
     system: m.system - m.user - n("x"),
@@ -477,7 +531,7 @@ async function measure(
       n("Data"),
     perArrayOfObjects: m.arrayOfObjects - m.arrayOfStrings - innerProps,
     anthropic,
-    media: { ...media, pdf: { averagePage: averagePdfPageTokens(encoding) } },
+    media: { ...media, pdf: pdfRecipe },
   };
 
   // Every probe, and every check, must come out the way the API counted it.

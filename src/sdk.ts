@@ -6,8 +6,8 @@ import {
   needsImageCount,
   type ImageContext,
 } from "./image-tokens";
-import { imageSizeOf, mediaBytesOf } from "./media";
-import { pdfTokens } from "./pdf-tokens";
+import { imageSizeOf } from "./media";
+import { pdfTokens, readInlinePdf } from "./pdf-tokens";
 
 export interface CountOptions<TOOLS extends ToolSet = ToolSet> {
   /**
@@ -98,7 +98,7 @@ export function count<TOOLS extends ToolSet = ToolSet>(
   options: CountOptions<TOOLS>
 ): CountResult<TOOLS> {
   const config = options.model.tokens;
-  const price = mediaPricer(options.messages, config);
+  const price = mediaPricer(options.tokenizer, options.messages, config);
 
   let total = config.baseOverhead;
 
@@ -777,6 +777,8 @@ interface Media {
    * AI SDK v7 tagged file data, or a provider file reference.
    */
   data: unknown;
+  /** The part itself. */
+  source: Record<string, unknown>;
   /** `providerOptions.openai.imageDetail` of the part: `low`, `high`, `auto` or `original`. */
   detail: string | undefined;
 }
@@ -792,6 +794,7 @@ type MediaPricer = (media: Media) => number;
  * file-like part reaches it, whatever its AI SDK shape.
  */
 function mediaPricer(
+  tokenizer: Tokenizer,
   messages: ModelMessage[],
   config: ModelTokens
 ): MediaPricer {
@@ -806,7 +809,11 @@ function mediaPricer(
         : FLAT_IMAGE_TOKENS;
     }
     if (config.media?.pdf && isPdf(media)) {
-      return pdfTokens(config.media.pdf, mediaBytesOf(media.data));
+      return pdfTokens(
+        config.media.pdf,
+        tokenizer,
+        readInlinePdf(media.source, media.data)
+      );
     }
     return FLAT_FILE_TOKENS;
   };
@@ -902,6 +909,7 @@ function toMedia(part: Record<string, unknown>): Media {
         : "file",
     mediaType,
     data: mediaData(part),
+    source: part,
     detail: imageDetail(part),
   };
 }

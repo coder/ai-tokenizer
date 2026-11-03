@@ -14,7 +14,7 @@ import type {
   TileImageTokens,
 } from "../src";
 import { imageTokens } from "../src/image-tokens";
-import { countPdfPages } from "../src/pdf-tokens";
+import { readPdf } from "../src/pdf";
 
 const fixture = (name: string) =>
   JSON.parse(
@@ -234,10 +234,10 @@ export function fitGeminiImage(model: string): MediaTokens {
 }
 
 /**
- * The mean cost of a page of the PDF corpus, measured on the model that counts
- * with this encoding, by the page count `count()` finds in each file.
+ * What a PDF costs when it cannot be read: the mean cost of a page of the PDF
+ * corpus, measured on the model that counts with this encoding.
  */
-export function averagePdfPageTokens(encoding: string): number {
+export function unreadablePdfTokens(encoding: string): number {
   const model = {
     claude_v3: "claude-opus-4-6",
     claude_v4_7: "claude-opus-4-7",
@@ -255,13 +255,11 @@ export function averagePdfPageTokens(encoding: string): number {
   let pages = 0;
   for (const [file, cost] of Object.entries(measured)) {
     if (typeof cost !== "number") continue;
-    tokens += cost;
-    pages += Math.max(
-      1,
-      countPdfPages(
-        readFileSync(new URL(`../src/fixtures/pdf/${file}`, import.meta.url))
-      )
+    const pdf = readPdf(
+      readFileSync(new URL(`../src/fixtures/pdf/${file}`, import.meta.url))
     );
+    tokens += cost;
+    pages += pdf?.pages.length ?? 0;
   }
   return Math.round(tokens / pages);
 }

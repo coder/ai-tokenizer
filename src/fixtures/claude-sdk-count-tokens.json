@@ -24,20 +24,20 @@
         { "role": "user", "content": "Hello there.  " }
       ],
       "api": {
-        "anthropic/claude-sonnet-4.5": 16,
         "anthropic/claude-haiku-4.5": 16,
-        "anthropic/claude-fable-5": 19,
         "anthropic/claude-opus-4.5": 16,
+        "anthropic/claude-sonnet-4.5": 16,
+        "anthropic/claude-fable-5": 19,
         "anthropic/claude-opus-4.6": 17,
         "anthropic/claude-haiku-5.5": 19,
         "anthropic/claude-opus-4.7": 24,
         "anthropic/claude-fable-5.1": 19,
         "anthropic/claude-opus-4.8": 19,
         "anthropic/claude-opus-5": 17,
-        "anthropic/claude-sonnet-4.6": 17,
         "anthropic/claude-opus-5.5": 19,
-        "anthropic/claude-sonnet-5": 19,
-        "anthropic/claude-sonnet-5.5": 19
+        "anthropic/claude-sonnet-4.6": 17,
+        "anthropic/claude-sonnet-5.5": 19,
+        "anthropic/claude-sonnet-5": 19
       }
     },
     {
@@ -50,19 +50,19 @@
       ],
       "api": {
         "anthropic/claude-haiku-4.5": 13,
-        "anthropic/claude-opus-4.5": 13,
         "anthropic/claude-sonnet-4.5": 13,
+        "anthropic/claude-opus-4.5": 13,
         "anthropic/claude-fable-5": 17,
         "anthropic/claude-fable-5.1": 19,
-        "anthropic/claude-opus-4.7": 22,
         "anthropic/claude-haiku-5.5": 19,
         "anthropic/claude-opus-4.6": 14,
-        "anthropic/claude-opus-5.5": 19,
+        "anthropic/claude-opus-4.7": 22,
         "anthropic/claude-opus-4.8": 17,
         "anthropic/claude-opus-5": 17,
         "anthropic/claude-sonnet-4.6": 14,
-        "anthropic/claude-sonnet-5": 17,
-        "anthropic/claude-sonnet-5.5": 19
+        "anthropic/claude-opus-5.5": 19,
+        "anthropic/claude-sonnet-5.5": 19,
+        "anthropic/claude-sonnet-5": 17
       }
     },
     {
@@ -75,18 +75,18 @@
         { "role": "user", "content": "b" }
       ],
       "api": {
-        "anthropic/claude-haiku-4.5": 21,
-        "anthropic/claude-sonnet-4.5": 21,
         "anthropic/claude-opus-4.5": 21,
+        "anthropic/claude-sonnet-4.5": 21,
+        "anthropic/claude-haiku-4.5": 21,
         "anthropic/claude-fable-5": 21,
-        "anthropic/claude-fable-5.1": 23,
-        "anthropic/claude-haiku-5.5": 23,
         "anthropic/claude-opus-4.6": 21,
+        "anthropic/claude-haiku-5.5": 23,
         "anthropic/claude-opus-4.7": 32,
+        "anthropic/claude-fable-5.1": 23,
         "anthropic/claude-opus-4.8": 21,
         "anthropic/claude-opus-5": 21,
-        "anthropic/claude-sonnet-4.6": 21,
         "anthropic/claude-opus-5.5": 23,
+        "anthropic/claude-sonnet-4.6": 21,
         "anthropic/claude-sonnet-5": 21,
         "anthropic/claude-sonnet-5.5": 23
       }
@@ -106,20 +106,20 @@
         }
       ],
       "api": {
-        "anthropic/claude-haiku-4.5": 28,
-        "anthropic/claude-fable-5": 28,
         "anthropic/claude-opus-4.5": 28,
+        "anthropic/claude-haiku-4.5": 28,
         "anthropic/claude-sonnet-4.5": 28,
-        "anthropic/claude-fable-5.1": 29,
-        "anthropic/claude-haiku-5.5": 29,
+        "anthropic/claude-fable-5": 28,
         "anthropic/claude-opus-4.6": 28,
+        "anthropic/claude-haiku-5.5": 29,
+        "anthropic/claude-fable-5.1": 29,
         "anthropic/claude-opus-4.7": 39,
-        "anthropic/claude-opus-4.8": 28,
         "anthropic/claude-opus-5": 27,
         "anthropic/claude-sonnet-4.6": 28,
+        "anthropic/claude-opus-4.8": 28,
         "anthropic/claude-opus-5.5": 29,
-        "anthropic/claude-sonnet-5": 28,
-        "anthropic/claude-sonnet-5.5": 29
+        "anthropic/claude-sonnet-5.5": 29,
+        "anthropic/claude-sonnet-5": 28
       }
     },
     {
@@ -135,18 +135,18 @@
         }
       ],
       "api": {
-        "anthropic/claude-opus-4.5": 9,
-        "anthropic/claude-haiku-4.5": 9,
-        "anthropic/claude-fable-5": 8,
         "anthropic/claude-sonnet-4.5": 9,
-        "anthropic/claude-opus-4.6": 9,
-        "anthropic/claude-opus-4.7": 13,
+        "anthropic/claude-haiku-4.5": 9,
+        "anthropic/claude-opus-4.5": 9,
+        "anthropic/claude-fable-5": 8,
         "anthropic/claude-haiku-5.5": 10,
+        "anthropic/claude-opus-4.6": 9,
         "anthropic/claude-fable-5.1": 10,
-        "anthropic/claude-opus-4.8": 8,
+        "anthropic/claude-opus-4.7": 13,
         "anthropic/claude-opus-5": 8,
         "anthropic/claude-opus-5.5": 10,
         "anthropic/claude-sonnet-4.6": 9,
+        "anthropic/claude-opus-4.8": 8,
         "anthropic/claude-sonnet-5": 8,
         "anthropic/claude-sonnet-5.5": 10
       }
@@ -261,13 +261,13 @@
         }
       },
       "api": {
+        "anthropic/claude-opus-4.5": 886,
         "anthropic/claude-haiku-4.5": 886,
         "anthropic/claude-sonnet-4.5": 886,
         "anthropic/claude-fable-5": 657,
-        "anthropic/claude-opus-4.5": 886,
-        "anthropic/claude-opus-4.6": 887,
         "anthropic/claude-haiku-5.5": 658,
         "anthropic/claude-fable-5.1": 658,
+        "anthropic/claude-opus-4.6": 887,
         "anthropic/claude-opus-4.7": 1156,
         "anthropic/claude-opus-4.8": 657,
         "anthropic/claude-opus-5": 652,
@@ -285,20 +285,53 @@
         { "role": "assistant", "content": "Hi there  " }
       ],
       "api": {
+        "anthropic/claude-haiku-4.5": 11,
         "anthropic/claude-opus-4.5": 11,
         "anthropic/claude-sonnet-4.5": 11,
         "anthropic/claude-fable-5": 14,
-        "anthropic/claude-haiku-4.5": 11,
-        "anthropic/claude-opus-4.6": 11,
         "anthropic/claude-fable-5.1": 16,
+        "anthropic/claude-opus-4.6": 11,
         "anthropic/claude-haiku-5.5": 16,
         "anthropic/claude-opus-4.7": 19,
         "anthropic/claude-opus-4.8": 14,
         "anthropic/claude-opus-5": 14,
-        "anthropic/claude-sonnet-4.6": 11,
         "anthropic/claude-opus-5.5": 16,
+        "anthropic/claude-sonnet-4.6": 11,
         "anthropic/claude-sonnet-5": 14,
         "anthropic/claude-sonnet-5.5": 16
+      }
+    },
+    {
+      "name": "pdfPages",
+      "kind": "exact",
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            { "type": "text", "text": "a" },
+            {
+              "type": "file",
+              "mediaType": "application/pdf",
+              "data": "JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFs1IDAgUiA3IDAgUiA5IDAgUl0gL0NvdW50IDMgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhID4+CmVuZG9iago0IDAgb2JqCjw8IC9MZW5ndGggOTg2ID4+CnN0cmVhbQpCVCAvRjEgMTEgVGYgMzYgNzQ0IFRkCih3b3JkMCB3b3JkMSB3b3JkMiB3b3JkMyB3b3JkNCB3b3JkNSB3b3JkNiB3b3JkNyB3b3JkOCB3b3JkOSB3b3JkMTAgd29yZDExKSBUaiAwIC0xNCBUZAood29yZDEyIHdvcmQxMyB3b3JkMTQgd29yZDE1IHdvcmQxNiB3b3JkMTcgd29yZDE4IHdvcmQxOSB3b3JkMjAgd29yZDIxIHdvcmQyMiB3b3JkMjMpIFRqIDAgLTE0IFRkCih3b3JkMjQgd29yZDI1IHdvcmQyNiB3b3JkMjcgd29yZDI4IHdvcmQyOSB3b3JkMzAgd29yZDMxIHdvcmQzMiB3b3JkMzMgd29yZDM0IHdvcmQzNSkgVGogMCAtMTQgVGQKKHdvcmQzNiB3b3JkMzcgd29yZDM4IHdvcmQzOSB3b3JkNDAgd29yZDQxIHdvcmQ0MiB3b3JkNDMgd29yZDQ0IHdvcmQ0NSB3b3JkNDYgd29yZDQ3KSBUaiAwIC0xNCBUZAood29yZDQ4IHdvcmQ0OSB3b3JkNTAgd29yZDUxIHdvcmQ1MiB3b3JkNTMgd29yZDU0IHdvcmQ1NSB3b3JkNTYgd29yZDU3IHdvcmQ1OCB3b3JkNTkpIFRqIDAgLTE0IFRkCih3b3JkNjAgd29yZDYxIHdvcmQ2MiB3b3JkNjMgd29yZDY0IHdvcmQ2NSB3b3JkNjYgd29yZDY3IHdvcmQ2OCB3b3JkNjkgd29yZDcwIHdvcmQ3MSkgVGogMCAtMTQgVGQKKHdvcmQ3MiB3b3JkNzMgd29yZDc0IHdvcmQ3NSB3b3JkNzYgd29yZDc3IHdvcmQ3OCB3b3JkNzkgd29yZDgwIHdvcmQ4MSB3b3JkODIgd29yZDgzKSBUaiAwIC0xNCBUZAood29yZDg0IHdvcmQ4NSB3b3JkODYgd29yZDg3IHdvcmQ4OCB3b3JkODkgd29yZDkwIHdvcmQ5MSB3b3JkOTIgd29yZDkzIHdvcmQ5NCB3b3JkOTUpIFRqIDAgLTE0IFRkCih3b3JkOTYgd29yZDAgd29yZDEgd29yZDIgd29yZDMgd29yZDQgd29yZDUgd29yZDYgd29yZDcgd29yZDggd29yZDkgd29yZDEwKSBUaiAwIC0xNCBUZAood29yZDExIHdvcmQxMiB3b3JkMTMgd29yZDE0IHdvcmQxNSB3b3JkMTYgd29yZDE3IHdvcmQxOCB3b3JkMTkgd29yZDIwIHdvcmQyMSB3b3JkMjIpIFRqIDAgLTE0IFRkCkVUCmVuZHN0cmVhbQplbmRvYmoKNSAwIG9iago8PCAvVHlwZSAvUGFnZSAvUGFyZW50IDIgMCBSIC9NZWRpYUJveCBbMCAwIDYxMiA3OTJdIC9SZXNvdXJjZXMgPDwgL0ZvbnQgPDwgL0YxIDMgMCBSID4+ID4+IC9Db250ZW50cyA0IDAgUiA+PgplbmRvYmoKNiAwIG9iago8PCAvTGVuZ3RoIDAgPj4Kc3RyZWFtCmVuZHN0cmVhbQplbmRvYmoKNyAwIG9iago8PCAvVHlwZSAvUGFnZSAvUGFyZW50IDIgMCBSIC9NZWRpYUJveCBbMCAwIDU5NSA4NDJdIC9SZXNvdXJjZXMgPDwgL0ZvbnQgPDwgL0YxIDMgMCBSID4+ID4+IC9Db250ZW50cyA2IDAgUiA+PgplbmRvYmoKOCAwIG9iago8PCAvTGVuZ3RoIDcwID4+CnN0cmVhbQpCVCAvRjEgMTEgVGYgMzYgMTUyIFRkCih3b3JkMCB3b3JkMSB3b3JkMiB3b3JkMyB3b3JkNCkgVGogMCAtMTQgVGQKRVQKZW5kc3RyZWFtCmVuZG9iago5IDAgb2JqCjw8IC9UeXBlIC9QYWdlIC9QYXJlbnQgMiAwIFIgL01lZGlhQm94IFswIDAgMzAwIDIwMF0gL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgMyAwIFIgPj4gPj4gL0NvbnRlbnRzIDggMCBSID4+CmVuZG9iagp4cmVmCjAgMTAKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDEyNyAwMDAwMCBuIAowMDAwMDAwMTk3IDAwMDAwIG4gCjAwMDAwMDEyMzMgMDAwMDAgbiAKMDAwMDAwMTM1OSAwMDAwMCBuIAowMDAwMDAxNDA3IDAwMDAwIG4gCjAwMDAwMDE1MzMgMDAwMDAgbiAKMDAwMDAwMTY1MiAwMDAwMCBuIAp0cmFpbGVyCjw8IC9TaXplIDEwIC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgoxNzc4CiUlRU9GCg=="
+            }
+          ]
+        }
+      ],
+      "api": {
+        "anthropic/claude-haiku-4.5": 5118,
+        "anthropic/claude-opus-4.5": 5118,
+        "anthropic/claude-fable-5": 5122,
+        "anthropic/claude-sonnet-4.5": 5118,
+        "anthropic/claude-haiku-5.5": 5124,
+        "anthropic/claude-opus-4.7": 5127,
+        "anthropic/claude-opus-4.6": 5119,
+        "anthropic/claude-fable-5.1": 5124,
+        "anthropic/claude-sonnet-4.6": 5119,
+        "anthropic/claude-opus-4.8": 5122,
+        "anthropic/claude-opus-5.5": 5124,
+        "anthropic/claude-sonnet-5": 5122,
+        "anthropic/claude-opus-5": 5122,
+        "anthropic/claude-sonnet-5.5": 5124
       }
     },
     {
@@ -328,20 +361,20 @@
         }
       ],
       "api": {
-        "anthropic/claude-sonnet-4.5": 1969,
         "anthropic/claude-haiku-4.5": 1969,
-        "anthropic/claude-opus-4.5": 1969,
         "anthropic/claude-fable-5": 5138,
-        "anthropic/claude-opus-4.6": 1969,
+        "anthropic/claude-sonnet-4.5": 1969,
+        "anthropic/claude-opus-4.5": 1969,
         "anthropic/claude-fable-5.1": 5140,
+        "anthropic/claude-opus-4.6": 1969,
         "anthropic/claude-opus-4.7": 5143,
         "anthropic/claude-haiku-5.5": 5140,
         "anthropic/claude-opus-4.8": 5138,
         "anthropic/claude-opus-5": 5138,
-        "anthropic/claude-opus-5.5": 5140,
         "anthropic/claude-sonnet-4.6": 1969,
-        "anthropic/claude-sonnet-5.5": 5140,
-        "anthropic/claude-sonnet-5": 5138
+        "anthropic/claude-opus-5.5": 5140,
+        "anthropic/claude-sonnet-5": 5138,
+        "anthropic/claude-sonnet-5.5": 5140
       }
     },
     {
@@ -407,19 +440,19 @@
       },
       "api": {
         "anthropic/claude-haiku-4.5": 678,
+        "anthropic/claude-opus-4.5": 678,
         "anthropic/claude-sonnet-4.5": 678,
         "anthropic/claude-fable-5": 480,
-        "anthropic/claude-opus-4.5": 678,
-        "anthropic/claude-haiku-5.5": 478,
         "anthropic/claude-opus-4.6": 679,
         "anthropic/claude-fable-5.1": 478,
+        "anthropic/claude-haiku-5.5": 478,
         "anthropic/claude-opus-4.7": 894,
         "anthropic/claude-opus-5": 476,
-        "anthropic/claude-opus-4.8": 480,
         "anthropic/claude-sonnet-4.6": 679,
+        "anthropic/claude-opus-4.8": 480,
         "anthropic/claude-opus-5.5": 478,
-        "anthropic/claude-sonnet-5.5": 478,
-        "anthropic/claude-sonnet-5": 544
+        "anthropic/claude-sonnet-5": 544,
+        "anthropic/claude-sonnet-5.5": 478
       }
     },
     {
@@ -465,14 +498,14 @@
         }
       },
       "api": {
+        "anthropic/claude-opus-4.5": 666,
         "anthropic/claude-sonnet-4.5": 666,
         "anthropic/claude-haiku-4.5": 666,
         "anthropic/claude-fable-5": 474,
-        "anthropic/claude-opus-4.5": 666,
-        "anthropic/claude-fable-5.1": 472,
-        "anthropic/claude-opus-4.7": 888,
-        "anthropic/claude-haiku-5.5": 472,
         "anthropic/claude-opus-4.6": 667,
+        "anthropic/claude-fable-5.1": 472,
+        "anthropic/claude-haiku-5.5": 472,
+        "anthropic/claude-opus-4.7": 888,
         "anthropic/claude-opus-5": 470,
         "anthropic/claude-opus-4.8": 474,
         "anthropic/claude-sonnet-4.6": 667,
@@ -548,18 +581,18 @@
       },
       "api": {
         "anthropic/claude-sonnet-4.5": 857,
+        "anthropic/claude-opus-4.5": 857,
         "anthropic/claude-haiku-4.5": 857,
         "anthropic/claude-fable-5": 789,
-        "anthropic/claude-opus-4.5": 857,
-        "anthropic/claude-opus-4.7": 1179,
-        "anthropic/claude-haiku-5.5": 787,
-        "anthropic/claude-fable-5.1": 787,
         "anthropic/claude-opus-4.6": 858,
-        "anthropic/claude-opus-5": 785,
+        "anthropic/claude-opus-4.7": 1179,
+        "anthropic/claude-fable-5.1": 787,
+        "anthropic/claude-haiku-5.5": 787,
         "anthropic/claude-opus-4.8": 789,
-        "anthropic/claude-opus-5.5": 787,
-        "anthropic/claude-sonnet-5": 853,
         "anthropic/claude-sonnet-4.6": 858,
+        "anthropic/claude-opus-5.5": 787,
+        "anthropic/claude-opus-5": 785,
+        "anthropic/claude-sonnet-5": 853,
         "anthropic/claude-sonnet-5.5": 787
       }
     },
@@ -977,10 +1010,10 @@
         }
       },
       "api": {
-        "anthropic/claude-opus-4.5": 4524,
         "anthropic/claude-haiku-4.5": 4524,
-        "anthropic/claude-sonnet-4.5": 4524,
         "anthropic/claude-fable-5": 5310,
+        "anthropic/claude-sonnet-4.5": 4524,
+        "anthropic/claude-opus-4.5": 4524,
         "anthropic/claude-fable-5.1": 5312,
         "anthropic/claude-haiku-5.5": 5312,
         "anthropic/claude-opus-4.6": 4525,

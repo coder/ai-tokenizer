@@ -37,7 +37,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1763
+          "base": 22,
+          "perPage": 19,
+          "textDiscount": 0,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1707
         }
       }
     },
@@ -89,7 +98,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1763
+          "base": 22,
+          "perPage": 19,
+          "textDiscount": 0,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1707
         }
       }
     },
@@ -141,7 +159,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1763
+          "base": 22,
+          "perPage": 19,
+          "textDiscount": 0,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1707
         }
       }
     },
@@ -193,7 +220,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1763
+          "base": 22,
+          "perPage": 19,
+          "textDiscount": 0,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1707
         }
       }
     },
@@ -245,7 +281,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1763
+          "base": 22,
+          "perPage": 19,
+          "textDiscount": 0,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1707
         }
       }
     },
@@ -295,7 +340,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1763
+          "base": 22,
+          "perPage": 19,
+          "textDiscount": 0,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1707
         }
       }
     },
@@ -347,7 +401,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1763
+          "base": 22,
+          "perPage": 19,
+          "textDiscount": 0,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1707
         }
       }
     },
@@ -399,7 +462,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1763
+          "base": 22,
+          "perPage": 19,
+          "textDiscount": 0,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1707
         }
       }
     },
@@ -451,7 +523,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1763
+          "base": 22,
+          "perPage": 19,
+          "textDiscount": 0,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1707
         }
       }
     },
@@ -503,7 +584,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1763
+          "base": 22,
+          "perPage": 19,
+          "textDiscount": 0,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1707
         }
       }
     },
@@ -2423,7 +2513,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1763
+          "base": 22,
+          "perPage": 19,
+          "textDiscount": 0,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1707
         }
       }
     },
@@ -2622,7 +2721,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1763
+          "base": 22,
+          "perPage": 19,
+          "textDiscount": 0,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1707
         }
       }
     },
@@ -2674,7 +2782,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1813
+          "base": 26,
+          "perPage": 20,
+          "textDiscount": 1,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1756
         }
       }
     },
@@ -2726,7 +2843,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1813
+          "base": 26,
+          "perPage": 20,
+          "textDiscount": 1,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1756
         }
       }
     },
@@ -2778,7 +2904,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1813
+          "base": 26,
+          "perPage": 20,
+          "textDiscount": 1,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1756
         }
       }
     },
@@ -2830,7 +2965,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1813
+          "base": 26,
+          "perPage": 20,
+          "textDiscount": 1,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1756
         }
       }
     },
@@ -2882,7 +3026,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1763
+          "base": 22,
+          "perPage": 19,
+          "textDiscount": 0,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1707
         }
       }
     },
@@ -2934,7 +3087,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1813
+          "base": 26,
+          "perPage": 20,
+          "textDiscount": 1,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1756
         }
       }
     },
@@ -2986,7 +3148,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1813
+          "base": 26,
+          "perPage": 20,
+          "textDiscount": 1,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1756
         }
       }
     },
@@ -3038,7 +3209,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1763
+          "base": 22,
+          "perPage": 19,
+          "textDiscount": 0,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1707
         }
       }
     },
@@ -3090,7 +3270,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1763
+          "base": 23,
+          "perPage": 19,
+          "textDiscount": 0,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1707
         }
       }
     },
@@ -3142,7 +3331,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1763
+          "base": 23,
+          "perPage": 19,
+          "textDiscount": 0,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1707
         }
       }
     },
@@ -3194,7 +3392,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1813
+          "base": 26,
+          "perPage": 20,
+          "textDiscount": 1,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1756
         }
       }
     },
@@ -3246,7 +3453,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1813
+          "base": 26,
+          "perPage": 20,
+          "textDiscount": 1,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1756
         }
       }
     },
@@ -3298,7 +3514,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1813
+          "base": 26,
+          "perPage": 20,
+          "textDiscount": 1,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1756
         }
       }
     },
@@ -3350,7 +3575,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1813
+          "base": 26,
+          "perPage": 20,
+          "textDiscount": 1,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1756
         }
       }
     },
@@ -3402,7 +3636,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1813
+          "base": 26,
+          "perPage": 20,
+          "textDiscount": 1,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1756
         }
       }
     },
@@ -3454,7 +3697,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1813
+          "base": 26,
+          "perPage": 20,
+          "textDiscount": 1,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1756
         }
       }
     },
@@ -3506,7 +3758,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1813
+          "base": 26,
+          "perPage": 20,
+          "textDiscount": 1,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1756
         }
       }
     },
@@ -3558,7 +3819,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1813
+          "base": 26,
+          "perPage": 20,
+          "textDiscount": 1,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1756
         }
       }
     },
@@ -3610,7 +3880,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1813
+          "base": 26,
+          "perPage": 20,
+          "textDiscount": 1,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1756
         }
       }
     },
@@ -3662,7 +3941,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1813
+          "base": 26,
+          "perPage": 20,
+          "textDiscount": 1,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1756
         }
       }
     },
@@ -3714,7 +4002,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1813
+          "base": 26,
+          "perPage": 20,
+          "textDiscount": 1,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1756
         }
       }
     },
@@ -3766,7 +4063,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1763
+          "base": 22,
+          "perPage": 19,
+          "textDiscount": 0,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1707
         }
       }
     },
@@ -3818,7 +4124,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1763
+          "base": 23,
+          "perPage": 19,
+          "textDiscount": 0,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1707
         }
       }
     },
@@ -3870,7 +4185,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1763
+          "base": 23,
+          "perPage": 19,
+          "textDiscount": 0,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1707
         }
       }
     },
@@ -3922,7 +4246,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1813
+          "base": 26,
+          "perPage": 20,
+          "textDiscount": 1,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1756
         }
       }
     },
@@ -3974,7 +4307,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1813
+          "base": 26,
+          "perPage": 20,
+          "textDiscount": 1,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1756
         }
       }
     },
@@ -4026,7 +4368,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1813
+          "base": 26,
+          "perPage": 20,
+          "textDiscount": 1,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1756
         }
       }
     },
@@ -4078,7 +4429,16 @@
           "overhead": 3
         },
         "pdf": {
-          "averagePage": 1813
+          "base": 26,
+          "perPage": 20,
+          "textDiscount": 1,
+          "page": {
+            "patch": 28,
+            "edge": 1568,
+            "maxPatches": 1568,
+            "overhead": 3
+          },
+          "unreadable": 1756
         }
       }
     },
