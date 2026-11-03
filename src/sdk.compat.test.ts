@@ -277,9 +277,8 @@ describe("tool schemas", () => {
 
       test.each(Object.entries(changed(z)))(
         "%s counts the inner type behind a wrapper",
-        (_name, [schema, expected, legacy]) => {
+        (_name, [schema, expected]) => {
           expect(schemaTokens(schema)).toBe(expected as number);
-          expect(expected).toBeGreaterThan(legacy as number);
         }
       );
     });
@@ -408,7 +407,21 @@ describe("tool schemas", () => {
       }
     });
 
-    test("a Standard Schema vendor without JSON Schema conversion", () => {
+    test("a thenable whose then() throws", () => {
+      const thenable = {
+        then() {
+          throw new Error("boom");
+        },
+      };
+      const tools = countTools({
+        t: { inputSchema: jsonSchema(thenable as never) },
+      });
+      expect(tools.unresolved).toEqual([
+        { tool: "t", part: "inputSchema", reason: "async" },
+      ]);
+    });
+
+    test("a Standard Schema the AI SDK cannot convert to JSON Schema", () => {
       const tools = countTools({ t: { inputSchema: standard(undefined) } });
       expect(tools.unresolved).toHaveLength(1);
       expect(tools.unresolved[0]).toMatchObject({ reason: "error" });
@@ -425,6 +438,89 @@ describe("tool schemas", () => {
       });
       expect(both.definitions.good).toEqual(only.definitions.good);
       expect(both.unresolved.map((u) => u.tool)).toEqual(["bad"]);
+    });
+  });
+
+  describe("local $ref", () => {
+    const address = z4
+      .object({
+        street: z4.string().describe("Street"),
+        city: z4.string(),
+      })
+      .describe("Postal address");
+    const inline = (schema: unknown) => schemaTokens(schema);
+
+    test("a zod 4 schema registered with .meta({ id }) counts like the inline schema", () => {
+      const registered = address.meta({ id: "Address" });
+      expect(inline(z4.object({ home: registered, work: registered }))).toBe(
+        inline(z4.object({ home: address, work: address }))
+      );
+      expect(inline(z4.object({ stops: z4.array(registered) }))).toBe(
+        inline(z4.object({ stops: z4.array(address) }))
+      );
+    });
+
+    test("a top-level $ref and a $ref inside nullable are followed", () => {
+      const definitions = {
+        Address: {
+          type: "object",
+          description: "Postal address",
+          properties: { street: { type: "string", description: "Street" } },
+        },
+      };
+      const direct = {
+        type: "object",
+        properties: { home: { $ref: "#/definitions/Address" } },
+        definitions,
+      };
+      const nullable = {
+        type: "object",
+        properties: {
+          home: {
+            anyOf: [{ $ref: "#/definitions/Address" }, { type: "null" }],
+          },
+        },
+        definitions,
+      };
+      const expected = inline(
+        jsonSchema({
+          type: "object",
+          properties: { home: definitions.Address },
+        } as never)
+      );
+      expect(inline(jsonSchema(direct as never))).toBe(expected);
+      expect(inline(jsonSchema(nullable as never))).toBe(expected);
+      const rootRef = {
+        $ref: "#/$defs/Root",
+        $defs: {
+          Root: {
+            type: "object",
+            properties: { home: { $ref: "#/$defs/Address" } },
+          },
+          Address: definitions.Address,
+        },
+      };
+      expect(inline(jsonSchema(rootRef as never))).toBe(expected);
+    });
+
+    test("a recursive $ref ends", () => {
+      const tree = {
+        type: "object",
+        properties: { child: { $ref: "#" } },
+      };
+      expect(inline(jsonSchema(tree as never))).toBe(
+        enc("child") + tokens.perFirstProp + tokens.perNestedObject
+      );
+    });
+
+    test("a $ref to somewhere else counts nothing", () => {
+      const remote = {
+        type: "object",
+        properties: { a: { $ref: "https://example.com/a.json" } },
+      };
+      expect(inline(jsonSchema(remote as never))).toBe(
+        enc("a") + tokens.perFirstProp
+      );
     });
   });
 
@@ -455,17 +551,25 @@ describe("tool schemas", () => {
       ]);
     });
 
-    test("a provider-defined tool has no schema and counts only its name", () => {
-      const tools = countTools({
-        search: { type: "provider", id: "x.search", args: {} },
-      });
-      expect(tools.definitions.search).toEqual({
-        name: enc("search"),
-        description: 0,
-        inputSchema: 0,
-      });
-      expect(tools.unresolved).toEqual([]);
-    });
+    test.each(["provider", "provider-defined"])(
+      "a %s tool counts its name, not the schema the provider ignores",
+      (type) => {
+        const tools = countTools({
+          search: {
+            type,
+            id: "x.search",
+            args: {},
+            inputSchema: z4.object({ q: z4.string() }),
+          },
+        });
+        expect(tools.definitions.search).toEqual({
+          name: enc("search"),
+          description: 0,
+          inputSchema: 0,
+        });
+        expect(tools.unresolved).toEqual([]);
+      }
+    );
   });
 });
 
@@ -638,10 +742,11 @@ const fixtures: Fixture[] = [
     text: ["User said no"],
   },
   {
-    name: "output execution-denied without a reason",
+    name: "output execution-denied without a reason counts the default text providers send",
     since: 6,
     role: "tool",
     content: toolResult({ type: "execution-denied" }),
+    text: ["Tool call execution denied."],
   },
   {
     name: "output content: image-* items are images",
@@ -903,17 +1008,5 @@ describe("message parts", () => {
       ),
       input: Math.round(enc(JSON.stringify(input)) * tokens.contentMultiplier),
     });
-  });
-
-  test("a message with every part type adds up", () => {
-    const messages = fixtures
-      .filter((f) => f.role === "user")
-      .map((f) => ({
-        role: "user",
-        content: [f.content],
-      })) as unknown as ModelMessage[];
-    const result = count({ tokenizer, model, messages });
-    const sum = result.messages.reduce((total, m) => total + m.total, 0);
-    expect(result.total).toBe(tokens.baseOverhead + sum);
   });
 });

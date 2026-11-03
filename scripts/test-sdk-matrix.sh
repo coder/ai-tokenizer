@@ -10,7 +10,8 @@
 #       Runs one cell in this checkout. It rewrites package.json, bun.lock and
 #       node_modules, so use it in a throwaway checkout such as a CI job.
 #   scripts/test-sdk-matrix.sh --all
-#       Runs every cell, each in a throwaway copy of the repo.
+#       Runs every cell, each in a throwaway copy of the repo, on the Node
+#       that is installed here (the Node column only applies in CI).
 #   scripts/test-sdk-matrix.sh --list-json
 #       Prints the cells as a GitHub Actions matrix. CI reads this list.
 #
@@ -55,7 +56,8 @@ run_cell() {
   rm -f tsconfig.sdk-cell.json
 
   bun test src/sdk.test.ts src/sdk.compat.test.ts >"$log" 2>&1 || { cat "$log"; exit 1; }
-  tests="$(grep -E '^ *[0-9]+ (pass|skip|fail)$' "$log" | tr -s ' ' | tr '\n' ' ')"
+  tests="$(grep -E '^ *[0-9]+ (pass|skip|fail)$' "$log" | tr -s ' ' | tr '\n' ' ' || true)"
+  [ -n "$tests" ] || { cat "$log"; echo "no test summary found" >&2; exit 1; }
 
   bun run build --dts=false >/dev/null
   local smoke

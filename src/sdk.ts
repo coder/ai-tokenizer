@@ -158,6 +158,7 @@ function countToolsTokensDetailed<TOOLS extends ToolSet = ToolSet>(
     for (let i = 0; i < toolEntries.length; i++) {
       const [toolName, tool] = toolEntries[i]!;
       const definition = tool as {
+        type?: unknown;
         description?: unknown;
         inputSchema?: unknown;
       };
@@ -181,10 +182,10 @@ function countToolsTokensDetailed<TOOLS extends ToolSet = ToolSet>(
 
       // Count inputSchema tokens
       let inputSchemaTokens = 0;
-      if (definition.inputSchema) {
+      if (definition.inputSchema && !isProviderTool(definition.type)) {
         const schema = readInputSchema(definition.inputSchema);
         if (schema.status === "ok") {
-          inputSchemaTokens = countSchemaProperties(
+          inputSchemaTokens = countToolSchema(
             schema.jsonSchema,
             tokenizer,
             config
@@ -235,6 +236,14 @@ function readDescription(
   return { text: typeof description === "string" ? description : undefined };
 }
 
+/**
+ * Provider tools (`provider-defined` in v5, `provider` in v6 and v7) still
+ * carry an `inputSchema`, but the provider sends its own definition instead.
+ */
+function isProviderTool(type: unknown): boolean {
+  return type === "provider" || type === "provider-defined";
+}
+
 type InputSchemaRead =
   | { status: "ok"; jsonSchema: unknown }
   | { status: "async" }
@@ -252,8 +261,12 @@ function readInputSchema(inputSchema: unknown): InputSchemaRead {
       inputSchema as Parameters<typeof asSchema>[0]
     ).jsonSchema;
     if (isThenable(jsonSchema)) {
-      // Mark the rejection as handled: we are not going to await it.
-      jsonSchema.then(undefined, () => {});
+      try {
+        // Mark the rejection as handled: we are not going to await it.
+        jsonSchema.then(undefined, () => {});
+      } catch {
+        // A thenable whose `then` throws is still not readable synchronously.
+      }
       return { status: "async" };
     }
     return { status: "ok", jsonSchema };
@@ -281,6 +294,39 @@ function propertiesOf(schema: unknown): Record<string, unknown> | undefined {
 }
 
 /**
+ * Follows a local `$ref` ("#", "#/definitions/X", "#/$defs/X") to its target in
+ * the root schema. zod 4 emits one for a schema registered with `.meta({ id })`
+ * and pydantic-based MCP servers emit them for nested models. A `description`
+ * next to the `$ref` wins over the target's.
+ */
+function resolveRef(
+  schema: Record<string, unknown>,
+  root: unknown
+): Record<string, unknown> {
+  const ref = schema.$ref;
+  if (typeof ref !== "string" || !ref.startsWith("#")) {
+    return schema;
+  }
+  let target: unknown = root;
+  try {
+    for (const segment of ref.slice(1).split("/").slice(1)) {
+      const key = decodeURIComponent(segment)
+        .replace(/~1/g, "/")
+        .replace(/~0/g, "~");
+      target = isRecord(target) ? target[key] : undefined;
+    }
+  } catch {
+    return schema;
+  }
+  if (!isRecord(target)) {
+    return schema;
+  }
+  return schema.description === undefined
+    ? target
+    : { ...target, description: schema.description };
+}
+
+/**
  * `.nullable()` becomes `anyOf: [inner, { type: "null" }]`. Read through it, so
  * a nullable property counts like the same property without `null`. A real
  * union (two or more non-null variants) is left alone.
@@ -304,16 +350,43 @@ function withoutNull(schema: Record<string, unknown>): Record<string, unknown> {
     : { ...inner, description: schema.description };
 }
 
+interface SchemaWalk {
+  tokenizer: Tokenizer;
+  config: ModelTokens;
+  /** The whole tool schema, which local `$ref`s point into. */
+  root: unknown;
+  /** `properties` objects being walked, so a recursive schema ends. */
+  ancestors: Set<unknown>;
+}
+
+/** The schema a property stands for once `$ref` and `null` wrappers are read through. */
+function unwrap(value: Record<string, unknown>, walk: SchemaWalk) {
+  return resolveRef(withoutNull(resolveRef(value, walk.root)), walk.root);
+}
+
+function countToolSchema(
+  jsonSchema: unknown,
+  tokenizer: Tokenizer,
+  config: ModelTokens
+): number {
+  if (!isRecord(jsonSchema)) {
+    return 0;
+  }
+  const walk: SchemaWalk = {
+    tokenizer,
+    config,
+    root: jsonSchema,
+    ancestors: new Set(),
+  };
+  return countSchemaProperties(resolveRef(jsonSchema, jsonSchema), walk);
+}
+
 /**
  * Count the properties of a JSON Schema object by walking its structure.
- * Unions (`anyOf`, `oneOf`, `allOf`) and `$ref` are not followed.
+ * Unions (`anyOf`, `oneOf`, `allOf`) and non-local `$ref`s are not followed.
  */
-function countSchemaProperties(
-  schema: unknown,
-  tokenizer: Tokenizer,
-  config: ModelTokens,
-  ancestors: Set<unknown> = new Set()
-): number {
+function countSchemaProperties(schema: unknown, walk: SchemaWalk): number {
+  const { tokenizer, config, ancestors } = walk;
   const properties = propertiesOf(schema);
   if (!properties || ancestors.has(properties)) {
     return 0;
@@ -334,7 +407,7 @@ function countSchemaProperties(
     if (!isRecord(value)) {
       continue;
     }
-    const propSchema = withoutNull(value);
+    const propSchema = unwrap(value, walk);
 
     // Count property description if present
     if (typeof propSchema.description === "string" && propSchema.description) {
@@ -353,14 +426,14 @@ function countSchemaProperties(
     if (propertiesOf(propSchema)) {
       // Handle nested objects
       tokens += config.perNestedObject || 0;
-      tokens += countSchemaProperties(propSchema, tokenizer, config, ancestors);
+      tokens += countSchemaProperties(propSchema, walk);
     } else if (isRecord(propSchema.items)) {
       // Handle arrays with object items
-      const items = withoutNull(propSchema.items);
+      const items = unwrap(propSchema.items, walk);
       if (propertiesOf(items)) {
         tokens += config.perArrayOfObjects || 0;
       }
-      tokens += countSchemaProperties(items, tokenizer, config, ancestors);
+      tokens += countSchemaProperties(items, walk);
     }
   }
 
@@ -592,9 +665,12 @@ function tallyToolOutput(tally: Tally, output: unknown): void {
         }
         return;
       case "execution-denied":
-        if (typeof output.reason === "string") {
-          tally.addText(output.reason);
-        }
+        // OpenAI and Anthropic send this text when there is no reason.
+        tally.addText(
+          typeof output.reason === "string"
+            ? output.reason
+            : "Tool call execution denied."
+        );
         return;
       case "content":
         if (Array.isArray(output.value)) {
