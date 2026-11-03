@@ -24,26 +24,28 @@ Random inputs come from fast-check, which shrinks a failure to a short counterex
 
 ```sh
 bun install
-bun .agents/skills/formal-verify-tokenizer/check.ts            # full, about 80 s
+bun .agents/skills/formal-verify-tokenizer/check.ts            # full, about 90 s
 bun .agents/skills/formal-verify-tokenizer/check.ts --quick    # about 5 s, smaller bounds
-bun .agents/skills/formal-verify-tokenizer/mutants.ts          # about 3 min, proves the check can fail
+bun .agents/skills/formal-verify-tokenizer/mutants.ts          # about 1 min, proves the check can fail
 bunx tsc --noEmit -p .agents/skills/formal-verify-tokenizer    # typecheck the scripts
 ```
 
 `check.ts` also takes `--seed N` (default `20261103`), `--fail-fast`, and `--tokenizer PATH` to check another copy of `tokenizer.ts`. It prints one `PASS` or `FAIL` line per property and ends with `SUMMARY pass=N fail=M`. It exits 1 on any failure. A run without the `SUMMARY` line did not finish.
 
-`mutants.ts` breaks `src/tokenizer.ts` in one place at a time, in a temp copy, and runs the quick check on each copy. It ends with `SUMMARY killed=9/9 problems=0`. A `SURVIVED` line means the check no longer catches that break. A `STALE` line means the code changed and that mutant's text no longer matches. Update the mutant to the new code.
+`mutants.ts` breaks `src/tokenizer.ts` in one place at a time, in a temp copy, and runs the quick check on each copy. It ends with `SUMMARY killed=11/11 problems=0`. A `SURVIVED` line means the check no longer catches that break. A `STALE` line means the code changed and that mutant's text no longer matches. Update the mutant to the new code.
 
 ## What it checks
 
-| Property                | Inputs                                                                                                                                                                                                                                              | Bound                                    |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
-| `codepoints/<encoding>` | Every Unicode scalar value as a one-character string, ordinary mode, plus round trip.                                                                                                                                                               | All 1,112,064 (`--quick`: every 61st).   |
-| `chunks/<encoding>`     | Every concatenation of 1 to 3 chunks from `CHUNKS` in `check.ts`: whitespace, U+FEFF, U+0085, contractions, digits, accents, emoji, special tokens and fragments of them, `Object.prototype` names. 5 special-token modes each. Shortest first.     | 33,824 strings.                          |
-| `random/<encoding>`     | Joined arrays of chunks, grapheme, ASCII and binary strings, and lowercase words. 5 modes, on a default tokenizer and on one with a 2-entry merge cache.                                                                                            | 3,000 runs (`--quick`: 300).             |
-| `cache`                 | Every sequence of 6 encodes over 4 pieces that miss the vocabulary, with cache sizes 0, 1, 2, 3 and Infinity. After each step the merge cache must hold exactly what a FIFO queue of that size holds, in order, and the ring of keys must match it. | 20,480 sequences (`--quick`: 4 encodes). |
+| Property                | Inputs                                                                                                                                                                                                                                                                                                          | Bound                                                     |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| `codepoints/<encoding>` | Every Unicode scalar value as a one-character string, ordinary mode, plus round trip.                                                                                                                                                                                                                           | All 1,112,064 (`--quick`: every 61st).                    |
+| `chunks/<encoding>`     | Every concatenation of 1 to 3 chunks from `CHUNKS` in `check.ts`: whitespace, U+FEFF, U+0085, contractions, digits, accents, emoji, special tokens and fragments of them, `Object.prototype` names. 5 special-token modes each. Shortest first.                                                                 | 33,824 strings (`--quick`: 1 to 2 chunks, 1,056 strings). |
+| `random/<encoding>`     | Joined arrays of chunks, grapheme, ASCII and binary strings, and lowercase words. 5 modes, on a default tokenizer and on one with a 2-entry merge cache.                                                                                                                                                        | 3,000 runs (`--quick`: 300).                              |
+| `cache/<encoding>`      | Every sequence of 6 encodes over 4 pieces that miss the vocabulary, with cache sizes 0, 1, 2, 3 and Infinity. After each step the merge cache must hold exactly what a FIFO queue of that size holds, in order, and the ring of keys must hold the same keys. Runs on `o200k_base` and `p50k_base-no-specials`. | 20,480 sequences each (`--quick`: 4 encodes).             |
 
-The 5 modes are ordinary (`[]`, `[]`), `"all"`, the default (throws on any special token), one allowed special token with the rest disallowed, and one allowed with the rest ordinary. Where one side throws, the other must throw too.
+The encodings are `o200k_base`, `cl100k_base`, `p50k_base`, `claude`, and `p50k_base-no-specials`: p50k with its special tokens removed. `encode` reaches `encodeOrdinary` only for an encoding without special tokens, so this one covers that path. It runs only the ordinary mode, because tiktoken still knows p50k's special token.
+
+The 5 modes are ordinary (`[]`, `[]`), `"all"`, the default (throws on any special token), one allowed special token with the rest disallowed, and one allowed with the rest ordinary. Where the oracle throws, ours must throw too, with an error that names a disallowed special token. Ours must not throw anywhere else.
 
 ## Read a failure
 
@@ -74,12 +76,15 @@ Then decide which side is wrong:
 
 The check covers `src/tokenizer.ts` (`Tokenizer` constructor, `encode`, `encodeOrdinary`, `encodeOrdinaryInto`, `bytePairEncode`, `addToMergeCache`, `decode`, and the module functions `bytePairMerge`, `binarySearchBytes`, `tryBytesToString`, `isValidUTF8`) and the data in `src/encoding/*.ts`. Its oracle is `tiktoken` as pinned in `bun.lock`.
 
-Sync commit: `e95b9141de5e`. At that commit, the full check printed `SUMMARY pass=13 fail=0` and `mutants.ts` printed `SUMMARY killed=9/9 problems=0`.
+Sync commit: `1849542abadf`. With the covered files as of that commit, the full check printed `SUMMARY pass=17 fail=0` and `mutants.ts` printed `SUMMARY killed=11/11 problems=0`.
 
 To see whether the check needs another look:
 
 ```sh
-git diff --stat e95b9141de5e..HEAD -- src/tokenizer.ts src/encoding scripts/generate-encodings.ts bun.lock
+git diff --stat 1849542abadf..HEAD -- src/tokenizer.ts src/encoding scripts/generate-encodings.ts
+git diff 1849542abadf..HEAD -- bun.lock | grep '"tiktoken"'
 ```
 
-Move the sync commit forward only after both scripts pass at the new commit and you have confirmed that the tables above still describe the code. For drift that a change did not recheck, use `/maintain-formal-verification-skill`.
+No output from either command means the covered code and the oracle did not change.
+
+Move the sync commit forward only after both scripts pass at the new commit and you have confirmed that the tables above still describe the code. For drift that a change did not recheck, use `/maintain-formal-verification-skill` from the pstack plugin. Without pstack, rerun both scripts, compare the coverage record with the code, and fix the check before you move the sync commit.

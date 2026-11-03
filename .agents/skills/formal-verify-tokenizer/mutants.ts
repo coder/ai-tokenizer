@@ -43,6 +43,16 @@ const MUTANTS: Array<{ name: string; from: string; to: string }> = [
     to: "directRank !== undefined",
   },
   {
+    name: "short-text lookup accepts inherited properties",
+    from: 'if (typeof direct === "number") return [direct];',
+    to: "if (direct !== undefined) return [direct];",
+  },
+  {
+    name: "encodeOrdinary cache hit returns only the first token",
+    from: "for (let i = 0; i < cached.length; i++) {",
+    to: "for (let i = 0; i < Math.min(1, cached.length); i++) {",
+  },
+  {
     name: "decode drops special tokens",
     from: "this.decoder[token] ?? this.inverseSpecialTokens[token]!",
     to: "this.decoder[token]!",

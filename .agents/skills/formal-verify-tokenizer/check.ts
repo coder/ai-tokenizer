@@ -38,7 +38,7 @@ type Encoder = {
     disallowed?: string[] | "all"
   ): ArrayLike<number>;
 };
-type Outcome = { ok: true; tokens: number[] } | { ok: false };
+type Outcome = { ok: true; tokens: number[] } | { ok: false; message: string };
 
 const ENCODINGS: Array<{
   name: string;
@@ -61,6 +61,13 @@ const ENCODINGS: Array<{
     tiktoken: get_encoding("p50k_base"),
   },
   { name: "claude", data: claude as Encoding, tiktoken: null },
+  // encode() takes the encodeOrdinary path only for an encoding without
+  // special tokens.
+  {
+    name: "p50k_base-no-specials",
+    data: { ...(p50k_base as Encoding), special_tokens: {} },
+    tiktoken: get_encoding("p50k_base"),
+  },
 ];
 
 let passed = 0;
@@ -97,13 +104,23 @@ function run(encoder: Encoder, text: string, mode: Mode): Outcome {
       ok: true,
       tokens: Array.from(encoder.encode(text, mode.allowed, mode.disallowed)),
     };
-  } catch {
-    return { ok: false };
+  } catch (error) {
+    return { ok: false, message: String(error) };
   }
 }
 
-function same(a: Outcome, b: Outcome): boolean {
-  if (!a.ok || !b.ok) return a.ok === b.ok;
+// `ours` must throw only where the oracle throws, and only for the reason the
+// oracle has: a disallowed special token.
+function same(ours: Outcome, oracle: Outcome): boolean {
+  if (!ours.ok || !oracle.ok) {
+    return (
+      !ours.ok &&
+      !oracle.ok &&
+      ours.message.includes("disallowed special token")
+    );
+  }
+  const a = ours;
+  const b = oracle;
   return (
     a.tokens.length === b.tokens.length &&
     a.tokens.every((t, i) => t === b.tokens[i])
@@ -111,9 +128,13 @@ function same(a: Outcome, b: Outcome): boolean {
 }
 
 function modesFor(specials: string[]): Mode[] {
+  const ordinary = { name: "ordinary", allowed: [], disallowed: [] };
+  // tiktoken still knows the special tokens of the encoding this one strips,
+  // so only ordinary mode has a tiktoken answer.
+  if (specials.length === 0) return [ordinary];
   const first = specials[0]!;
   return [
-    { name: "ordinary", allowed: [], disallowed: [] },
+    ordinary,
     { name: "all", allowed: "all" },
     { name: "default" },
     { name: `only ${first}`, allowed: [first] },
@@ -228,7 +249,8 @@ function checkChunks(
   let failure: string | null = null;
   let level = [""];
   // Shortest strings first, so the first counterexample is a shortest one.
-  for (let depth = 1; depth <= 3 && failure === null; depth++) {
+  const maxDepth = args.quick ? 2 : 3;
+  for (let depth = 1; depth <= maxDepth && failure === null; depth++) {
     const next: string[] = [];
     for (const prefix of level) {
       for (const chunk of CHUNKS) {
@@ -295,11 +317,10 @@ function checkRandom(
 // Every sequence of encodes over a few pieces that miss the vocabulary, for
 // several cache sizes. After each step the cache must hold exactly what a
 // plain FIFO queue of that size holds, in the same order.
-function checkCache(): void {
+function checkCache(enc: (typeof ENCODINGS)[number]): void {
   const pieces = ["qzxvw", "qzxvy", "qzxvz", "qzxvq"];
   const length = args.quick ? 4 : 6;
   const sizes = [0, 1, 2, 3, Infinity];
-  const enc = ENCODINGS[0]!;
   const reference = new ReferenceEncoder(enc.data);
   let sequences = 0;
   for (const size of sizes) {
@@ -337,7 +358,7 @@ function checkCache(): void {
                 : null;
         if (failure) {
           return report(
-            "cache",
+            `cache/${enc.name}`,
             `size=${size} steps=${short(steps)} ${failure}`,
             ""
           );
@@ -346,7 +367,7 @@ function checkCache(): void {
     }
   }
   report(
-    "cache",
+    `cache/${enc.name}`,
     null,
     `${sequences} sequences of ${length} encodes, sizes ${sizes.join(",")}`
   );
@@ -361,5 +382,6 @@ for (const enc of ENCODINGS) {
   checkChunks(enc, ours, oracles, modes);
   checkRandom(enc, oracles, modes);
 }
-checkCache();
+checkCache(ENCODINGS[0]!);
+checkCache(ENCODINGS.at(-1)!);
 finish();
