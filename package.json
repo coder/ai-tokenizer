@@ -7,6 +7,7 @@
     "url": "https://coder.com"
   },
   "devDependencies": {
+    "@ai-sdk/anthropic": "^4.0.96",
     "@types/bun": "latest",
     "ai": "^7.0.162",
     "base64-js": "^1.5.1",

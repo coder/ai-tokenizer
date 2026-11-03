@@ -55,7 +55,7 @@ run_cell() {
   bunx tsc --noEmit -p tsconfig.sdk-cell.json >"$log" 2>&1 || { cat "$log"; typecheck=FAILED; }
   rm -f tsconfig.sdk-cell.json
 
-  bun test src/sdk.test.ts src/sdk.compat.test.ts >"$log" 2>&1 || { cat "$log"; exit 1; }
+  bun test src/sdk.test.ts src/sdk.compat.test.ts src/sdk.claude.test.ts >"$log" 2>&1 || { cat "$log"; exit 1; }
   tests="$(grep -E '^ *[0-9]+ (pass|skip|fail)$' "$log" | tr -s ' ' | tr '\n' ' ' || true)"
   [ -n "$tests" ] || { cat "$log"; echo "no test summary found" >&2; exit 1; }
 

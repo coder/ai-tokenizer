@@ -5,6 +5,24 @@ import { readFileSync, writeFileSync, existsSync } from "fs"
 import { join } from "path"
 import { findBestTokenizer, type TokenizerResult } from "./find-best-tokenizer"
 import * as encoding from "../src/encoding"
+import { toolProbes, type ToolProbeName } from "./probes"
+
+// --provider gateway (default): measure through the AI Gateway's token usage.
+// --provider anthropic: measure the Claude models through Anthropic's free
+// count_tokens, and write src/models.json for all of them. --model <id> limits
+// that to the ids that contain it.
+const args = process.argv.slice(2)
+const flag = (name: string) => args.includes(`--${name}`) ? args[args.indexOf(`--${name}`) + 1] : undefined
+const provider = flag("provider") ?? "gateway"
+if (provider !== "gateway" && provider !== "anthropic") {
+    throw new Error(`Unknown --provider ${provider}: use gateway or anthropic`)
+}
+
+if (provider === "anthropic") {
+    const { generateAnthropicConfigs } = await import("./calibrate-anthropic")
+    await generateAnthropicConfigs(flag("model"))
+    process.exit(0)
+}
 
 if (!process.env.AI_GATEWAY_API_KEY) {
     throw new Error("AI_GATEWAY_API_KEY is not set")
@@ -186,19 +204,6 @@ async function measureModel(modelName: string, encoding: string, apiModel: ApiMo
         msgAWithTools,
         twoMsgsWithTools,
         threeMsgsWithTools,
-        noTools,
-        emptyTool,
-        twoTools,
-        withDesc,
-        oneProp,
-        twoProp,
-        propWithDesc,
-        stringProp,
-        enumProp,
-        flatTwoProps,
-        nestedTwoProps,
-        arrayOfStrings,
-        arrayOfObjects,
     ] = await Promise.all([
         // 1. Message overhead - test multiple patterns
         run(modelName, [{ role: "user", content: "a" }]),
@@ -240,62 +245,27 @@ async function measureModel(modelName: string, encoding: string, apiModel: ApiMo
             { role: "assistant", content: "b" },
             { role: "user", content: "c" },
         ], testTool),
-        // 2. Tool overhead
-        run(modelName, [{ role: "user", content: "Test" }], {}),
-        run(modelName, [{ role: "user", content: "Test" }], {
-            x: tool({ inputSchema: z.object({}) }),
-        }),
-        run(modelName, [{ role: "user", content: "Test" }], {
-            x: tool({ inputSchema: z.object({}) }),
-            y: tool({ inputSchema: z.object({}) }),
-        }),
-        // 3. Tool description overhead
-        run(modelName, [{ role: "user", content: "Test" }], {
-            x: tool({ description: "Hi", inputSchema: z.object({}) }),
-        }),
-        // 4. Property overhead
-        run(modelName, [{ role: "user", content: "Test" }], {
-            x: tool({ inputSchema: z.object({ y: z.string() }) }),
-        }),
-        run(modelName, [{ role: "user", content: "Test" }], {
-            x: tool({ inputSchema: z.object({ y: z.string(), z: z.string() }) }),
-        }),
-        // 5. Property description overhead
-        run(modelName, [{ role: "user", content: "Test" }], {
-            x: tool({ inputSchema: z.object({ y: z.string().describe("Hi") }) }),
-        }),
-        // 6. Enum overhead
-        run(modelName, [{ role: "user", content: "Test" }], {
-            x: tool({ inputSchema: z.object({ y: z.string() }) }),
-        }),
-        run(modelName, [{ role: "user", content: "Test" }], {
-            x: tool({ inputSchema: z.object({ y: z.enum(["a", "b", "c"]) }) }),
-        }),
-        // 7. Nested object overhead
-        run(modelName, [{ role: "user", content: "Test" }], {
-            x: tool({ inputSchema: z.object({ y: z.string().describe("Hi"), z: z.string().describe("Hi") }) }),
-        }),
-        run(modelName, [{ role: "user", content: "Test" }], {
-            x: tool({ inputSchema: z.object({ 
-                data: z.object({
-                    y: z.string().describe("Hi"),
-                    z: z.string().describe("Hi"),
-                }).describe("Data"),
-            }) }),
-        }),
-        // 8. Array of objects overhead
-        run(modelName, [{ role: "user", content: "Test" }], {
-            x: tool({ inputSchema: z.object({ items: z.array(z.string()).describe("Items") }) }),
-        }),
-        run(modelName, [{ role: "user", content: "Test" }], {
-            x: tool({ inputSchema: z.object({ 
-                items: z.array(z.object({
-                    y: z.string().describe("Hi"),
-                    z: z.string().describe("Hi"),
-                })).describe("Items"),
-            }) }),
-        }),
     ])
+
+    const toolProbeNames = Object.keys(toolProbes) as ToolProbeName[]
+    const toolCounts = await Promise.all(
+        toolProbeNames.map(name => run(modelName, toolProbes[name].messages, toolProbes[name].tools))
+    )
+    const {
+        noTools,
+        emptyTool,
+        twoTools,
+        withDesc,
+        oneProp,
+        twoProp,
+        propWithDesc,
+        stringProp,
+        enumProp,
+        flatTwoProps,
+        nestedTwoProps,
+        arrayOfStrings,
+        arrayOfObjects,
+    } = Object.fromEntries(toolProbeNames.map((name, i) => [name, toolCounts[i]!])) as Record<ToolProbeName, number>
 
     // Calculate all the overhead values
     
@@ -452,7 +422,7 @@ function validateConfig(config: ModelConfig): boolean {
 
 function saveConfigs(configs: Record<string, ModelConfig>) {
     const outputPath = join(process.cwd(), "src", "models.json")
-    const fileContent = JSON.stringify(configs, null, 2)
+    const fileContent = JSON.stringify(configs, null, 2) + "\n"
     writeFileSync(outputPath, fileContent, "utf-8")
 }
 
