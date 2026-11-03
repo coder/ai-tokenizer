@@ -17,7 +17,6 @@ import {
 } from "../scripts/hf-fixture";
 import { SOURCES } from "../scripts/hf-sources";
 import Tokenizer from "./tokenizer";
-import SentencePieceTokenizer from "./sentencepiece";
 import * as llama4 from "./encoding/llama4";
 import * as gemma4 from "./encoding/gemma4";
 
@@ -56,7 +55,7 @@ const llama4SkipReason = (sampleName: string): string | undefined => {
 
 const llama4Tokenizer = new Tokenizer(llama4);
 const llama4Special = Object.keys(llama4.special_tokens);
-const gemma4Tokenizer = new SentencePieceTokenizer(gemma4);
+const gemma4Tokenizer = new Tokenizer(gemma4);
 const gemma4Special = Object.keys(gemma4.special_tokens);
 
 const subjects: Subject[] = [

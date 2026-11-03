@@ -18,6 +18,8 @@
  * Encoding data format for {@link SentencePieceTokenizer}.
  */
 export interface SentencePieceEncoding {
+  /** Tells `Tokenizer` to run this encoding with SentencePieceTokenizer. */
+  kind: "sentencepiece";
   name: string;
   special_tokens: Record<string, number>;
   /** Token text by id. A space is "▁" and a raw byte is "<0xNN>". */
@@ -182,8 +184,8 @@ class MergeHeap {
 }
 
 /**
- * Tokenizer for {@link SentencePieceEncoding} data. It has the same public
- * counting surface as the default `Tokenizer` class.
+ * Engine for {@link SentencePieceEncoding} data. `new Tokenizer(encoding)`
+ * returns it, and it has the same public methods as `Tokenizer`.
  */
 export default class SentencePieceTokenizer {
   private readonly name: string;
@@ -196,7 +198,10 @@ export default class SentencePieceTokenizer {
   private readonly specialTokenKeys: readonly string[];
   private readonly specialTokensRegex: RegExp | null;
 
-  constructor(data: SentencePieceEncoding) {
+  constructor(
+    data: SentencePieceEncoding,
+    extendedSpecialTokens?: Record<string, number>
+  ) {
     this.name = data.name;
     this.vocab = data.vocab;
     this.merges = new MergeTable(data.merges);
@@ -228,7 +233,7 @@ export default class SentencePieceTokenizer {
       throw new Error(`Encoding ${data.name} has no U+FFFD token`);
     }
 
-    this.specialTokens = { ...data.special_tokens };
+    this.specialTokens = { ...data.special_tokens, ...extendedSpecialTokens };
     // Longest first, so an alternation prefers the longest token.
     this.specialTokenKeys = Object.keys(this.specialTokens).sort(
       (a, b) => b.length - a.length

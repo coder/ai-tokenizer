@@ -13,6 +13,10 @@
  * - ASCII fast path
  */
 
+import SentencePieceTokenizer, {
+  type SentencePieceEncoding,
+} from "./sentencepiece";
+
 /**
  * Encoding data format (optimized)
  */
@@ -55,10 +59,18 @@ export default class Tokenizer {
   private mergeCacheHead = 0;
 
   constructor(
-    data: Encoding,
+    data: Encoding | SentencePieceEncoding,
     extendedSpecialTokens?: Record<string, number>,
     mergeCacheSize: number = 100000
   ) {
+    // An encoding with a `kind` is not regex BPE. Its engine has the same
+    // public methods, so the caller never sees the difference.
+    if ("kind" in data) {
+      return new SentencePieceTokenizer(
+        data,
+        extendedSpecialTokens
+      ) as unknown as Tokenizer;
+    }
     this.name = data.name;
     this.mergeCacheSize = mergeCacheSize;
     this.mergeCache = new Map();

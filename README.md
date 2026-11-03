@@ -91,12 +91,12 @@ const total = tokenizer.count("some text input");
 Gemini models use the Gemma 4 tokenizer, and Llama 4 has its own vocabulary. In our checks, both encodings give the same token count as the provider's API for message content:
 
 ```ts
-import { Tokenizer, SentencePieceTokenizer } from "ai-tokenizer";
+import { Tokenizer } from "ai-tokenizer";
 import * as llama4 from "ai-tokenizer/encoding/llama4";
 import * as gemma4 from "ai-tokenizer/encoding/gemma4";
 
 new Tokenizer(llama4).count("some text"); // Llama 4 Scout and Maverick
-new SentencePieceTokenizer(gemma4).count("some text"); // Gemini
+new Tokenizer(gemma4).count("some text"); // Gemini
 ```
 
 > [!WARNING]

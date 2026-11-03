@@ -5,11 +5,14 @@
  * Source: https://huggingface.co/google/gemma-4-E4B-it at ee0ef6023621cff504d758262d4e04895a5af4a2
  * tokenizer.json sha256: cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f
  *
- * SentencePiece-style BPE, run by SentencePieceTokenizer:
+ * SentencePiece-style BPE. `new Tokenizer(gemma4)` runs it with
+ * SentencePieceTokenizer:
  * - Tokens: 262,144
  * - Merges: 514,906
  * - Special tokens: 24
  */
+
+export const kind = "sentencepiece";
 
 export const name = "gemma4";
 

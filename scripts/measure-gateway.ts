@@ -18,7 +18,6 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import Tokenizer from "../src/tokenizer";
-import SentencePieceTokenizer from "../src/sentencepiece";
 import * as gemma4 from "../src/encoding/gemma4";
 import * as llama4 from "../src/encoding/llama4";
 import * as o200k from "../src/encoding/o200k_base";
@@ -60,7 +59,7 @@ const texts = SAMPLES.map((name) => {
 
 const o200kTokenizer = new Tokenizer(o200k);
 const llama4Tokenizer = new Tokenizer(llama4);
-const gemma4Tokenizer = new SentencePieceTokenizer(gemma4);
+const gemma4Tokenizer = new Tokenizer(gemma4);
 const familyCounters: Record<string, (text: string) => number> = {
   meta: (text) => llama4Tokenizer.encode(text, [], []).length,
   google: (text) => gemma4Tokenizer.encode(text, [], []).length,

@@ -1,9 +1,20 @@
 import { describe, expect, test } from "bun:test";
-import SentencePieceTokenizer from "./sentencepiece";
+import Tokenizer from "./tokenizer";
+import * as encodings from "./encoding";
 import * as gemma4 from "./encoding/gemma4";
 
-describe("SentencePieceTokenizer with gemma4", () => {
-  const tokenizer = new SentencePieceTokenizer(gemma4);
+describe("Tokenizer with the gemma4 encoding", () => {
+  const tokenizer = new Tokenizer(gemma4);
+
+  test("Tokenizer accepts every module of the encoding namespace", () => {
+    for (const name of Object.keys(encodings) as Array<
+      keyof typeof encodings
+    >) {
+      const count = new Tokenizer(encodings[name]).count("hello world");
+      expect(count).toBeGreaterThan(0);
+      expect(count).toBeLessThan(5);
+    }
+  });
 
   test("empty text has no tokens", () => {
     expect(tokenizer.encode("")).toEqual([]);

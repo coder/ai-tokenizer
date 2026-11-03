@@ -323,11 +323,14 @@ function generateGemma4(tokenizer: any, source: Source): string {
  *
 ${describeSource(source)}
  *
- * SentencePiece-style BPE, run by SentencePieceTokenizer:
+ * SentencePiece-style BPE. \`new Tokenizer(gemma4)\` runs it with
+ * SentencePieceTokenizer:
  * - Tokens: ${byId.length.toLocaleString("en-US")}
  * - Merges: ${count.toLocaleString("en-US")}
  * - Special tokens: ${Object.keys(special).length.toLocaleString("en-US")}
  */
+
+export const kind = "sentencepiece";
 
 export const name = "gemma4";
 

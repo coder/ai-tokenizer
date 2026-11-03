@@ -20,7 +20,6 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 import Tokenizer from "../src/tokenizer";
-import SentencePieceTokenizer from "../src/sentencepiece";
 import * as llama4 from "../src/encoding/llama4";
 import * as gemma4 from "../src/encoding/gemma4";
 import { type Corpus, FIXTURE_DIR, hashIds, sampleText } from "./hf-fixture";
@@ -36,7 +35,7 @@ function loadEncoder(name: string): Encode {
     return (text) => tokenizer.encode(text, [], []);
   }
   if (name === "gemma4") {
-    const tokenizer = new SentencePieceTokenizer(gemma4);
+    const tokenizer = new Tokenizer(gemma4);
     return (text) => tokenizer.encode(text, [], []);
   }
   throw new Error(`Unknown encoding: ${name}`);
