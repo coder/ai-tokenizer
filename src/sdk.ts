@@ -1,7 +1,11 @@
 import Tokenizer from "./tokenizer";
 import { asSchema, type ModelMessage, type ToolSet } from "ai";
 import type { AnthropicTokens, Model, ModelTokens } from ".";
-import { imageTokens } from "./image-tokens";
+import {
+  imageTokens,
+  needsImageCount,
+  type ImageContext,
+} from "./image-tokens";
 import { imageSizeOf } from "./media";
 
 export interface CountOptions<TOOLS extends ToolSet = ToolSet> {
@@ -93,14 +97,15 @@ export function count<TOOLS extends ToolSet = ToolSet>(
   options: CountOptions<TOOLS>
 ): CountResult<TOOLS> {
   const config = options.model.tokens;
+  const request = requestMedia(options.messages, config);
 
   let total = config.baseOverhead;
 
   // Count messages with detailed breakdown
   const messages: CountResultMessage[] = config.anthropic
-    ? countClaudeMessages(options.tokenizer, options.messages, config)
+    ? countClaudeMessages(options.tokenizer, options.messages, config, request)
     : options.messages.map((message) =>
-        countMessageTokensDetailed(options.tokenizer, message, config)
+        countMessageTokensDetailed(options.tokenizer, message, config, request)
       );
   for (const message of messages) {
     total += message.total;
@@ -634,7 +639,8 @@ function countProperty(
 function countMessageTokensDetailed(
   tokenizer: Tokenizer,
   message: ModelMessage,
-  config: ModelTokens
+  config: ModelTokens,
+  request: ImageContext
 ): CountResultMessage {
   let total = config.perMessage;
   const content: CountResultMessageContent[] = [];
@@ -647,7 +653,8 @@ function countMessageTokensDetailed(
     const contentResult = countMessageContentTokensDetailed(
       tokenizer,
       message.content,
-      config
+      config,
+      request
     );
     content.push(...contentResult);
     total += contentResult.reduce((sum, c) => sum + c.total, 0);
@@ -662,7 +669,8 @@ function countMessageTokensDetailed(
 function countMessageContentTokensDetailed(
   tokenizer: Tokenizer,
   content: ModelMessage["content"],
-  config: ModelTokens
+  config: ModelTokens,
+  request: ImageContext
 ): CountResultMessageContent[] {
   const multiplier = config.contentMultiplier;
   const results: CountResultMessageContent[] = [];
@@ -683,7 +691,7 @@ function countMessageContentTokensDetailed(
       if (!isRecord(part)) {
         continue;
       }
-      const tally = createTally(tokenizer, config);
+      const tally = createTally(tokenizer, config, request);
 
       if (part.type === "text") {
         if (typeof part.text === "string") {
@@ -736,7 +744,11 @@ function countMessageContentTokensDetailed(
  * Tokens of one content part. `text` is raw tokenizer tokens and still gets
  * `contentMultiplier`. `media` is a fixed estimate and never does.
  */
-function createTally(tokenizer: Tokenizer, config: ModelTokens) {
+function createTally(
+  tokenizer: Tokenizer,
+  config: ModelTokens,
+  request: ImageContext
+) {
   const tally = {
     text: 0,
     media: 0,
@@ -744,7 +756,7 @@ function createTally(tokenizer: Tokenizer, config: ModelTokens) {
       tally.text += tokenizer.count(text);
     },
     addMedia(media: Media) {
-      tally.media += countMediaTokens(media, config);
+      tally.media += countMediaTokens(media, config, request);
     },
   };
   return tally;
@@ -775,13 +787,52 @@ const FLAT_FILE_TOKENS = 100;
  * The single place that prices an image or a file. Every image-like and
  * file-like part reaches it, whatever its AI SDK shape.
  */
-function countMediaTokens(media: Media, config: ModelTokens): number {
+function countMediaTokens(
+  media: Media,
+  config: ModelTokens,
+  request: ImageContext
+): number {
   if (media.kind === "image") {
     return config.media
-      ? imageTokens(config.media.image, imageSizeOf(media.data), media.detail)
+      ? imageTokens(config.media.image, imageSizeOf(media.data), {
+          ...request,
+          detail: media.detail,
+        })
       : FLAT_IMAGE_TOKENS;
   }
   return FLAT_FILE_TOKENS;
+}
+
+/**
+ * What the price of one image depends on besides the image: for now only how
+ * many images the request holds, which a `crops` recipe reads.
+ */
+function requestMedia(
+  messages: ModelMessage[],
+  config: ModelTokens
+): ImageContext {
+  if (!config.media || !needsImageCount(config.media.image)) {
+    return {};
+  }
+  let images = 0;
+  const visit = (part: unknown) => {
+    if (!isRecord(part)) {
+      return;
+    }
+    if (part.type === "tool-result" && isRecord(part.output)) {
+      if (part.output.type === "content" && Array.isArray(part.output.value)) {
+        part.output.value.forEach(visit);
+      }
+    } else if (isBinaryMediaPart(part) && toMedia(part).kind === "image") {
+      images++;
+    }
+  };
+  for (const message of messages) {
+    if (Array.isArray(message.content)) {
+      (message.content as unknown[]).forEach(visit);
+    }
+  }
+  return { images };
 }
 
 /**
@@ -947,10 +998,11 @@ interface ClaudeTurn {
 function countClaudeMessages(
   tokenizer: Tokenizer,
   messages: ModelMessage[],
-  config: ModelTokens
+  config: ModelTokens,
+  request: ImageContext
 ): CountResultMessage[] {
   const tokens = config.anthropic!;
-  const price = (media: Media) => countMediaTokens(media, config);
+  const price = (media: Media) => countMediaTokens(media, config, request);
   const results = messages.map(
     (): CountResultMessage => ({ total: 0, content: [] })
   );

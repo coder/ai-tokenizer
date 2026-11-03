@@ -1,6 +1,7 @@
 /**
- * Writes the image recipe of the OpenAI models into src/models.json, from the
- * measurements in src/fixtures/media-openai.json. No key is needed:
+ * Writes the image recipe of the OpenAI and Gemini models into
+ * src/models.json, from the measurements in src/fixtures/media-*.json. No key
+ * is needed:
  *
  *   bun scripts/generate-media-configs.ts
  *
@@ -11,36 +12,40 @@
  * message fields in the same run.
  */
 import { readFileSync, writeFileSync } from "node:fs";
-import type { ModelTokens } from "../src";
-import { fitOpenAiImage } from "./fit-media";
+import type { MediaTokens, ModelTokens } from "../src";
+import { fitGeminiImage, fitOpenAiImage } from "./fit-media";
 
 const path = new URL("../src/models.json", import.meta.url);
 const catalog = JSON.parse(readFileSync(path, "utf8")) as Record<
   string,
   { tokens: ModelTokens }
 >;
-const measured = JSON.parse(
-  readFileSync(
-    new URL("../src/fixtures/media-openai.json", import.meta.url),
-    "utf8"
-  )
-) as { models: Record<string, { cases: unknown[] }> };
-
 let written = 0;
 let missing = 0;
-for (const [apiId, { cases }] of Object.entries(measured.models)) {
-  const media = fitOpenAiImage(apiId);
-  const entry = catalog[`openai/${apiId}`];
-  if (!entry) {
-    console.log(
-      `openai/${apiId}: ${cases.length} cases fit, not in the catalog`
-    );
-    missing++;
-    continue;
+function write(
+  provider: string,
+  fixture: string,
+  fit: (id: string) => MediaTokens
+) {
+  const measured = JSON.parse(
+    readFileSync(new URL(`../src/fixtures/${fixture}`, import.meta.url), "utf8")
+  ) as { models: Record<string, unknown> };
+  for (const id of Object.keys(measured.models)) {
+    const media = fit(id);
+    const catalogId = id.includes("/") ? id : `${provider}/${id}`;
+    const entry = catalog[catalogId];
+    if (!entry) {
+      console.log(`${catalogId}: fits every measured case, not in the catalog`);
+      missing++;
+      continue;
+    }
+    entry.tokens.media = media;
+    console.log(`${catalogId}: fits every measured case, recipe written`);
+    written++;
   }
-  entry.tokens.media = media;
-  console.log(`openai/${apiId}: ${cases.length} cases fit, recipe written`);
-  written++;
 }
+
+write("openai", "media-openai.json", fitOpenAiImage);
+write("google", "media-gemini.json", fitGeminiImage);
 writeFileSync(path, JSON.stringify(catalog, null, 2) + "\n");
 console.log(`${written} recipes written, ${missing} models not in the catalog`);

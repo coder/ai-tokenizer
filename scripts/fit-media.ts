@@ -7,6 +7,8 @@
 import { readFileSync } from "node:fs";
 import type {
   AreaPatchImageTokens,
+  BudgetImageTokens,
+  CropImageTokens,
   MediaTokens,
   PatchImageTokens,
   TileImageTokens,
@@ -43,10 +45,10 @@ function anthropicSizes(model: string): { sizes: Measured[]; label: string } {
 
 function mismatches(image: MediaTokens["image"], sizes: Measured[]): string[] {
   return sizes
-    .filter((s) => imageTokens(image, s, s.detail) !== s.tokens)
+    .filter((s) => imageTokens(image, s, { detail: s.detail }) !== s.tokens)
     .map(
       (s) =>
-        `${s.width}x${s.height}${s.detail ? ` ${s.detail}` : ""}: ${s.tokens} vs ${imageTokens(image, s, s.detail)}`
+        `${s.width}x${s.height}${s.detail ? ` ${s.detail}` : ""}: ${s.tokens} vs ${imageTokens(image, s, { detail: s.detail })}`
     );
 }
 
@@ -173,6 +175,48 @@ export function fitOpenAiImage(model: string): MediaTokens {
   }
   const misses: string[] = [];
   for (const image of OPENAI_CANDIDATES(low, one)) {
+    const wrong = mismatches(image, sizes);
+    if (wrong.length === 0) {
+      return { image };
+    }
+    misses.push(`${wrong.length} wrong, e.g. ${wrong[0]}`);
+  }
+  throw new Error(
+    `${model} (${sizes.length} cases): no recipe fits\n  ${misses.join("\n  ")}`
+  );
+}
+
+/**
+ * Gemini through the AI Gateway, which tries Vertex first. At the default
+ * media resolution Gemini 2.5 Flash crops the image (on Google AI Studio the
+ * default is a flat 258 tokens instead) and Gemini 3.5 Flash fits it into a
+ * budget of patches. Both are checked at the default resolution only.
+ */
+const GEMINI_CANDIDATES: Array<MediaTokens["image"]> = [
+  {
+    kind: "crops",
+    tile: 258,
+    singleTileEdge: 384,
+    maxEdge: 2500,
+    minCrop: 256,
+    maxCrop: 768,
+    maxCrops: 12,
+    several: 258,
+  } satisfies CropImageTokens,
+  { kind: "budget", budget: 1120 } satisfies BudgetImageTokens,
+];
+
+export function fitGeminiImage(model: string): MediaTokens {
+  const entry = fixture("media-gemini.json").models[model];
+  if (!entry) {
+    throw new Error(`media-gemini.json has no measurements of ${model}`);
+  }
+  const sizes: Measured[] = entry.cases.filter(
+    (c: { mediaResolution: string; tokens?: number }) =>
+      c.mediaResolution === "default" && c.tokens !== undefined
+  );
+  const misses: string[] = [];
+  for (const image of GEMINI_CANDIDATES) {
     const wrong = mismatches(image, sizes);
     if (wrong.length === 0) {
       return { image };

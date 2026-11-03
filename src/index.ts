@@ -93,6 +93,36 @@ export interface TileImageTokens {
   perTile: number;
 }
 
+/**
+ * Gemini 2.5's way: a small image of a normal shape is one tile, any other
+ * is one tile for the whole image and one for each crop of a grid of square
+ * crops, at most `maxCrops` of them. The long edge is cut to `maxEdge` first.
+ * The crop is a third of the short edge's two thirds, between `minCrop` and
+ * `maxCrop`. When the request holds more than one image, each costs `several`.
+ */
+export interface CropImageTokens {
+  kind: "crops";
+  /** Tokens of a tile. */
+  tile: number;
+  /** An image up to this long and under twice as long as it is wide is one tile. */
+  singleTileEdge: number;
+  maxEdge: number;
+  minCrop: number;
+  maxCrop: number;
+  maxCrops: number;
+  several: number;
+}
+
+/**
+ * Gemini 3's way: the image becomes a grid of patches that keeps its aspect
+ * ratio and holds at most `budget` of them, at one token each. Its pixel size
+ * does not matter.
+ */
+export interface BudgetImageTokens {
+  kind: "budget";
+  budget: number;
+}
+
 /** An image that costs the same at every size. */
 export interface FlatImageTokens {
   kind: "flat";
@@ -103,6 +133,8 @@ export type ImageRecipe =
   | PatchImageTokens
   | AreaPatchImageTokens
   | TileImageTokens
+  | CropImageTokens
+  | BudgetImageTokens
   | FlatImageTokens;
 
 /**

@@ -2208,7 +2208,19 @@
       "perPropDesc": 0,
       "perEnum": 0,
       "perNestedObject": -1,
-      "perArrayOfObjects": 0
+      "perArrayOfObjects": 0,
+      "media": {
+        "image": {
+          "kind": "crops",
+          "tile": 258,
+          "singleTileEdge": 384,
+          "maxEdge": 2500,
+          "minCrop": 256,
+          "maxCrop": 768,
+          "maxCrops": 12,
+          "several": 258
+        }
+      }
     },
     "name": "Gemini 2.5 Flash",
     "contextWindow": 1000000,

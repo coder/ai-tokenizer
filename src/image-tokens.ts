@@ -1,5 +1,7 @@
 import type {
   AreaPatchImageTokens,
+  BudgetImageTokens,
+  CropImageTokens,
   ImageByDetail,
   MediaTokens,
   PatchImageTokens,
@@ -10,18 +12,31 @@ import type { ImageSize } from "./media";
 /** A photo or a screenshot, as the usual size of an image that cannot be read. */
 export const UNKNOWN_IMAGE_SIZE: ImageSize = { width: 1024, height: 1024 };
 
+export interface ImageContext {
+  /** The `imageDetail` option of an OpenAI image part: `low`, `high`, `auto` or `original`. */
+  detail?: string;
+  /** How many images the whole request holds. Needed by `crops` recipes only. */
+  images?: number;
+}
+
+/** Whether pricing an image needs to know how many images the request holds. */
+export function needsImageCount(image: MediaTokens["image"]): boolean {
+  return [image, ...("default" in image ? Object.values(image) : [])].some(
+    (recipe) => "kind" in recipe && recipe.kind === "crops"
+  );
+}
+
 /**
  * What an image costs under a model's recipe. `size` is undefined for an
  * image whose pixels cannot be read here: a URL, a provider file id, a format
- * without a reader. Those cost as `UNKNOWN_IMAGE_SIZE`. `detail` is the
- * `imageDetail` option of OpenAI image parts.
+ * without a reader. Those cost as `UNKNOWN_IMAGE_SIZE`.
  */
 export function imageTokens(
   image: MediaTokens["image"],
   size: ImageSize | undefined,
-  detail?: string
+  context: ImageContext = {}
 ): number {
-  const recipe = "default" in image ? byDetail(image, detail) : image;
+  const recipe = "default" in image ? byDetail(image, context.detail) : image;
   const { width, height } =
     size && size.width >= 1 && size.height >= 1 ? size : UNKNOWN_IMAGE_SIZE;
   switch (recipe.kind) {
@@ -33,6 +48,10 @@ export function imageTokens(
       return areaPatchTokens(recipe, width, height);
     case "tiles":
       return tileTokens(recipe, width, height);
+    case "crops":
+      return cropTokens(recipe, width, height, context.images ?? 1);
+    case "budget":
+      return budgetTokens(recipe, width, height);
   }
 }
 
@@ -129,5 +148,51 @@ function tileTokens(
   return (
     recipe.base +
     recipe.perTile * Math.ceil(w / recipe.tile) * Math.ceil(h / recipe.tile)
+  );
+}
+
+function cropTokens(
+  recipe: CropImageTokens,
+  width: number,
+  height: number,
+  images: number
+): number {
+  if (images > 1) {
+    return recipe.several;
+  }
+  let short = Math.min(width, height);
+  let long = Math.max(width, height);
+  if (long <= recipe.singleTileEdge && long < 2 * short) {
+    return recipe.tile;
+  }
+  if (long > recipe.maxEdge) {
+    short = Math.floor((short * recipe.maxEdge) / long);
+    long = recipe.maxEdge;
+    if (short === 0) {
+      return recipe.tile;
+    }
+  }
+  const crop = Math.min(
+    short,
+    Math.min(
+      recipe.maxCrop,
+      Math.max(recipe.minCrop, Math.floor((2 * short) / 3))
+    )
+  );
+  const crops = Math.ceil(long / crop) * Math.ceil(short / crop);
+  return recipe.tile * (1 + Math.min(recipe.maxCrops, crops));
+}
+
+function budgetTokens(
+  recipe: BudgetImageTokens,
+  width: number,
+  height: number
+): number {
+  // floor(sqrt(x)) equals floor(sqrt(floor(x))), so the integer part is exact.
+  const side = (x: number) => Math.max(1, Math.floor(Math.sqrt(Math.floor(x))));
+  return Math.min(
+    recipe.budget,
+    side((recipe.budget * width) / height) *
+      side((recipe.budget * height) / width)
   );
 }

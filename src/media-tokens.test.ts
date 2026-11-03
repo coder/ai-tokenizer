@@ -10,8 +10,9 @@ import { pngHeader } from "../scripts/media-samples";
 import { count } from "./sdk";
 import { models, Tokenizer, type Model } from "./index";
 import * as o200k from "./encoding/o200k_base";
-import { fitOpenAiImage } from "../scripts/fit-media";
+import { fitGeminiImage, fitOpenAiImage } from "../scripts/fit-media";
 import anthropic from "./fixtures/media-anthropic.json";
+import gemini from "./fixtures/media-gemini.json";
 import openai from "./fixtures/media-openai.json";
 
 const tokenizer = new Tokenizer(o200k);
@@ -139,6 +140,64 @@ describe("OpenAI images against the Responses API", () => {
         models[`openai/${id}` as keyof typeof models].tokens
       ).toHaveProperty("media");
     }
+  });
+});
+
+describe("Gemini images against the AI Gateway (Vertex), at the default resolution", () => {
+  // gemini-3.5-flash is measured but not in the catalog.
+  const modelOf = (id: string): Model =>
+    (models[id as keyof typeof models] ?? {
+      tokens: {
+        ...(models["google/gemini-2.5-flash"] as Model).tokens,
+        media: fitGeminiImage(id),
+      },
+    }) as Model;
+
+  test.each(Object.entries(gemini.models))("%s", (id, measured) => {
+    const model = modelOf(id);
+    const cases = measured.cases.filter(
+      (c): c is typeof c & { tokens: number } =>
+        "tokens" in c && c.mediaResolution === "default"
+    );
+    expect(cases.length).toBeGreaterThan(100);
+    for (const c of cases) {
+      expectCost(model, sized(c.width, c.height), c.tokens);
+    }
+  });
+
+  test.each(Object.entries(gemini.probes.vertex))(
+    "%s: the cost of several identical images in one request",
+    (id, probe) => {
+      const model = modelOf(id);
+      for (const [images, total] of Object.entries(probe.identicalImages)) {
+        const part = sized(probe.width, probe.height);
+        const { messages } = count({
+          tokenizer,
+          model,
+          messages: [
+            { role: "user", content: Array(Number(images)).fill(part) },
+          ] as ModelMessage[],
+        });
+        const got = messages[0]!.content.reduce((sum, c) => sum + c.total, 0);
+        checked++;
+        exact += got === total ? 1 : 0;
+        expect(got).toBe(total);
+      }
+    }
+  );
+
+  test("images in different messages count as one request", () => {
+    const model = modelOf("google/gemini-2.5-flash");
+    const message = (content: unknown[]) => ({ role: "user", content });
+    const part = sized(1920, 1080);
+    const costs = (messages: unknown[]) =>
+      count({
+        tokenizer,
+        model,
+        messages: messages as ModelMessage[],
+      }).messages.map((m) => m.content[0]!.total);
+    expect(costs([message([part])])).toEqual([1806]);
+    expect(costs([message([part]), message([part])])).toEqual([258, 258]);
   });
 });
 
