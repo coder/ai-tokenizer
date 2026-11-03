@@ -268,6 +268,18 @@ describe("tiktoken parity", () => {
     }
   });
 
+  test("an encoding without special tokens encodes inherited names", () => {
+    const ours = new Tokenizer({ ...p50k, special_tokens: {} });
+    const tiktoken = get_encoding("p50k_base");
+    try {
+      for (const text of ["toString", "constructor", "x.valueOf"]) {
+        expect(ours.encode(text)).toEqual(Array.from(tiktoken.encode(text)));
+      }
+    } finally {
+      tiktoken.free();
+    }
+  });
+
   test('allowedSpecial "all" encodes special tokens', () => {
     const ours = new Tokenizer(o200k);
     const tiktoken = get_encoding("o200k_base");
