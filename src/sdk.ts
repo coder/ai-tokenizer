@@ -711,8 +711,11 @@ function toMedia(part: Record<string, unknown>): Media {
     mediaType !== undefined &&
     (mediaType === "image" || mediaType.startsWith("image/"));
   return {
+    // A `file` part counts as a file whatever its media type, as it always
+    // has. The image-counting change will decide this from `mediaType`.
     kind:
-      isImageMediaType || MEDIA_KINDS.get(part.type as string) === "image"
+      part.type !== "file" &&
+      (isImageMediaType || MEDIA_KINDS.get(part.type as string) === "image")
         ? "image"
         : "file",
     mediaType,
