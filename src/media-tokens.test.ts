@@ -259,6 +259,66 @@ describe("Claude PDFs against count_tokens", () => {
     }
   });
 
+  test("a PDF costs the same in every shape the AI SDK gives it", () => {
+    const model = models["anthropic/claude-opus-4.6"] as Model;
+    const bytes = new Uint8Array(
+      readFileSync(
+        new URL("./fixtures/pdf/reportlab-table.pdf", import.meta.url)
+      )
+    );
+    const base64 = Buffer.from(bytes).toString("base64");
+    const claude = new Tokenizer(claude_v3);
+    const pdfTokens = (part: unknown, role: "user" | "tool" = "user") => {
+      const { messages } = count({
+        tokenizer: claude,
+        model,
+        messages: [{ role, content: [part] }] as ModelMessage[],
+      });
+      return role === "user"
+        ? messages[0]!.content[0]!.total
+        : (messages[0]!.content[0] as { output: number }).output;
+    };
+    const expected = pdfTokens({
+      type: "file",
+      mediaType: "application/pdf",
+      data: bytes,
+    });
+    expect(expected).toBeGreaterThan(1000);
+    for (const part of [
+      { type: "file", mediaType: "application/pdf", data: base64 },
+      {
+        type: "file",
+        mediaType: "application/pdf",
+        data: `data:application/pdf;base64,${base64}`,
+      },
+      {
+        type: "file",
+        mediaType: "application/pdf",
+        data: { type: "data", data: bytes },
+      },
+      { type: "file", mediaType: "application/pdf", data: bytes.buffer },
+    ]) {
+      expect(pdfTokens(part)).toBe(expected);
+    }
+    const inResult = (item: unknown) => ({
+      type: "tool-result",
+      toolCallId: "call_1",
+      toolName: "f",
+      output: { type: "content", value: [item] },
+    });
+    for (const item of [
+      { type: "file-data", mediaType: "application/pdf", data: base64 },
+      {
+        type: "file",
+        mediaType: "application/pdf",
+        data: { type: "data", data: base64 },
+      },
+    ]) {
+      // A result of only a PDF has no JSON wrapper left over to count.
+      expect(pdfTokens(inResult(item), "tool")).toBe(expected);
+    }
+  });
+
   test("a PDF that cannot be read costs a typical page", () => {
     const model = models["anthropic/claude-opus-4.6"] as Model;
     const typical = model.tokens.media!.pdf!.unreadable;

@@ -938,8 +938,8 @@ function tallyMedia(tally: Tally, part: Record<string, unknown>): void {
  * `tool_result` block overhead that `ModelTokens` has no field for yet, and
  * counting only the payload under-counts every result by about 6 tokens.
  *
- * The one exception is a `content` output: its images and files are priced by
- * `price` instead of serialising their base64 or URL.
+ * The one exception is a `content` output: its images and files are priced
+ * by the media pricer instead of serialising their base64 or URL.
  */
 function tallyToolOutput(tally: Tally, output: unknown): void {
   if (!output) {
