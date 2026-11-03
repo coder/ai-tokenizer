@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { bpeData, tiktokenBytesByRank } from "../scripts/encoding-source";
@@ -18,11 +18,15 @@ describe("importing the encodings", () => {
       script,
       `
       const parsed = [];
-      const parse = JSON.parse;
-      JSON.parse = (text, ...rest) => {
-        if (typeof text === "string" && text.length > 100_000) parsed.push(text.length);
-        return parse(text, ...rest);
+      const watch = (owner, key) => {
+        const original = owner[key];
+        owner[key] = (text, ...rest) => {
+          if (typeof text === "string" && text.length > 100_000) parsed.push(key);
+          return original.call(owner, text, ...rest);
+        };
       };
+      watch(JSON, "parse");
+      watch(globalThis, "atob");
       Bun.gc(true);
       const before = process.memoryUsage().rss;
       await import(${JSON.stringify(join(ENCODING_DIR, "index.ts"))});
@@ -57,6 +61,38 @@ describe("generated encodings", () => {
       expect(resolve(actual.stringEncoder)).toEqual(expected.stringEncoder);
       expect(resolve(actual.binaryEncoder)).toEqual(expected.binaryEncoder);
       expect(resolve(actual.decoder)).toEqual(expected.decoder);
+    });
+  }
+});
+
+describe("bundling the encodings", () => {
+  // A bundler drops an unused encoding only when the calls that build its
+  // tables are marked pure. Without the mark, a barrel import that names one
+  // encoding ships all of them (12.95 MB instead of 3.03 MB in Rolldown).
+  const files = [
+    ...readdirSync(ENCODING_DIR)
+      .filter((file) => file.endsWith(".ts") && file !== "index.ts")
+      .map((file) => join(ENCODING_DIR, file)),
+    ...readdirSync(join(ENCODING_DIR, "../claude"))
+      .filter((file) => file.startsWith("vocab_"))
+      .map((file) => join(ENCODING_DIR, "../claude", file)),
+  ];
+
+  for (const file of files) {
+    test(`${file.split("/").slice(-2).join("/")} marks its calls pure`, () => {
+      const source = readFileSync(file, "utf-8");
+      const calls = [
+        ...source.matchAll(
+          /^export const [^=\n]+=\s*(\/\* @__PURE__ \*\/\s*)?(bpeTable|lazy|createSentencePieceCodec|createClaudeCodec)\b/gm
+        ),
+      ];
+      expect(calls.length).toBeGreaterThan(0);
+      for (const [, mark, callee] of calls) {
+        expect({ callee, pure: mark !== undefined }).toEqual({
+          callee,
+          pure: true,
+        });
+      }
     });
   }
 });

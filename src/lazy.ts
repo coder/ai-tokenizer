@@ -88,7 +88,7 @@ export function buildBpeTables({ tokens, binary }: BpeData): BpeTables {
   const decoder = tokens as Array<string | Uint8Array | undefined | null>;
   for (let rank = 0; rank < tokens.length; rank++) {
     const text = tokens[rank]!;
-    if (text === null) decoder[rank] = undefined;
+    if (text === null) delete decoder[rank];
     else if (text !== "") stringEncoder[text] = rank;
   }
   const binaryEncoder = binary.map(([hex, rank]): [Uint8Array, number] => {

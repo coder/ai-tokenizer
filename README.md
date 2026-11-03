@@ -131,9 +131,11 @@ new Tokenizer(gemma4).count("some text"); // Gemini
 ```
 
 > [!NOTE]
-> Importing an encoding builds nothing, so `import * as encoding from "ai-tokenizer/encoding"` is cheap to run. The first `new Tokenizer(encoding)` builds that encoding's tables (about 80 ms for `o200k_base`), and later Tokenizers of the same encoding share them. `stringEncoder`, `binaryEncoder` and `decoder` stay readable on every BPE encoding and are built on first read.
+> Importing an encoding builds nothing, so `import * as encoding from "ai-tokenizer/encoding"` is cheap to run. The first `new Tokenizer(encoding)` builds that encoding's tables (about 80 ms for `o200k_base` on Node 22), and later Tokenizers of the same encoding share them.
 >
-> Bundlers still ship every encoding you import. Import encodings selectively based on what you need. Each encoding is 0.5-11MB uncompressed.
+> `stringEncoder`, `binaryEncoder` and `decoder` stay readable on every BPE encoding. They are stand-ins (a `Proxy`) that build the real table on first read. They read like the old tables, with these differences: `stringEncoder` has no prototype, so call `Object.hasOwn(table, key)` and not `table.hasOwnProperty(key)`. `decoder` is an array. `structuredClone` and `postMessage` cannot copy a stand-in. `Object.freeze` and `Object.defineProperty` do not work on one.
+>
+> Bundlers still ship every encoding you import. Import encodings selectively based on what you need. Each encoding is 0.5-10MB uncompressed.
 
 ## Claude encodings
 

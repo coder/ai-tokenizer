@@ -117,6 +117,7 @@ describe("bpeTable", () => {
     expect(decoder[4]).toEqual(new Uint8Array([0xff]));
     expect(binaryEncoder).toEqual([[new Uint8Array([0xff]), 4]]);
     expect(decoder[0]).toBeUndefined();
+    expect(0 in decoder).toBe(false);
     expect(decoder[99]).toBeUndefined();
   });
 
