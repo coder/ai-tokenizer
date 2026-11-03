@@ -5,6 +5,8 @@ import type * as encodings from "./encoding";
 export default Tokenizer;
 export { Tokenizer };
 export type { Encoding } from "./tokenizer";
+export { default as SentencePieceTokenizer } from "./sentencepiece";
+export type { SentencePieceEncoding } from "./sentencepiece";
 
 export type ModelName = keyof typeof modelsJson;
 
