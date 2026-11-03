@@ -219,6 +219,56 @@
       }
     },
     {
+      "name": "space then vertical tab",
+      "text": "abc \u000b",
+      "input_tokens": {
+        "claude_v3": 9,
+        "claude_v4_7": 14,
+        "claude_v4_8": 9,
+        "claude_v5": 10
+      }
+    },
+    {
+      "name": "space then form feed",
+      "text": "abc \f",
+      "input_tokens": {
+        "claude_v3": 9,
+        "claude_v4_7": 14,
+        "claude_v4_8": 9,
+        "claude_v5": 10
+      }
+    },
+    {
+      "name": "form feed then space",
+      "text": "abc\f ",
+      "input_tokens": {
+        "claude_v3": 9,
+        "claude_v4_7": 14,
+        "claude_v4_8": 9,
+        "claude_v5": 10
+      }
+    },
+    {
+      "name": "mixed trailing ASCII whitespace",
+      "text": "abc\t\n \r\n\u000b\f ",
+      "input_tokens": {
+        "claude_v3": 13,
+        "claude_v4_7": 18,
+        "claude_v4_8": 13,
+        "claude_v5": 10
+      }
+    },
+    {
+      "name": "trailing control character after a space",
+      "text": "abc \u0001",
+      "input_tokens": {
+        "claude_v3": 9,
+        "claude_v4_7": 14,
+        "claude_v4_8": 9,
+        "claude_v5": 11
+      }
+    },
+    {
       "name": "trailing newline",
       "text": "line\n",
       "input_tokens": {
