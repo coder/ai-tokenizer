@@ -84,7 +84,7 @@ cmd_launch() {
   echo "== build and pack (logs: $RUN/work/build.log)"
   export -f build_and_pack
   export REPO BUN ORACLE_PKGS
-  with_checkout_lock bash -c 'build_and_pack "$0"' "$RUN/work" > "$RUN/work/build.log" 2>&1 \
+  with_checkout_lock bash -c 'set -euo pipefail; build_and_pack "$0"' "$RUN/work" > "$RUN/work/build.log" 2>&1 \
     || { tail -20 "$RUN/work/build.log"; die "build failed"; }
 
   echo "== install tarballs into scratch consumer"
@@ -115,7 +115,7 @@ cmd_site_up() {
   echo "== build site (logs: $RUN/work/site-build.log)"
   export -f site_build
   export REPO BUN
-  with_checkout_lock bash -c 'site_build "$0"' "$RUN/work/site-dist" > "$RUN/work/site-build.log" 2>&1 \
+  with_checkout_lock bash -c 'set -euo pipefail; site_build "$0"' "$RUN/work/site-dist" > "$RUN/work/site-build.log" 2>&1 \
     || { tail -20 "$RUN/work/site-build.log"; die "site build failed"; }
   local port="${VAT_PORT:-$(free_port)}"
   cd "$REPO/site"
