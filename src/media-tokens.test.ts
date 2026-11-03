@@ -9,12 +9,10 @@ import type { ModelMessage } from "ai";
 import { pngHeader } from "../scripts/media-samples";
 import { count } from "./sdk";
 import { imageTokens as imageTokensOf } from "./image-tokens";
+import { countPdfPages } from "./pdf-tokens";
 import { models, Tokenizer, type Model } from "./index";
 import * as o200k from "./encoding/o200k_base";
 import * as claude_v3 from "./encoding/claude_v3";
-import * as claude_v4_7 from "./encoding/claude_v4_7";
-import * as claude_v4_8 from "./encoding/claude_v4_8";
-import * as claude_v5 from "./encoding/claude_v5";
 import { fitGeminiImage, fitOpenAiImage } from "../scripts/fit-media";
 import anthropic from "./fixtures/media-anthropic.json";
 import gemini from "./fixtures/media-gemini.json";
@@ -209,57 +207,53 @@ describe("Gemini images against the AI Gateway (Vertex), at the default resoluti
   });
 });
 
-describe("Claude PDFs against count_tokens", () => {
-  const encodings = { claude_v3, claude_v4_7, claude_v4_8, claude_v5 };
-  // The reader does not decrypt a file with a user password, and a line just
-  // below the edge of a CropBox is clipped differently on Claude 4.7 and later.
-  const inexact: Record<string, number> = {
-    "qpdf-encrypted.pdf": 0.05,
-    "pymupdf-cropbox.pdf": 0.002,
-  };
-  let exactPdfs = 0;
-  let checkedPdfs = 0;
+describe("Claude PDFs against count_tokens, by the mean cost of a page", () => {
+  // A page count read from the bytes cannot see pages inside a compressed
+  // object stream, so a PDF of such a file counts as one page.
+  const pages = (file: string) =>
+    Math.max(
+      1,
+      countPdfPages(
+        readFileSync(new URL(`./fixtures/pdf/${file}`, import.meta.url))
+      )
+    );
+  const errors: number[] = [];
 
   afterAll(() => {
-    console.log(`pdf fixtures: ${exactPdfs}/${checkedPdfs} exact`);
+    const sorted = errors.map(Math.abs).sort((a, b) => a - b);
+    console.log(
+      `pdf fixtures: ${sorted.length} costs, median error ${(sorted[sorted.length >> 1]! * 100).toFixed(1)}%, max ${(sorted.at(-1)! * 100).toFixed(1)}%, ${sorted.filter((e) => e <= 0.15).length} within 15%`
+    );
   });
 
   test.each(Object.entries(pdfs.models))("%s", (apiId, measured) => {
     const catalog = catalogModels("anthropic", apiId);
     expect(catalog.length).toBeGreaterThan(0);
+    const own: number[] = [];
     for (const model of catalog) {
-      const pdfTokenizer = new Tokenizer(
-        encodings[model.encoding as keyof typeof encodings]
-      );
       for (const [file, cost] of Object.entries(measured)) {
         const bytes = new Uint8Array(
           readFileSync(new URL(`./fixtures/pdf/${file}`, import.meta.url))
         );
-        const { messages } = count({
-          tokenizer: pdfTokenizer,
-          model,
-          messages: [
-            {
-              role: "user",
-              content: [
-                { type: "file", mediaType: "application/pdf", data: bytes },
-              ],
-            },
-          ] as ModelMessage[],
+        const got = imageTokens(model, {
+          type: "file",
+          mediaType: "application/pdf",
+          data: bytes,
         });
-        const got = messages[0]!.content[0]!.total;
-        const measuredCost = cost as number;
-        checkedPdfs++;
-        exactPdfs += got === measuredCost ? 1 : 0;
-        if (file in inexact) {
-          expect(Math.abs(got - measuredCost) / measuredCost).toBeLessThan(
-            inexact[file]!
-          );
-        } else {
-          expect(got).toBe(measuredCost);
-        }
+        expect(got).toBe(model.tokens.media!.pdf!.averagePage * pages(file));
+        own.push((got - (cost as number)) / (cost as number));
       }
     }
+    errors.push(...own);
+    // The error of the mean page on the corpus, as the README gives it: the
+    // worst file keeps its page objects in a compressed object stream, which
+    // the scan cannot see, so its pages count as one.
+    const sorted = own.map(Math.abs).sort((a, b) => a - b);
+    expect(sorted[sorted.length >> 1]!).toBeLessThan(0.12);
+    expect(sorted.at(-1)!).toBeLessThan(0.7);
+    expect(
+      sorted.filter((e) => e <= 0.15).length / sorted.length
+    ).toBeGreaterThan(0.65);
   });
 
   test("a PDF costs the same in every shape the AI SDK gives it", () => {
@@ -286,7 +280,7 @@ describe("Claude PDFs against count_tokens", () => {
       mediaType: "application/pdf",
       data: bytes,
     });
-    expect(expected).toBeGreaterThan(1000);
+    expect(expected).toBe(2 * model.tokens.media!.pdf!.averagePage);
     for (const part of [
       { type: "file", mediaType: "application/pdf", data: base64 },
       {
@@ -322,9 +316,9 @@ describe("Claude PDFs against count_tokens", () => {
     }
   });
 
-  test("a PDF that cannot be read costs a typical page", () => {
+  test("a PDF that cannot be read costs one page", () => {
     const model = models["anthropic/claude-opus-4.6"] as Model;
-    const typical = model.tokens.media!.pdf!.unreadable;
+    const page = model.tokens.media!.pdf!.averagePage;
     const part = (data: unknown) => ({
       type: "file",
       mediaType: "application/pdf",
@@ -336,7 +330,7 @@ describe("Claude PDFs against count_tokens", () => {
       new Uint8Array([1, 2, 3]),
       { type: "reference", reference: { anthropic: "file_1" } },
     ]) {
-      expect(imageTokens(model, part(data))).toBe(typical);
+      expect(imageTokens(model, part(data))).toBe(page);
     }
   });
 
@@ -353,6 +347,32 @@ describe("Claude PDFs against count_tokens", () => {
         ),
       })
     ).toBe(100);
+  });
+});
+
+describe("the page count of a PDF", () => {
+  const bytes = (text: string) => new TextEncoder().encode(text);
+
+  test("counts the page objects and not the page tree", () => {
+    expect(
+      countPdfPages(
+        bytes(
+          "<</Type/Pages/Kids[3 0 R 4 0 R]/Count 2>> <</Type /Page /Parent 2 0 R>> <</Type\n/Page/Parent 2 0 R>> <</Type/PageLabels>>"
+        )
+      )
+    ).toBe(2);
+  });
+
+  test("counts the pages of the corpus files that do not hide them", () => {
+    const count = (file: string) =>
+      countPdfPages(
+        new Uint8Array(
+          readFileSync(new URL(`./fixtures/pdf/${file}`, import.meta.url))
+        )
+      );
+    expect(count("reportlab-table.pdf")).toBe(2);
+    expect(count("pypdf-merged.pdf")).toBe(5);
+    expect(count("pymupdf-objstm.pdf")).toBe(0);
   });
 });
 

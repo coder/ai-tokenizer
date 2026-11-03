@@ -98,7 +98,7 @@ export function count<TOOLS extends ToolSet = ToolSet>(
   options: CountOptions<TOOLS>
 ): CountResult<TOOLS> {
   const config = options.model.tokens;
-  const price = mediaPricer(options.tokenizer, options.messages, config);
+  const price = mediaPricer(options.messages, config);
 
   let total = config.baseOverhead;
 
@@ -792,7 +792,6 @@ type MediaPricer = (media: Media) => number;
  * file-like part reaches it, whatever its AI SDK shape.
  */
 function mediaPricer(
-  tokenizer: Tokenizer,
   messages: ModelMessage[],
   config: ModelTokens
 ): MediaPricer {
@@ -807,7 +806,7 @@ function mediaPricer(
         : FLAT_IMAGE_TOKENS;
     }
     if (config.media?.pdf && isPdf(media)) {
-      return pdfTokens(config.media.pdf, tokenizer, mediaBytesOf(media.data));
+      return pdfTokens(config.media.pdf, mediaBytesOf(media.data));
     }
     return FLAT_FILE_TOKENS;
   };

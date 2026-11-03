@@ -149,24 +149,13 @@ export interface ImageByDetail {
 }
 
 /**
- * What an Anthropic document block costs for a PDF: the block, then each page
- * as an image of its own plus the page's text, which the API reads out of the
- * file with a PDF engine. Measured by `scripts/measure-media-anthropic-pdf.ts`.
+ * What an Anthropic document block costs for a PDF: a mean cost per page,
+ * times the number of pages found by scanning the file. Measured by
+ * `scripts/measure-media-anthropic-pdf.ts` on the PDFs of `src/fixtures/pdf/`.
  */
 export interface PdfTokens {
-  /** The block, once. */
-  base: number;
-  /** Each page, on top of its image and its text. */
-  perPage: number;
-  /** A page that has text costs this many tokens less than its text and `perPage`. */
-  textDiscount: number;
-  /**
-   * A page is drawn as an image with its long edge at `edge` pixels, scaled
-   * up or down, and then priced like an image. The short edge rounds down.
-   */
-  page: { patch: number; edge: number; maxPatches: number; overhead: number };
-  /** A PDF this library cannot read: a URL, a file id, bytes that are not a PDF. The mean cost of a page. */
-  unreadable: number;
+  /** Tokens of one page: its image, its text and its share of the block. */
+  averagePage: number;
 }
 
 export interface MediaTokens {
