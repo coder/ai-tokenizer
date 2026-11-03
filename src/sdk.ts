@@ -763,6 +763,8 @@ interface Media {
    * AI SDK v7 tagged file data, or a provider file reference.
    */
   data: unknown;
+  /** `providerOptions.openai.imageDetail` of the part: `low`, `high`, `auto` or `original`. */
+  detail: string | undefined;
 }
 
 /** What an image costs on a model without a measured recipe, and a file on any model without one. */
@@ -776,7 +778,7 @@ const FLAT_FILE_TOKENS = 100;
 function countMediaTokens(media: Media, config: ModelTokens): number {
   if (media.kind === "image") {
     return config.media
-      ? imageTokens(config.media.image, imageSizeOf(media.data))
+      ? imageTokens(config.media.image, imageSizeOf(media.data), media.detail)
       : FLAT_IMAGE_TOKENS;
   }
   return FLAT_FILE_TOKENS;
@@ -836,7 +838,24 @@ function toMedia(part: Record<string, unknown>): Media {
         : "file",
     mediaType,
     data: mediaData(part),
+    detail: imageDetail(part),
   };
+}
+
+function imageDetail(part: Record<string, unknown>): string | undefined {
+  const options = part.providerOptions;
+  if (!isRecord(options)) {
+    return undefined;
+  }
+  for (const provider of ["openai", "azure"]) {
+    const detail = isRecord(options[provider])
+      ? options[provider].imageDetail
+      : undefined;
+    if (typeof detail === "string") {
+      return detail;
+    }
+  }
+  return undefined;
 }
 
 function tallyMedia(tally: Tally, part: Record<string, unknown>): void {

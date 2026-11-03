@@ -49,9 +49,10 @@ export interface AnthropicTokens {
  * An image that is scaled down to fit a limit and then charged per square
  * patch of pixels. The long edge is cut to `maxEdge`. While the image still has
  * more than `maxPatches` patches, the long edge loses one pixel at a time and
- * the short edge follows at the same aspect ratio, rounded.
+ * the short edge follows at the same aspect ratio, rounded. Anthropic's.
  */
 export interface PatchImageTokens {
+  kind: "patches";
   /** Side of a patch, in pixels. */
   patch: number;
   maxEdge: number;
@@ -60,11 +61,64 @@ export interface PatchImageTokens {
   overhead: number;
 }
 
-/** How a model prices an image from its size. Measured by `scripts/measure-media-*.ts`. */
-export type ImageTokens = PatchImageTokens;
+/**
+ * An image that is scaled down to fit a limit and then charged per square
+ * patch of pixels, as OpenAI's patch models do. The long edge is cut to
+ * `maxEdge` and rounded. Above `maxPatches` the image is scaled down by its
+ * area to a whole number of patches along its tighter side. The price is the
+ * patch count times `multiplier`, rounded as `round` says, plus `overhead`.
+ */
+export interface AreaPatchImageTokens {
+  kind: "area-patches";
+  patch: number;
+  /** No cut when absent. */
+  maxEdge?: number;
+  /** No limit when absent. */
+  maxPatches?: number;
+  multiplier: number;
+  round: "floor" | "ceil";
+  overhead: number;
+}
+
+/**
+ * An image that is scaled down until its long edge fits `maxEdge` and its
+ * short edge fits `maxShortEdge`, and then charged per square tile of pixels.
+ */
+export interface TileImageTokens {
+  kind: "tiles";
+  tile: number;
+  maxEdge: number;
+  maxShortEdge: number;
+  base: number;
+  perTile: number;
+}
+
+/** An image that costs the same at every size. */
+export interface FlatImageTokens {
+  kind: "flat";
+  tokens: number;
+}
+
+export type ImageRecipe =
+  | PatchImageTokens
+  | AreaPatchImageTokens
+  | TileImageTokens
+  | FlatImageTokens;
+
+/**
+ * A model whose price depends on the `detail` of the image (OpenAI's
+ * `providerOptions.openai.imageDetail`). `default` is `auto`, `original` and
+ * every other value that is not listed.
+ */
+export interface ImageByDetail {
+  default: ImageRecipe;
+  low?: ImageRecipe;
+  high?: ImageRecipe;
+}
 
 export interface MediaTokens {
-  image: ImageTokens;
+  /** How the model prices an image from its size. Measured by `scripts/measure-media-*.ts`. */
+  image: ImageRecipe | ImageByDetail;
 }
 
 export interface ModelTokens {
@@ -99,8 +153,15 @@ type ModelWithTypedEncoding<T extends ModelName = ModelName> = Omit<
 
 export type Model<T extends ModelName = ModelName> = ModelWithTypedEncoding<T>;
 
+/** What a JSON import makes of a type: string literals widen to `string`. */
+type Widened<T> = T extends string
+  ? string
+  : T extends object
+    ? { [K in keyof T]: Widened<T[K]> }
+    : T;
+
 // Fails to compile when a models.json entry does not fit `ModelTokens`.
-modelsJson satisfies Record<string, { tokens: ModelTokens }>;
+modelsJson satisfies Record<string, { tokens: Widened<ModelTokens> }>;
 
 // Properly typed models record where each key maps to its specific model
 export const models: {

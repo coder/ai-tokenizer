@@ -10,7 +10,9 @@ import { pngHeader } from "../scripts/media-samples";
 import { count } from "./sdk";
 import { models, Tokenizer, type Model } from "./index";
 import * as o200k from "./encoding/o200k_base";
+import { fitOpenAiImage } from "../scripts/fit-media";
 import anthropic from "./fixtures/media-anthropic.json";
+import openai from "./fixtures/media-openai.json";
 
 const tokenizer = new Tokenizer(o200k);
 
@@ -24,10 +26,11 @@ function imageTokens(model: Model, part: unknown): number {
   return messages[0]!.content[0]!.total;
 }
 
-const sized = (width: number, height: number) => ({
+const sized = (width: number, height: number, imageDetail?: string) => ({
   type: "image",
   image: pngHeader(width, height).toString("base64"),
   mediaType: "image/png",
+  ...(imageDetail && { providerOptions: { openai: { imageDetail } } }),
 });
 
 let checked = 0;
@@ -97,6 +100,46 @@ describe("Claude images against count_tokens", () => {
       }
     }
   );
+});
+
+describe("OpenAI images against the Responses API", () => {
+  // gpt-5.5 and gpt-6.1-sol are measured but not in the catalog: they get
+  // the recipe that was fitted to them, so the fit is tested as well.
+  const modelOf = (apiId: string): Model => {
+    const catalog = models[`openai/${apiId}` as keyof typeof models] as
+      | Model
+      | undefined;
+    return (catalog ?? {
+      tokens: {
+        ...(models["openai/gpt-5"] as Model).tokens,
+        media: fitOpenAiImage(apiId),
+      },
+    }) as Model;
+  };
+
+  test.each(Object.entries(openai.models))("%s", (apiId, measured) => {
+    const model = modelOf(apiId);
+    const cases = measured.cases.filter(
+      (c): c is typeof c & { tokens: number } => "tokens" in c
+    );
+    expect(cases.length).toBeGreaterThan(200);
+    for (const c of cases) {
+      expectCost(model, sized(c.width, c.height, c.detail), c.tokens);
+    }
+  });
+
+  test("a model without a recipe ignores the detail", () => {
+    const grok = models["xai/grok-4"] as Model;
+    expect(imageTokens(grok, sized(2000, 2000, "high"))).toBe(85);
+  });
+
+  test("the catalog has the recipes of the measured models it lists", () => {
+    for (const id of ["gpt-5", "gpt-4o", "gpt-4.1-mini"]) {
+      expect(
+        models[`openai/${id}` as keyof typeof models].tokens
+      ).toHaveProperty("media");
+    }
+  });
 });
 
 describe("images without a size", () => {

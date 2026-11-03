@@ -42,7 +42,15 @@ const model = {
     perNestedObject: 29,
     perArrayOfObjects: 31,
     anthropic,
-    media: { image: { patch: 10, maxEdge: 100, maxPatches: 40, overhead: 5 } },
+    media: {
+      image: {
+        kind: "patches",
+        patch: 10,
+        maxEdge: 100,
+        maxPatches: 40,
+        overhead: 5,
+      },
+    },
   },
 } as Model;
 
