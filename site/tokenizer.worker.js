@@ -155,7 +155,7 @@ self.onmessage = async function(e) {
       }
 
       const startTime = performance.now();
-      tokens = currentTokenizer.encode(text);
+      tokens = currentTokenizer.encode(text, [], []);
       const encodeTime = performance.now() - startTime;
 
       // Reset render state

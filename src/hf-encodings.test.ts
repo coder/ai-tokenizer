@@ -43,15 +43,10 @@ interface Subject {
   skipReason: (sampleName: string) => string | undefined;
 }
 
-// The default engine runs llama4. Both bugs are in src/tokenizer.ts and not in
-// the encoding. Remove the skips once they are fixed there.
-const llama4SkipReason = (sampleName: string): string | undefined => {
-  // Quadratic time on a long run of one character (issue #6).
-  if (sampleName.startsWith("long/")) return "slow engine";
-  // TextDecoder drops a leading BOM when the engine looks up a rank (PR #8).
-  if (sampleName === "edge/\\ufeffx") return "BOM rank lookup";
-  return undefined;
-};
+// The default engine runs llama4 and takes quadratic time on a long run of
+// one character (issue #6, fixed by PR #15). Remove the skip once that lands.
+const llama4SkipReason = (sampleName: string): string | undefined =>
+  sampleName.startsWith("long/") ? "slow engine" : undefined;
 
 const llama4Tokenizer = new Tokenizer(llama4);
 const llama4Special = Object.keys(llama4.special_tokens);
