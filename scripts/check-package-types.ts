@@ -33,6 +33,11 @@ const model = models["openai/gpt-5"];
 const tokenizer = new Tokenizer(encoding[model.encoding]);
 export const result = count({ tokenizer, model, messages, tools });
 export const total: number = result.total;
+export const claudeResult = count({
+  tokenizer: new Tokenizer(encoding.claude_v5),
+  model,
+  messages,
+});
 `;
 
 const resolutions: Array<{
