@@ -33,3 +33,8 @@ jobs:
       - name: Build
         run: bun run build --dts=false
 
+      - name: Build with type declarations
+        run: bun run build
+
+      - name: Check packed types
+        run: bun scripts/check-package-types.ts

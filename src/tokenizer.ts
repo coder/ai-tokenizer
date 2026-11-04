@@ -520,15 +520,18 @@ function escapeRegex(str: string): string {
 }
 
 /**
- * Hyper-optimized BPE merge
- * Matches gpt-tokenizer's approach exactly but with our optimizations
+ * Byte pair merge in O(n log n) for a piece of n bytes.
+ *
+ * The parts form a linked list, and a min-heap of adjacent pairs ordered by
+ * (rank, position) picks the next merge: the lowest rank first, the leftmost
+ * pair among equal ranks. Exported for tests; not part of the public API.
  */
-function bytePairMerge(
+export function bytePairMerge(
   piece: Uint8Array,
   stringRanks: Record<string, number>,
   binaryFirstByteIndex: Array<Array<[Uint8Array, number]> | null>
 ): number[] {
-  const len = piece.length;
+  const n = piece.length;
 
   // Ultra-fast inlined rank lookup
   const getRankForSlice = (slice: Uint8Array): number => {
@@ -548,65 +551,141 @@ function bytePairMerge(
     return NO_RANK;
   };
 
-  const starts: number[] = [];
-  const ranks: number[] = [];
+  const output: number[] = [];
+  if (n === 0) return output;
 
-  // Inline getRank helper
-  const getRank = (
-    startIndex: number,
-    pairStart?: number,
-    pairEnd?: number
-  ): number => {
-    if (pairStart === undefined) pairStart = starts[startIndex];
-    if (pairEnd === undefined) pairEnd = starts[startIndex + 2];
-    if (pairEnd === undefined) return NO_RANK;
-    return getRankForSlice(piece.subarray(pairStart, pairEnd));
+  // A part is named by the index of its first byte. next[i] is where the part
+  // after i starts (n for the last part), or -1 once i was merged into the part
+  // on its left. partRank[i] is the rank of i's part if it was merged.
+  const next = new Int32Array(n + 1);
+  const prev = new Int32Array(n);
+  const partRank = new Uint32Array(n).fill(NO_RANK);
+  for (let i = 0; i < n; i++) {
+    next[i] = i + 1;
+    prev[i] = i - 1;
+  }
+  next[n] = -1;
+
+  // Heap entry: merge the part at `pos` with the part after it; together they
+  // span [pos, end). An entry is live while pos still has a right neighbour
+  // whose own right edge is `end`. Every merge adds at most two entries and
+  // removes one, so 2n slots are enough.
+  const capacity = 2 * n;
+  const heapRank = new Uint32Array(capacity);
+  const heapPos = new Int32Array(capacity);
+  const heapEnd = new Int32Array(capacity);
+  let size = 0;
+
+  const siftUp = (index: number): void => {
+    const rank = heapRank[index]!;
+    const pos = heapPos[index]!;
+    const end = heapEnd[index]!;
+    while (index > 0) {
+      const parent = (index - 1) >> 1;
+      const parentRank = heapRank[parent]!;
+      if (
+        parentRank < rank ||
+        (parentRank === rank && heapPos[parent]! < pos)
+      ) {
+        break;
+      }
+      heapRank[index] = parentRank;
+      heapPos[index] = heapPos[parent]!;
+      heapEnd[index] = heapEnd[parent]!;
+      index = parent;
+    }
+    heapRank[index] = rank;
+    heapPos[index] = pos;
+    heapEnd[index] = end;
   };
 
-  // Initialize starts and ranks
-  for (let i = 0; i <= len; i++) {
-    starts[i] = i;
-    if (i < len - 1) {
-      ranks[i] = getRank(i, i, i + 2);
-    } else {
-      ranks[i] = NO_RANK;
-    }
-  }
+  // Typed arrays drop writes past their end, so check the bound here.
+  const push = (rank: number, pos: number, end: number): void => {
+    if (size >= capacity) throw new RangeError("bytePairMerge: heap is full");
+    heapRank[size] = rank;
+    heapPos[size] = pos;
+    heapEnd[size] = end;
+    siftUp(size++);
+  };
 
-  // Main merge loop
-  while (starts.length > 1) {
-    let minRank = NO_RANK;
-    let minIdx = -1;
-
-    // Find minimum rank
-    const ranksLen = ranks.length - 1;
-    for (let i = 0; i < ranksLen; i++) {
-      const rank = ranks[i]!;
-      if (rank < minRank) {
-        minRank = rank!;
-        minIdx = i;
+  const siftDown = (index: number): void => {
+    const rank = heapRank[index]!;
+    const pos = heapPos[index]!;
+    const end = heapEnd[index]!;
+    const half = size >> 1;
+    while (index < half) {
+      let child = 2 * index + 1;
+      const right = child + 1;
+      if (
+        right < size &&
+        (heapRank[right]! < heapRank[child]! ||
+          (heapRank[right] === heapRank[child] &&
+            heapPos[right]! < heapPos[child]!))
+      ) {
+        child = right;
       }
+      const childRank = heapRank[child]!;
+      if (rank < childRank || (rank === childRank && pos < heapPos[child]!)) {
+        break;
+      }
+      heapRank[index] = childRank;
+      heapPos[index] = heapPos[child]!;
+      heapEnd[index] = heapEnd[child]!;
+      index = child;
+    }
+    heapRank[index] = rank;
+    heapPos[index] = pos;
+    heapEnd[index] = end;
+  };
+
+  // Only a pair whose rank is below NO_RANK can merge.
+  for (let i = 0; i + 2 <= n; i++) {
+    const rank = getRankForSlice(piece.subarray(i, i + 2));
+    if (rank < NO_RANK) {
+      heapRank[size] = rank;
+      heapPos[size] = i;
+      heapEnd[size] = i + 2;
+      size++;
+    }
+  }
+  for (let i = (size >> 1) - 1; i >= 0; i--) siftDown(i);
+
+  while (size > 0) {
+    const rank = heapRank[0]!;
+    const pos = heapPos[0]!;
+    const end = heapEnd[0]!;
+    size--;
+    if (size > 0) {
+      heapRank[0] = heapRank[size]!;
+      heapPos[0] = heapPos[size]!;
+      heapEnd[0] = heapEnd[size]!;
+      siftDown(0);
     }
 
-    if (minRank === NO_RANK || minIdx === -1) break;
+    const right = next[pos]!;
+    if (right < 0 || next[right] !== end) continue;
 
-    // Remove elements
-    starts.splice(minIdx + 1, 1);
-    ranks.splice(minIdx, 1);
-
-    // Update ranks
-    ranks[minIdx] = getRank(minIdx);
-    if (minIdx > 0) {
-      ranks[minIdx - 1] = getRank(minIdx - 1);
+    next[pos] = end;
+    next[right] = -1;
+    partRank[pos] = rank;
+    if (end < n) {
+      prev[end] = pos;
+      const afterEnd = next[end]!;
+      const rankWithNext = getRankForSlice(piece.subarray(pos, afterEnd));
+      if (rankWithNext < NO_RANK) push(rankWithNext, pos, afterEnd);
+    }
+    const left = prev[pos]!;
+    if (left >= 0) {
+      const rankWithLeft = getRankForSlice(piece.subarray(left, end));
+      if (rankWithLeft < NO_RANK) push(rankWithLeft, left, end);
     }
   }
 
-  // Build output
-  const output: number[] = [];
-  for (let i = 0; i < starts.length - 1; i++) {
-    const pairStart = starts[i];
-    const pairEnd = starts[i + 1];
-    const rank = getRankForSlice(piece.subarray(pairStart, pairEnd));
+  for (let i = 0; i < n; i = next[i]!) {
+    let rank = partRank[i]!;
+    if (rank === NO_RANK) {
+      rank = getRankForSlice(piece.subarray(i, i + 1));
+    }
     if (rank !== NO_RANK) {
       output.push(rank);
     }
