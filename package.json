@@ -35,7 +35,11 @@
       "encoding/cl100k_base": ["./dist/encoding/cl100k_base.d.ts"],
       "encoding/o200k_base": ["./dist/encoding/o200k_base.d.ts"],
       "encoding/p50k_base": ["./dist/encoding/p50k_base.d.ts"],
-      "encoding/claude": ["./dist/encoding/claude.d.ts"]
+      "encoding/claude": ["./dist/encoding/claude.d.ts"],
+      "encoding/claude_v3": ["./dist/encoding/claude_v3.d.ts"],
+      "encoding/claude_v4_7": ["./dist/encoding/claude_v4_7.d.ts"],
+      "encoding/claude_v4_8": ["./dist/encoding/claude_v4_8.d.ts"],
+      "encoding/claude_v5": ["./dist/encoding/claude_v5.d.ts"]
     }
   },
   "exports": {
@@ -107,6 +111,46 @@
       "require": {
         "types": "./dist/encoding/claude.d.cts",
         "default": "./dist/encoding/claude.cjs"
+      }
+    },
+    "./encoding/claude_v3": {
+      "import": {
+        "types": "./dist/encoding/claude_v3.d.ts",
+        "default": "./dist/encoding/claude_v3.js"
+      },
+      "require": {
+        "types": "./dist/encoding/claude_v3.d.cts",
+        "default": "./dist/encoding/claude_v3.cjs"
+      }
+    },
+    "./encoding/claude_v4_7": {
+      "import": {
+        "types": "./dist/encoding/claude_v4_7.d.ts",
+        "default": "./dist/encoding/claude_v4_7.js"
+      },
+      "require": {
+        "types": "./dist/encoding/claude_v4_7.d.cts",
+        "default": "./dist/encoding/claude_v4_7.cjs"
+      }
+    },
+    "./encoding/claude_v4_8": {
+      "import": {
+        "types": "./dist/encoding/claude_v4_8.d.ts",
+        "default": "./dist/encoding/claude_v4_8.js"
+      },
+      "require": {
+        "types": "./dist/encoding/claude_v4_8.d.cts",
+        "default": "./dist/encoding/claude_v4_8.cjs"
+      }
+    },
+    "./encoding/claude_v5": {
+      "import": {
+        "types": "./dist/encoding/claude_v5.d.ts",
+        "default": "./dist/encoding/claude_v5.js"
+      },
+      "require": {
+        "types": "./dist/encoding/claude_v5.d.cts",
+        "default": "./dist/encoding/claude_v5.cjs"
       }
     }
   },

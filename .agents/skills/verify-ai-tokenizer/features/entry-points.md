@@ -1,6 +1,6 @@
 # Package entry points
 
-The package exports `.`, `./sdk`, `./encoding` and `./encoding/{cl100k_base,o200k_base,p50k_base,claude}`, each with ESM, CJS and type entries. A consumer can import every subpath from ESM, require it from CJS, and typecheck the README snippets with TypeScript.
+The package exports `.`, `./sdk`, `./encoding` and `./encoding/{cl100k_base,o200k_base,p50k_base,claude,claude_v3,claude_v4_7,claude_v4_8,claude_v5}`, each with ESM, CJS and type entries. A consumer can import every subpath from ESM, require it from CJS, and typecheck the README snippets with TypeScript.
 
 ## Sub-features
 
