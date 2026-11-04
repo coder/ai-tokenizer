@@ -6,33 +6,81 @@
  * `ai-tokenizer/encoding` paid for every encoding. A module now embeds its
  * data as one string and exports stand-ins for the tables. A stand-in builds
  * the real table on first use. A module namespace cannot hold a getter, and
- * the tables are public exports, so a stand-in is a Proxy that forwards to the
- * real table.
+ * the tables are public exports, so a stand-in is a Proxy.
  *
- * `Tokenizer` calls {@link resolve} to get the real table, so a lookup in its
- * hot loop never goes through the Proxy.
+ * The Proxy wraps the real table, which starts empty. The first operation on
+ * the Proxy fills that table in place, then forwards to it. So freezing,
+ * sealing or defining a property on a stand-in changes the real table, and
+ * Node's and Bun's `console.log` print its content. `Tokenizer` calls
+ * {@link resolve} to get the real table, so a lookup in its hot loop never
+ * goes through the Proxy.
+ *
+ * A Proxy cannot be copied by `structuredClone` or `postMessage` in V8 or
+ * JavaScriptCore, whatever its target holds. Copy `{ ...table }` (or
+ * `[...table]` for an array) instead.
  */
 
 // Symbol.for, so an ESM and a CJS copy of this package agree on the key.
 const REAL = Symbol.for("ai-tokenizer.lazy");
+const INSPECT = Symbol.for("nodejs.util.inspect.custom");
 
 /**
- * A stand-in for the table `load` returns. `placeholder` must be an empty
- * object, or an empty array when the table is an array, so that
- * `Array.isArray` and the Proxy invariants hold. `load` runs once.
+ * A stand-in for `target`, which must be empty: an empty object, or an empty
+ * array for a table that is an array, so that `Array.isArray` holds. `fill`
+ * runs once, on the first operation, and puts the table's content in `target`.
  */
-export function lazy<T extends object>(placeholder: T, load: () => T): T {
-  let real: T | undefined;
-  const get = (): T => (real ??= load());
-  return new Proxy(placeholder, {
-    get: (_, key) => (key === REAL ? get() : Reflect.get(get(), key)),
-    has: (_, key) => Reflect.has(get(), key),
-    ownKeys: () => Reflect.ownKeys(get()),
-    getOwnPropertyDescriptor: (_, key) =>
-      Reflect.getOwnPropertyDescriptor(get(), key),
-    getPrototypeOf: () => Reflect.getPrototypeOf(get()),
-    set: (_, key, value) => Reflect.set(get(), key, value),
-    deleteProperty: (_, key) => Reflect.deleteProperty(get(), key),
+export function lazy<T extends object>(
+  target: T,
+  fill: (target: T) => void
+): T {
+  let filled = false;
+  const ensure = (): T => {
+    if (!filled) {
+      fill(target);
+      filled = true;
+    }
+    return target;
+  };
+  // Both runtimes print a Proxy by its target and ask the target, not the
+  // Proxy, for this method. The copy keeps the Proxy out of the printout.
+  Object.defineProperty(target, INSPECT, {
+    value: () =>
+      Array.isArray(ensure())
+        ? (target as unknown[]).slice()
+        : Object.assign(Object.create(null), target),
+    configurable: true,
+    writable: true,
+  });
+  return new Proxy(target, {
+    get: (t, key) =>
+      key === REAL ? ensure() : (ensure(), Reflect.get(t, key)),
+    set: (t, key, value) => (ensure(), Reflect.set(t, key, value)),
+    has: (t, key) => (ensure(), Reflect.has(t, key)),
+    deleteProperty: (t, key) => (ensure(), Reflect.deleteProperty(t, key)),
+    ownKeys: (t) => (ensure(), Reflect.ownKeys(t)),
+    getOwnPropertyDescriptor: (t, key) => (
+      ensure(),
+      Reflect.getOwnPropertyDescriptor(t, key)
+    ),
+    defineProperty: (t, key, descriptor) => (
+      ensure(),
+      Reflect.defineProperty(t, key, descriptor)
+    ),
+    getPrototypeOf: (t) => (ensure(), Reflect.getPrototypeOf(t)),
+    setPrototypeOf: (t, prototype) => (
+      ensure(),
+      Reflect.setPrototypeOf(t, prototype)
+    ),
+    isExtensible: (t) => (ensure(), Reflect.isExtensible(t)),
+    preventExtensions: (t) => (ensure(), Reflect.preventExtensions(t)),
+  });
+}
+
+/** A stand-in for the array `load` returns. */
+export function lazyArray<T>(load: () => T[]): T[] {
+  return lazy<T[]>([], (target) => {
+    const items = load();
+    for (let i = 0; i < items.length; i++) target[i] = items[i]!;
   });
 }
 
@@ -80,35 +128,36 @@ function fromHex(hex: string): Uint8Array {
   return bytes;
 }
 
-export function buildBpeTables({ tokens, binary }: BpeData): BpeTables {
-  // No prototype, so a token such as "constructor" or "__proto__" is a plain
-  // key and a missing token reads as undefined.
-  const stringEncoder: Record<string, number> = Object.create(null);
-  // The parsed token list becomes the decoder, to hold the strings once.
-  const decoder = tokens as Array<string | Uint8Array | undefined | null>;
-  for (let rank = 0; rank < tokens.length; rank++) {
-    const text = tokens[rank]!;
-    if (text === null) delete decoder[rank];
-    else if (text !== "") stringEncoder[text] = rank;
-  }
-  const binaryEncoder = binary.map(([hex, rank]): [Uint8Array, number] => {
-    const bytes = fromHex(hex);
-    decoder[rank] = bytes;
-    return [bytes, rank];
-  });
-  return {
-    stringEncoder,
-    binaryEncoder,
-    decoder: decoder as BpeTables["decoder"],
-  };
-}
+/** Puts each table of a BPE encoding in its empty target. */
+const FILL: {
+  [K in keyof BpeTables]: (target: BpeTables[K], data: BpeData) => void;
+} = {
+  stringEncoder(target, { tokens }) {
+    for (let rank = 0; rank < tokens.length; rank++) {
+      const text = tokens[rank]!;
+      if (text !== null && text !== "") target[text] = rank;
+    }
+  },
+  binaryEncoder(target, { binary }) {
+    for (const [hex, rank] of binary) target.push([fromHex(hex), rank]);
+  },
+  decoder(target, { tokens, binary }) {
+    for (let rank = 0; rank < tokens.length; rank++) {
+      const text = tokens[rank]!;
+      if (text !== null && text !== "") target[rank] = text;
+    }
+    for (const [hex, rank] of binary) target[rank] = fromHex(hex);
+    // A rank without a token stays a hole, as it was in an object literal.
+    (target as unknown as unknown[]).length = tokens.length;
+  },
+};
 
-// One build per JSON string, shared by the three tables of a module.
-const built = new Map<string, BpeTables>();
+/** The tables of one JSON string, parsed once and shared. */
+const parsed = new Map<string, { data: BpeData; unfilled: number }>();
 
 /**
  * One table of a BPE encoding, from the JSON its module embeds. Nothing is
- * parsed until a table is read, and the first read builds all three.
+ * parsed until a table is read, and a table is filled when it is first read.
  *
  * Each table is a call of its own, so a bundler that sees the call is pure can
  * drop a table, and the JSON with it, when nothing uses the encoding.
@@ -117,13 +166,21 @@ export function bpeTable<K extends keyof BpeTables>(
   json: string,
   key: K
 ): BpeTables[K] {
-  const placeholder = (key === "stringEncoder" ? {} : []) as BpeTables[K];
-  return lazy(placeholder, () => {
-    let tables = built.get(json);
-    if (tables === undefined) {
-      tables = buildBpeTables(JSON.parse(json) as BpeData);
-      built.set(json, tables);
+  // The string encoder has no prototype, so a token such as "constructor" or
+  // "__proto__" is a plain key and a missing token reads as undefined.
+  const target = (
+    key === "stringEncoder" ? Object.create(null) : []
+  ) as BpeTables[K];
+  return lazy(target, (table) => {
+    let entry = parsed.get(json);
+    if (entry === undefined) {
+      entry = { data: JSON.parse(json) as BpeData, unfilled: 3 };
+      parsed.set(json, entry);
     }
-    return tables[key];
+    (FILL[key] as (table: BpeTables[K], data: BpeData) => void)(
+      table,
+      entry.data
+    );
+    if (--entry.unfilled === 0) parsed.delete(json);
   });
 }

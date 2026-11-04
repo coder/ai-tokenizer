@@ -277,7 +277,7 @@ ${describeSource(source)}
  * - Merges: ${count.toLocaleString("en-US")}
  * - Special tokens: ${Object.keys(special).length.toLocaleString("en-US")}
  */
-import { decodeStrings, lazy } from "../lazy";
+import { decodeStrings, lazyArray } from "../lazy";
 import { createSentencePieceCodec } from "../sentencepiece";
 
 export const kind = "sentencepiece";
@@ -287,7 +287,7 @@ export const name = "gemma4";
 export const special_tokens: Record<string, number> = ${JSON.stringify(special, null, 2)};
 
 // Token text by id. Decoded on first use, not on import.
-export const vocab: string[] = /* @__PURE__ */ lazy<string[]>([], () =>
+export const vocab: string[] = /* @__PURE__ */ lazyArray(() =>
   decodeStrings(${JSON.stringify(encodeStrings(byId))})
 );
 

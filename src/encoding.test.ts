@@ -3,7 +3,7 @@ import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { bpeData, tiktokenBytesByRank } from "../scripts/encoding-source";
-import { buildBpeTables, resolve } from "./lazy";
+import { bpeTable, resolve } from "./lazy";
 
 const ENCODING_DIR = join(import.meta.dirname, "encoding");
 
@@ -50,17 +50,19 @@ describe("generated encodings", () => {
       const source = JSON.parse(
         readFileSync(join(ENCODING_DIR, `${name}.json`), "utf-8")
       );
-      const expected = buildBpeTables(
+      const json = JSON.stringify(
         bpeData(tiktokenBytesByRank(source.bpe_ranks)).data
       );
+      const expected = (key: "stringEncoder" | "binaryEncoder" | "decoder") =>
+        resolve(bpeTable(json, key));
       const actual = await import(`./encoding/${name}`);
 
       expect(actual.name).toBe(name);
       expect(actual.pat_str).toBe(source.pat_str);
       expect(actual.special_tokens).toEqual(source.special_tokens);
-      expect(resolve(actual.stringEncoder)).toEqual(expected.stringEncoder);
-      expect(resolve(actual.binaryEncoder)).toEqual(expected.binaryEncoder);
-      expect(resolve(actual.decoder)).toEqual(expected.decoder);
+      expect(resolve(actual.stringEncoder)).toEqual(expected("stringEncoder"));
+      expect(resolve(actual.binaryEncoder)).toEqual(expected("binaryEncoder"));
+      expect(resolve(actual.decoder)).toEqual(expected("decoder"));
     });
   }
 });
@@ -83,7 +85,7 @@ describe("bundling the encodings", () => {
       const source = readFileSync(file, "utf-8");
       const calls = [
         ...source.matchAll(
-          /^export const [^=\n]+=\s*(\/\* @__PURE__ \*\/\s*)?(bpeTable|lazy|createSentencePieceCodec|createClaudeCodec)\b/gm
+          /^export const [^=\n]+=\s*(\/\* @__PURE__ \*\/\s*)?(bpeTable|lazyArray|createSentencePieceCodec|createClaudeCodec)\b/gm
         ),
       ];
       expect(calls.length).toBeGreaterThan(0);

@@ -1,9 +1,10 @@
 import { describe, test, expect, spyOn } from "bun:test";
+import { inspect } from "node:util";
 import {
   decodeStrings,
   bpeTable,
-  buildBpeTables,
   lazy,
+  lazyArray,
   resolve,
   type BpeData,
 } from "./lazy";
@@ -11,53 +12,106 @@ import { encodeStrings } from "../scripts/encoding-source";
 import Tokenizer, { type Encoding } from "./tokenizer";
 
 describe("lazy", () => {
-  test("builds nothing until a read, then builds once", () => {
-    let loads = 0;
-    const table = lazy<Record<string, number>>({}, () => {
-      loads++;
-      return { a: 1, b: 2 };
+  const stand = (loads: { count: number } = { count: 0 }) =>
+    lazy<Record<string, number>>(Object.create(null), (target) => {
+      loads.count++;
+      Object.assign(target, { a: 1, b: 2 });
     });
-    expect(loads).toBe(0);
+
+  test("fills nothing until the first operation, then fills once", () => {
+    const loads = { count: 0 };
+    const table = stand(loads);
+    expect(loads.count).toBe(0);
     expect(table["a"]).toBe(1);
     expect("b" in table).toBe(true);
     expect(Object.keys(table)).toEqual(["a", "b"]);
-    expect(loads).toBe(1);
+    expect(loads.count).toBe(1);
   });
 
   test("an object stand-in reads like the object", () => {
-    const real: Record<string, number> = { x: 1, y: 2 };
-    const table = lazy<Record<string, number>>({}, () => real);
-    expect(JSON.stringify(table)).toBe(JSON.stringify(real));
-    expect({ ...table }).toEqual(real);
+    const table = stand();
+    expect(JSON.stringify(table)).toBe('{"a":1,"b":2}');
+    expect({ ...table }).toEqual({ a: 1, b: 2 });
     expect(Object.entries(table)).toEqual([
-      ["x", 1],
-      ["y", 2],
+      ["a", 1],
+      ["b", 2],
     ]);
     table["z"] = 3;
-    delete table["x"];
-    expect(real).toEqual({ y: 2, z: 3 });
+    delete table["a"];
+    expect({ ...resolve(table) }).toEqual({ b: 2, z: 3 });
   });
 
   test("an array stand-in reads like the array", () => {
-    const real = [10, 20, 30];
-    const table = lazy<number[]>([], () => real);
+    const table = lazyArray(() => [10, 20, 30]);
     expect(Array.isArray(table)).toBe(true);
     expect(table.length).toBe(3);
     expect(Object.keys(table)).toEqual(["0", "1", "2"]);
-    expect([...table]).toEqual(real);
+    expect([...table]).toEqual([10, 20, 30]);
     expect(table.map((n) => n / 10)).toEqual([1, 2, 3]);
     expect(JSON.stringify(table)).toBe("[10,20,30]");
   });
 
   test("resolve returns the real table, and any other value unchanged", () => {
-    const real = { a: 1 };
-    const table = lazy<Record<string, number>>({}, () => real);
-    expect(resolve(table)).toBe(real);
+    const table = stand();
+    const real = resolve(table);
+    expect(real).not.toBe(table);
+    expect(real).toEqual(Object.assign(Object.create(null), { a: 1, b: 2 }));
+    expect(resolve(real)).toBe(real);
     const plain = { a: 1 };
     expect(resolve(plain)).toBe(plain);
     expect(resolve(null)).toBeNull();
     expect(resolve(undefined)).toBeUndefined();
     expect(resolve(5)).toBe(5);
+  });
+
+  // A Proxy over an empty placeholder cannot report a frozen or sealed state,
+  // because the invariants are checked against its target.
+  test("freeze, seal and preventExtensions act on the filled table", () => {
+    const frozen = stand();
+    Object.freeze(frozen);
+    expect(Object.isFrozen(frozen)).toBe(true);
+    expect(frozen["a"]).toBe(1);
+    expect(Object.keys(frozen)).toEqual(["a", "b"]);
+    expect(Object.isFrozen(resolve(frozen))).toBe(true);
+
+    const sealed = lazyArray(() => [1, 2]);
+    Object.seal(sealed);
+    expect(Object.isSealed(sealed)).toBe(true);
+    expect([...sealed]).toEqual([1, 2]);
+
+    const fixed = stand();
+    Object.preventExtensions(fixed);
+    expect(Object.isExtensible(fixed)).toBe(false);
+    expect(fixed["b"]).toBe(2);
+  });
+
+  test("defineProperty defines on the filled table", () => {
+    const table = stand();
+    Object.defineProperty(table, "z", {
+      value: 9,
+      enumerable: true,
+      configurable: false,
+    });
+    expect(table["z"]).toBe(9);
+    expect(Object.keys(table)).toEqual(["a", "b", "z"]);
+    expect(Object.getOwnPropertyDescriptor(table, "z")?.configurable).toBe(
+      false
+    );
+  });
+
+  test("printing shows the content, before and after the first read", () => {
+    expect(inspect(stand())).toContain("a: 1");
+    expect(inspect(lazyArray(() => [7, 8]))).toBe("[ 7, 8 ]");
+    const read = stand();
+    void read["a"];
+    expect(inspect(read)).toContain("b: 2");
+  });
+
+  test("a spread copy survives structuredClone, the stand-in does not", () => {
+    // V8 and JavaScriptCore refuse every Proxy, whatever its target holds.
+    expect(() => structuredClone(stand())).toThrow();
+    expect(structuredClone({ ...stand() })).toEqual({ a: 1, b: 2 });
+    expect(structuredClone([...lazyArray(() => [1, 2])])).toEqual([1, 2]);
   });
 });
 

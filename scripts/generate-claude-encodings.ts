@@ -217,7 +217,7 @@ for (const [vocabulary, f] of vocabularies) {
 ${credit(f.family)} *
  * Pieces: ${count(f.pieces.length)}. Byte prefixes: ${count(f.bytePrefixes.length)}. Longest piece: ${f.maxPieceLength} codepoints.
  */
-import { lazy } from "../lazy";
+import { lazyArray } from "../lazy";
 
 /** Hex UTF-8 prefixes that cost one token on the byte floor. */
 export const bytePrefixes: readonly string[] = [
@@ -230,7 +230,7 @@ const json = ${PIECES_JSON};
  * The cost-1 pieces, sorted by codepoints. A piece's index is its token id.
  * Parsed on first use, not on import.
  */
-export const pieces: readonly string[] = /* @__PURE__ */ lazy<string[]>([], () =>
+export const pieces: readonly string[] = /* @__PURE__ */ lazyArray<string>(() =>
   JSON.parse(json)
 );
 `,

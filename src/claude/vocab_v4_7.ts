@@ -8,7 +8,7 @@
  *
  * Pieces: 14,819. Byte prefixes: 468. Longest piece: 32 codepoints.
  */
-import { lazy } from "../lazy";
+import { lazyArray } from "../lazy";
 
 /** Hex UTF-8 prefixes that cost one token on the byte floor. */
 export const bytePrefixes: readonly string[] = [
@@ -488,7 +488,6 @@ const json = `["\\t","\\t\\t","\\t\\t\\t","\\t\\t\\t\\t","\\t\\t\\t\\t\\t","\\t\
  * The cost-1 pieces, sorted by codepoints. A piece's index is its token id.
  * Parsed on first use, not on import.
  */
-export const pieces: readonly string[] = /* @__PURE__ */ lazy<string[]>(
-  [],
-  () => JSON.parse(json)
+export const pieces: readonly string[] = /* @__PURE__ */ lazyArray<string>(() =>
+  JSON.parse(json)
 );
