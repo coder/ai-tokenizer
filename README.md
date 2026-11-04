@@ -91,6 +91,39 @@ const total = tokenizer.count("some text input");
 > [!WARNING]
 > Import encodings selectively based on what you need. Each encoding is 2-8MB uncompressed.
 
+## Claude encodings
+
+Anthropic changed its tokenizer at Claude Opus 4.7. Four encodings count Claude tokens offline. Each one is named after the first model that counts that way. They match the `count_tokens` API exactly on all 93 texts in `src/fixtures/claude-count-tokens.json`, measured on Claude Opus 4.6, Opus 4.7, Opus 4.8 and Opus 5.5. The older `claude` encoding stays available unchanged.
+
+| Encoding | Models | Frame |
+| --- | --- | --- |
+| `claude_v3` | Claude 3 through Claude Opus 4.6, Sonnet 4.6 and Haiku 4.5 | 7 |
+| `claude_v4_7` | Claude Opus 4.7 | 11 |
+| `claude_v4_8` | Claude Opus 4.8, Sonnet 5 and Fable 5 | 6 |
+| `claude_v5` | Claude Opus 5, Opus 5.5, Sonnet 5.5, Haiku 5.5 and Fable 5.1 | 6 on Opus 5, 8 on the 5.5 and 5.1 models |
+
+`claude_v4_7`, `claude_v4_8` and `claude_v5` share one vocabulary. They differ in how the message frame treats the content.
+
+```ts
+import { Tokenizer } from "ai-tokenizer";
+import * as claude_v5 from "ai-tokenizer/encoding/claude_v5";
+
+const tokenizer = new Tokenizer(claude_v5);
+tokenizer.count("hello, world"); // 4
+```
+
+- `count()` counts the content of one user message. `count_tokens` also charges a fixed message frame, shown in the table above. The frame comes from the model config, not from the encoding.
+- The content count includes what the frame does to the content. On `claude_v3` and `claude_v4_7` the frame absorbs one leading space. On every encoding, newlines at the end of the content join the frame's own newline token, so a short run of them is free.
+- `claude_v5` drops trailing ASCII whitespace (space, tab, CR, LF, VT, FF) from the text it counts. These models drop it at the end of each user message and at the end of the system prompt. They do not drop it in assistant messages or in `tool_result` content. The API joins the text blocks of a message with no separator and trims only the last block, so trailing whitespace in earlier blocks still counts. A last block that holds only whitespace is not trimmed: `["a", "   "]` costs what `"a   "` costs on `claude_v4_8`. To count a user message with several text blocks, count the joined text with `claude_v5`, or with `claude_v4_8` when the last block is only whitespace.
+- `count("")` is 0. The API rejects empty content.
+- Token ids are synthetic, because Anthropic does not publish its ids. They are stable for one version of this package only.
+- `decode()` returns the normalized text, so it is lossy. Plain ASCII prose comes back unchanged. Unicode normalization, folded quotes and spaces, removed control characters, the absorbed leading space, some case changes and trailing whitespace do not.
+- Counts use Unicode 15.1 data, like the reference. A JavaScript engine with Unicode data older than 15.1 can count text with newer characters differently.
+- Some Latin letters added in Unicode 16 (for example U+A7CC, U+A7CD and U+A7DA) count a few tokens off. ctok has the same gap.
+- A single space at the end of the text, right after one of the ideographic tone marks U+302A to U+302F, counts 1 token too many on `claude_v3`, `claude_v4_7` and `claude_v4_8` (`"x \u302e "` is 5 on the API and 6 here). ctok has the same gap. `claude_v5` is right, because it trims that space.
+
+The encodings are a TypeScript port of [ctok](https://github.com/sanderland/ctok) by Sander Land (MIT License), at commit [`8c43ffd`](https://github.com/sanderland/ctok/tree/8c43ffd3c7be467622a540f025516e49ef78d8b1). `scripts/generate-claude-encodings.ts` regenerates the data from that commit, and `scripts/compare-claude-ctok.ts` compares the port with ctok.
+
 ## Accuracy
 
 Validated against actual API responses with pseudo-random messages:
